@@ -2,11 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 
 import {
-  BAR_CATEGORIES,
+  CATEGORIAS,
   CATEGORY_GOALS,
-  EXPENSE_CATEGORIES,
+  CATEGORY_SHORT_LABELS,
+  CHART_PALETTE,
   INITIAL_TRANSACTIONS,
   PIE_COLORS,
+  resolveCategoryColor,
   STATUS_STORAGE_KEY,
 } from '@app/core/services/finance.data';
 import { SupabaseService } from '@app/core/services/supabase.service';
@@ -38,6 +40,9 @@ export class FinanceService {
   /** Mês/ano visível no dashboard. Inicia em junho/2026 (dados presentes). */
   readonly currentDate = signal(new Date(2026, 5, 1));
 
+  /** Termo de busca compartilhado (header → tabela). */
+  readonly termoBusca = signal('');
+
   constructor() {
     this.loadTransactions();
   }
@@ -67,24 +72,59 @@ export class FinanceService {
     return { total, pago, pendente };
   });
 
+  readonly totalReceitas = computed(() =>
+    this.filteredTransactions()
+      .filter((t) => this.isReceita(t.categoria))
+      .reduce((s, t) => s + t.valor, 0),
+  );
+
+  readonly totalDespesas = computed(() =>
+    this.filteredTransactions()
+      .filter((t) => !this.isReceita(t.categoria))
+      .reduce((s, t) => s + t.valor, 0),
+  );
+
+  /** Soma das transações com status pendente no mês visível. */
+  readonly totalPendentes = computed(() =>
+    this.filteredTransactions()
+      .filter((t) => t.status === 'pendente')
+      .reduce((s, t) => s + t.valor, 0),
+  );
+
+  readonly saldoDisponivel = computed(
+    () => this.totalReceitas() - this.totalDespesas(),
+  );
+
   readonly pieData = computed<PieChartItem[]>(() => {
-    const list = this.filteredTransactions();
-    return EXPENSE_CATEGORIES.map((cat) => ({
-      name:  cat,
-      value: list.filter((t) => t.categoria === cat).reduce((s, t) => s + t.valor, 0),
-      color: PIE_COLORS[cat],
-    })).filter((item) => item.value > 0);
+    const totals = this.groupExpensesByCategory();
+
+    return [...totals.entries()]
+      .filter(([, value]) => value > 0)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, value], index) => ({
+        name,
+        value,
+        color: resolveCategoryColor(name, index),
+      }));
   });
 
   readonly pieTotal = computed(() => this.pieData().reduce((s, i) => s + i.value, 0));
 
   readonly barData = computed<BarChartItem[]>(() => {
-    const list = this.filteredTransactions();
-    return BAR_CATEGORIES.map((c) => ({
-      cat:   c.label,
-      gasto: list.filter((t) => t.categoria === c.key).reduce((s, t) => s + t.valor, 0),
-      meta:  CATEGORY_GOALS[c.key] ?? 0,
-    }));
+    const totals = this.groupExpensesByCategory();
+    const categories = new Set([
+      ...totals.keys(),
+      ...Object.keys(CATEGORY_GOALS),
+    ]);
+
+    return [...categories]
+      .map((key) => ({
+        cat:   CATEGORY_SHORT_LABELS[key] ?? key,
+        gasto: totals.get(key) ?? 0,
+        meta:  CATEGORY_GOALS[key] ?? 0,
+      }))
+      .filter((item) => item.gasto > 0 || item.meta > 0)
+      .sort((a, b) => b.gasto - a.gasto);
   });
 
   // ─── Ações ────────────────────────────────────────────────────────────────
@@ -180,25 +220,18 @@ export class FinanceService {
   }
 
   /**
-   * Remove um lançamento:
-   *   1. Remoção otimista imediata.
-   *   2. Persiste no Supabase em background (se configurado).
-   *   3. Restaura em caso de erro de rede.
+   * Remove um lançamento via DELETE no JSON Server.
+   * O signal é atualizado somente após resposta bem-sucedida.
    */
   deleteTransaction(id: number): void {
-    const previous = this.transactions().find((t) => t.id === id);
-    if (!previous) return;
-
-    this.transactions.update((list) => list.filter((t) => t.id !== id));
-    this.persistStatuses();
-
-    if (!this.supabase.isConfigured()) return;
-
-    this.supabase.deleteTransaction(id).then((ok) => {
-      if (!ok) {
-        this.transactions.update((list) => [...list, previous]);
+    this.http.delete<void>(`${this.transactionsUrl}/${id}`).subscribe({
+      next: () => {
+        this.transactions.update((list) => list.filter((t) => t.id !== id));
         this.persistStatuses();
-      }
+      },
+      error: (err) => {
+        console.error('[FinanceService] deleteTransaction:', err);
+      },
     });
   }
 
@@ -252,7 +285,10 @@ export class FinanceService {
   }
 
   getCategoryColor(categoria: string): string {
-    return PIE_COLORS[categoria] ?? 'var(--muted-foreground)';
+    if (PIE_COLORS[categoria]) return PIE_COLORS[categoria];
+
+    const idx = [...categoria].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+    return CHART_PALETTE[idx % CHART_PALETTE.length];
   }
 
   statusLabel(status: TransactionStatus): string {
@@ -262,6 +298,22 @@ export class FinanceService {
   pctOfTotal(value: number): number {
     const total = this.stats().total;
     return total > 0 ? Math.round((value / total) * 100) : 0;
+  }
+
+  private isReceita(categoria: string): boolean {
+    return (CATEGORIAS.RECEITA as readonly string[]).includes(categoria);
+  }
+
+  /** Agrupa despesas do mês visível por categoria (exclui receitas como Salário). */
+  private groupExpensesByCategory(): Map<string, number> {
+    const totals = new Map<string, number>();
+
+    for (const t of this.filteredTransactions()) {
+      if (this.isReceita(t.categoria)) continue;
+      totals.set(t.categoria, (totals.get(t.categoria) ?? 0) + t.valor);
+    }
+
+    return totals;
   }
 
   // ─── Carregamento ─────────────────────────────────────────────────────────
