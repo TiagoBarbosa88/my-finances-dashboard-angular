@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 
 import { ArcSlice, PieChartItem } from '@app/shared/models/transaction.model';
 
@@ -10,11 +10,25 @@ import { ArcSlice, PieChartItem } from '@app/shared/models/transaction.model';
   selector: 'app-donut-chart',
   standalone: true,
   templateUrl: './donut-chart.component.html',
+  styleUrl: './donut-chart.component.css',
 })
 export class DonutChartComponent {
-  data       = input.required<PieChartItem[]>();
-  centerText = input('');   // texto da linha 1 (valor formatado)
-  centerSub  = input('Total');
+  data            = input.required<PieChartItem[]>();
+  centerText      = input('');
+  centerSub       = input('Total');
+  highlightedName = input<string | null>(null);
+  formatTooltip   = input<(name: string, value: number) => string>(
+    (name, value) => `${name}: ${value}`,
+  );
+
+  /** Emitido ao passar o mouse sobre uma fatia (sincroniza legenda). */
+  sliceHighlight = output<string | null>();
+
+  private readonly hoveredName = signal<string | null>(null);
+
+  readonly activeName = computed(
+    () => this.highlightedName() ?? this.hoveredName(),
+  );
 
   private readonly CX       = 120;
   private readonly CY       = 120;
@@ -24,14 +38,36 @@ export class DonutChartComponent {
 
   readonly arcs = computed<ArcSlice[]>(() => this.buildArcs(this.data()));
 
+  tooltipFor(arc: ArcSlice): string {
+    return this.formatTooltip()(arc.name, arc.value);
+  }
+
+  isDimmed(name: string): boolean {
+    const active = this.activeName();
+    return active !== null && active !== name;
+  }
+
+  isHighlighted(name: string): boolean {
+    return this.activeName() === name;
+  }
+
+  onSliceEnter(name: string): void {
+    this.hoveredName.set(name);
+    this.sliceHighlight.emit(name);
+  }
+
+  onSliceLeave(): void {
+    this.hoveredName.set(null);
+    this.sliceHighlight.emit(null);
+  }
+
   private buildArcs(items: PieChartItem[]): ArcSlice[] {
     const sum = items.reduce((s, i) => s + i.value, 0);
     if (!sum) return [];
 
-    let angle = -90; // começa no topo
+    let angle = -90;
     return items.map((item) => {
       const sweepFull = (item.value / sum) * 360;
-      // se só tem 1 fatia, usa 359.99 para o SVG conseguir renderizar
       const sweep = items.length === 1 ? 359.99 : sweepFull - this.GAP_DEG;
       const d = this.arcPath(angle, angle + sweep);
       angle += sweepFull;

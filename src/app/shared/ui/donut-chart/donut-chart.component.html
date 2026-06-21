@@ -1,8 +1,18 @@
 <div class="relative mx-auto h-[240px] w-[240px]">
   @if (data().length > 0) {
-    <svg viewBox="0 0 240 240" class="h-full w-full" aria-hidden="true">
+    <svg viewBox="0 0 240 240" class="h-full w-full" role="img" aria-label="Gráfico de categorias de gastos">
       @for (arc of arcs(); track arc.name) {
-        <path [attr.d]="arc.d" [attr.fill]="arc.color" />
+        <g
+          class="donut-slice"
+          [class.donut-slice--dimmed]="isDimmed(arc.name)"
+          [class.donut-slice--highlighted]="isHighlighted(arc.name)"
+          [attr.title]="tooltipFor(arc)"
+          [attr.aria-label]="tooltipFor(arc)"
+          (mouseenter)="onSliceEnter(arc.name)"
+          (mouseleave)="onSliceLeave()"
+        >
+          <path [attr.d]="arc.d" [attr.fill]="arc.color" />
+        </g>
       }
     </svg>
 

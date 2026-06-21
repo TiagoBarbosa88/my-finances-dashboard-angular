@@ -1,7 +1,7 @@
-<section class="grid gap-4 lg:grid-cols-5">
+<section class="grid grid-cols-1 gap-4 md:grid-cols-2">
 
   <!-- ── Donut: Categorias de Gastos ── -->
-  <div class="surface-card lg:col-span-2">
+  <div class="surface-card">
 
     <!-- Cabeçalho do painel -->
     <div class="flex items-center justify-between gap-4">
@@ -16,14 +16,24 @@
       <app-donut-chart
         [data]="pieData()"
         [centerText]="finance.formatCurrency(pieTotal())"
+        [highlightedName]="highlightedCategory()"
+        [formatTooltip]="pieTooltipFn"
+        (sliceHighlight)="highlightedCategory.set($event)"
       />
     </div>
 
     <!-- Legenda de categorias -->
     <ul class="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
       @for (item of pieData(); track item.name) {
-        <li class="flex items-center justify-between gap-2">
-          <span class="flex min-w-0 items-center gap-2 truncate text-muted-foreground">
+        <li
+          class="legend-item flex items-center justify-between gap-2"
+          [class.legend-item--active]="isLegendActive(item.name)"
+          [class.legend-item--dimmed]="isLegendDimmed(item.name)"
+          [attr.title]="pieTooltipFn(item.name, item.value)"
+          (mouseenter)="onLegendEnter(item.name)"
+          (mouseleave)="onLegendLeave()"
+        >
+          <span class="legend-label flex min-w-0 items-center gap-2 truncate text-muted-foreground">
             <span
               class="h-2 w-2 shrink-0 rounded-full"
               [style]="categoryDotStyle(item.name)"
@@ -40,7 +50,7 @@
   </div>
 
   <!-- ── Barras: Metas por Categoria ── -->
-  <div class="surface-card lg:col-span-3">
+  <div class="surface-card">
 
     <!-- Cabeçalho do painel -->
     <div class="flex flex-wrap items-center justify-between gap-4">

@@ -1,0 +1,32 @@
+:host {
+  display: block;
+}
+
+.donut-slice {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    filter 0.2s ease;
+  transform-origin: 120px 120px;
+  cursor: pointer;
+}
+
+.donut-slice:hover {
+  opacity: 0.85;
+  transform: scale(1.05);
+  filter: brightness(1.12);
+}
+
+.donut-slice--dimmed {
+  opacity: 0.38;
+}
+
+.donut-slice--dimmed:hover {
+  opacity: 0.55;
+}
+
+.donut-slice--highlighted {
+  opacity: 1;
+  transform: scale(1.05);
+  filter: brightness(1.18) drop-shadow(0 0 10px color-mix(in oklab, currentColor 35%, transparent));
+}

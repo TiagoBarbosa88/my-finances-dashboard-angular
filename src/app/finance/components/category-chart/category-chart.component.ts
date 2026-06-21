@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 
 import { FinanceService } from '@app/core/services/finance.service';
 import { BarChartItem, PieChartItem } from '@app/shared/models/transaction.model';
@@ -15,6 +15,7 @@ import { DonutChartComponent } from '@app/shared/ui/donut-chart/donut-chart.comp
   standalone: true,
   imports: [DonutChartComponent, BarChartComponent, DecimalPipe],
   templateUrl: './category-chart.component.html',
+  styleUrl: './category-chart.component.css',
 })
 export class CategoryChartComponent {
   pieData  = input.required<PieChartItem[]>();
@@ -23,7 +24,30 @@ export class CategoryChartComponent {
 
   readonly finance = inject(FinanceService);
 
+  /** Categoria destacada via legenda ou fatia do donut. */
+  readonly highlightedCategory = signal<string | null>(null);
+
   categoryDotStyle(name: string): Record<string, string> {
     return { background: this.finance.getCategoryColor(name) };
+  }
+
+  readonly pieTooltipFn = (name: string, value: number): string =>
+    `${name}: ${this.finance.formatCurrency(value)}`;
+
+  onLegendEnter(name: string): void {
+    this.highlightedCategory.set(name);
+  }
+
+  onLegendLeave(): void {
+    this.highlightedCategory.set(null);
+  }
+
+  isLegendDimmed(name: string): boolean {
+    const active = this.highlightedCategory();
+    return active !== null && active !== name;
+  }
+
+  isLegendActive(name: string): boolean {
+    return this.highlightedCategory() === name;
   }
 }
