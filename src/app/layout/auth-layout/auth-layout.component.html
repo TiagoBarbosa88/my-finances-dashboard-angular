@@ -1,0 +1,163 @@
+<!--
+  Shell de autenticação — duas colunas em md+, coluna única no mobile.
+
+  md:grid-cols-2  → 50% branding | 50% formulário
+  No mobile o painel esquerdo fica hidden → só o formulário aparece.
+-->
+<div class="grid min-h-screen md:grid-cols-2">
+
+  <!-- ══════════════════════════════════════════════════════════
+       PAINEL ESQUERDO — Branding / Informativo
+       hidden no mobile, visível em md+
+  ══════════════════════════════════════════════════════════ -->
+  <div
+    class="relative hidden flex-col justify-between overflow-hidden p-10 md:flex"
+    style="background: radial-gradient(ellipse at 25% 25%,
+             oklch(0.78 0.17 160 / 0.14) 0%,
+             oklch(0.13 0.018 260) 55%),
+           oklch(0.13 0.018 260);"
+  >
+    <!-- Grade de pontos decorativa (sutil) -->
+    <div
+      class="pointer-events-none absolute inset-0 opacity-[0.04]"
+      style="background-image: radial-gradient(circle, oklch(0.97 0.005 250) 1px, transparent 1px);
+             background-size: 28px 28px;"
+    ></div>
+
+    <!-- Brilho secundário no canto inferior direito -->
+    <div
+      class="pointer-events-none absolute bottom-0 right-0 h-80 w-80
+             -translate-x-1/4 translate-y-1/4 rounded-full
+             bg-primary/10 blur-3xl"
+    ></div>
+
+    <!-- ── Logo ── -->
+    <div class="relative flex items-center gap-3">
+      <div
+        class="grid h-10 w-10 shrink-0 place-items-center rounded-xl
+               bg-primary text-primary-foreground glow-primary"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+          <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
+          <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
+          <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
+        </svg>
+      </div>
+      <span class="text-display text-lg font-semibold text-white">My Finances</span>
+    </div>
+
+    <!-- ── Conteúdo hero ── -->
+    <div class="relative space-y-8">
+
+      <!-- Chamada principal -->
+      <div class="space-y-3">
+        <span
+          class="inline-flex items-center gap-1.5 rounded-full border border-primary/30
+                 bg-primary/10 px-3 py-1 text-xs font-medium tracking-wide text-primary"
+        >
+          <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
+          Plataforma financeira pessoal
+        </span>
+
+        <h2 class="text-display text-3xl font-bold leading-snug text-white lg:text-[2.4rem]">
+          Gestão financeira simples para sua família e investimentos
+        </h2>
+      </div>
+
+      <!-- Bullet points -->
+      <ul class="space-y-5">
+
+        <li class="flex items-start gap-4">
+          <div
+            class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-xl
+                   border border-primary/30 bg-primary/10"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round"
+                 class="h-4 w-4 text-primary">
+              <rect x="3" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="14" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-white">Tudo em um só lugar</p>
+            <p class="mt-0.5 text-xs leading-relaxed text-white/50">
+              Centralize receitas, despesas e investimentos em um painel unificado.
+            </p>
+          </div>
+        </li>
+
+        <li class="flex items-start gap-4">
+          <div
+            class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-xl
+                   border border-primary/30 bg-primary/10"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round"
+                 class="h-4 w-4 text-primary">
+              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+              <polyline points="16 7 22 7 22 13"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-white">Investimentos B3 integrados</p>
+            <p class="mt-0.5 text-xs leading-relaxed text-white/50">
+              Acompanhe sua carteira de ações e fundos em tempo real.
+            </p>
+          </div>
+        </li>
+
+        <li class="flex items-start gap-4">
+          <div
+            class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-xl
+                   border border-primary/30 bg-primary/10"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round"
+                 class="h-4 w-4 text-primary">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-white">Compartilhe com sua família</p>
+            <p class="mt-0.5 text-xs leading-relaxed text-white/50">
+              Gerencie finanças compartilhadas com múltiplos usuários.
+            </p>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+
+    <!-- ── Rodapé do painel esquerdo ── -->
+    <div class="relative">
+      <p class="text-xs text-white/30">&copy; 2026 My Finances. Todos os direitos reservados.</p>
+    </div>
+
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       PAINEL DIREITO — Formulário (ng-content)
+       Full-width no mobile, metade em md+
+  ══════════════════════════════════════════════════════════ -->
+  <div
+    class="flex items-center justify-center bg-background
+           px-6 py-12 sm:px-8 md:px-10 lg:px-14"
+  >
+    <!--
+      max-w-sm garante que o formulário nunca fique absurdamente largo.
+      w-full faz ele preencher o espaço disponível até esse max.
+    -->
+    <div class="w-full max-w-sm">
+      <ng-content />
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,60 @@
+<svg
+  [attr.viewBox]="'0 0 ' + W + ' ' + H"
+  class="h-auto w-full"
+  preserveAspectRatio="xMidYMax meet"
+  aria-hidden="true"
+>
+  <!-- Grade horizontal -->
+  @for (y of gridLines(); track y) {
+    <line
+      [attr.x1]="PAD.left"
+      [attr.x2]="W - PAD.right"
+      [attr.y1]="y"
+      [attr.y2]="y"
+      stroke="var(--border)"
+      stroke-dasharray="3 3"
+      stroke-width="1"
+    />
+  }
+
+  <!-- Eixo Y: labels -->
+  @for (tick of yTicks(); track tick.value) {
+    <text
+      [attr.x]="PAD.left - 6"
+      [attr.y]="tick.y + 4"
+      text-anchor="end"
+      font-size="10"
+      fill="var(--muted-foreground)"
+    >{{ tick.label }}</text>
+  }
+
+  <!-- Barras -->
+  @for (bar of bars(); track bar.cat) {
+    <!-- Meta (cinza) -->
+    <rect
+      [attr.x]="bar.meta.x"
+      [attr.y]="bar.meta.y"
+      [attr.width]="bar.meta.w"
+      [attr.height]="bar.meta.h"
+      rx="4"
+      fill="var(--muted)"
+    />
+    <!-- Gasto (primary) -->
+    <rect
+      [attr.x]="bar.gasto.x"
+      [attr.y]="bar.gasto.y"
+      [attr.width]="bar.gasto.w"
+      [attr.height]="bar.gasto.h"
+      rx="4"
+      fill="var(--primary)"
+    />
+    <!-- Label da categoria -->
+    <text
+      [attr.x]="bar.labelX"
+      [attr.y]="bar.labelY"
+      text-anchor="middle"
+      font-size="10"
+      fill="var(--muted-foreground)"
+    >{{ bar.cat }}</text>
+  }
+</svg>

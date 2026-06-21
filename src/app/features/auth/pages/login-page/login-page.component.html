@@ -1,0 +1,145 @@
+<app-auth-layout>
+
+  <!-- ── Cabeçalho do formulário ──────────────────────────────────────────── -->
+  <!--
+    Logo compacta — visível apenas no mobile (md:hidden) porque no desktop
+    o painel esquerdo já exibe a marca.
+  -->
+  <div class="mb-8 flex flex-col items-center gap-3 text-center md:hidden">
+    <div class="grid h-12 w-12 place-items-center rounded-2xl
+                bg-primary text-primary-foreground glow-primary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+        <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
+        <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
+        <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
+      </svg>
+    </div>
+    <div>
+      <p class="text-display text-xl font-bold">My Finances</p>
+      <p class="mt-0.5 text-sm text-muted-foreground">Entre na sua conta</p>
+    </div>
+  </div>
+
+  <!-- Cabeçalho textual (visível somente em desktop, painel esquerdo está oculto) -->
+  <div class="mb-8 hidden md:block">
+    <h1 class="text-display text-2xl font-bold">Bem-vindo de volta</h1>
+    <p class="mt-1 text-sm text-muted-foreground">
+      Entre com suas credenciais para acessar o painel.
+    </p>
+  </div>
+
+  <!-- ── Formulário ────────────────────────────────────────────────────────── -->
+  <form class="space-y-4" (ngSubmit)="signIn()">
+
+    <!-- Alerta de erro -->
+    @if (error()) {
+      <div
+        class="flex items-center gap-2.5 rounded-xl border border-destructive/30
+               bg-destructive/10 px-4 py-3 text-sm text-destructive"
+        role="alert"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 shrink-0">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ error() }}
+      </div>
+    }
+
+    <!-- E-mail -->
+    <div class="space-y-1.5">
+      <label for="email" class="text-sm font-medium">E-mail</label>
+      <input
+        id="email"
+        type="email"
+        name="email"
+        placeholder="seu@email.com"
+        autocomplete="email"
+        [ngModel]="email()"
+        (ngModelChange)="email.set($event)"
+        class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5
+               text-sm text-foreground placeholder:text-muted-foreground
+               outline-none ring-ring transition-colors
+               focus:border-primary/60 focus:ring-1"
+      />
+    </div>
+
+    <!-- Senha -->
+    <div class="space-y-1.5">
+      <label for="password" class="text-sm font-medium">Senha</label>
+      <div class="relative">
+        <input
+          id="password"
+          [type]="showPassword() ? 'text' : 'password'"
+          name="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
+          class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5
+                 pr-11 text-sm text-foreground placeholder:text-muted-foreground
+                 outline-none ring-ring transition-colors
+                 focus:border-primary/60 focus:ring-1"
+        />
+        <button
+          type="button"
+          (click)="showPassword.set(!showPassword())"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground
+                 transition-colors hover:text-foreground"
+          [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Mostrar senha'"
+        >
+          @if (showPassword()) {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          } @else {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          }
+        </button>
+      </div>
+    </div>
+
+    <!-- Botão entrar -->
+    <button
+      type="submit"
+      [disabled]="loading()"
+      class="mt-2 flex w-full items-center justify-center gap-2 rounded-xl
+             bg-primary py-2.5 text-sm font-semibold text-primary-foreground
+             glow-primary shadow-sm shadow-primary/20
+             transition-all hover:brightness-110 active:scale-95
+             disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      @if (loading()) {
+        <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+        </svg>
+        Entrando…
+      } @else {
+        Entrar
+      }
+    </button>
+
+  </form>
+
+  <!-- ── Rodapé ─────────────────────────────────────────────────────────── -->
+  <p class="mt-6 text-center text-xs text-muted-foreground">
+    Acesso restrito. Para criar uma conta, fale com o administrador ou use o painel do
+    <a
+      href="https://supabase.com/dashboard"
+      target="_blank"
+      rel="noopener"
+      class="text-primary underline-offset-4 hover:underline"
+    >Supabase</a>.
+  </p>
+
+</app-auth-layout>

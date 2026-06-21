@@ -1,0 +1,42 @@
+<!-- Backdrop -->
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6
+         bg-black/60 backdrop-blur-sm"
+  (click)="close.emit()"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="all-transactions-title"
+>
+  <!-- Panel — largura total dentro do viewport -->
+  <div
+    class="flex max-h-[90vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl
+           border border-border bg-card shadow-2xl shadow-black/40"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Cabeçalho -->
+    <div class="flex shrink-0 items-center justify-between border-b border-border p-6">
+      <h2 id="all-transactions-title" class="text-display text-xl font-semibold">
+        Todos os lançamentos
+      </h2>
+
+      <button
+        type="button"
+        (click)="close.emit()"
+        class="rounded-xl border border-border px-4 py-2 text-sm font-medium
+               text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+      >
+        Fechar
+      </button>
+    </div>
+
+    <!-- Tabela em largura total -->
+    <div class="min-h-0 flex-1 overflow-y-auto p-6 pt-0">
+      <app-transactions-table
+        [transactions]="transactions()"
+        [showViewAll]="false"
+        title="Lançamentos do mês"
+        (edit)="edit.emit($event)"
+      />
+    </div>
+  </div>
+</div>

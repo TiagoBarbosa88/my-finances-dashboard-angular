@@ -1,0 +1,18 @@
+<div class="relative mx-auto h-[240px] w-[240px]">
+  @if (data().length > 0) {
+    <svg viewBox="0 0 240 240" class="h-full w-full" aria-hidden="true">
+      @for (arc of arcs(); track arc.name) {
+        <path [attr.d]="arc.d" [attr.fill]="arc.color" />
+      }
+    </svg>
+
+    <div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-0.5">
+      <span class="text-xs text-muted-foreground">{{ centerSub() }}</span>
+      <span class="text-display text-mono text-xl font-semibold">{{ centerText() }}</span>
+    </div>
+  } @else {
+    <div class="flex h-full items-center justify-center text-sm italic text-muted-foreground">
+      Sem gastos registrados
+    </div>
+  }
+</div>

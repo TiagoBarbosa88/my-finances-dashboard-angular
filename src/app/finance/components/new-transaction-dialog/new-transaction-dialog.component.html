@@ -1,0 +1,251 @@
+<!-- Backdrop: fecha ao clicar fora do painel -->
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6
+         bg-black/60 backdrop-blur-sm"
+  (click)="close.emit()"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="dialog-title"
+>
+  <!-- Panel (stopPropagation impede que o click feche o modal) -->
+  <div
+    class="w-full max-w-lg rounded-2xl border border-border bg-card
+           shadow-2xl shadow-black/40"
+    (click)="$event.stopPropagation()"
+  >
+
+    <!-- ── Header ── -->
+    <div class="flex items-center justify-between border-b border-border p-6">
+      <div>
+        <h2 id="dialog-title" class="text-display text-xl font-semibold">
+          {{ isEditMode() ? 'Editar lançamento' : 'Novo lançamento' }}
+        </h2>
+        <p class="mt-0.5 text-sm text-muted-foreground">
+          {{ isEditMode()
+            ? 'Atualize os dados do lançamento selecionado.'
+            : 'Registre uma receita ou despesa em segundos.' }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        (click)="close.emit()"
+        aria-label="Fechar"
+        class="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground
+               transition-colors hover:bg-accent hover:text-foreground"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!--
+      ── Formulário ──
+      IMPORTANTE: o footer (botão Salvar) está DENTRO do form para que
+      type="submit" dispare corretamente o (ngSubmit).
+    -->
+    <form class="space-y-4 p-6" (ngSubmit)="salvar()">
+
+      <!-- Toggle Despesa / Receita -->
+      <div class="grid grid-cols-2 gap-2 rounded-xl bg-muted p-1">
+        @for (t of tipoOptions; track t) {
+          <button
+            type="button"
+            (click)="setTipoTransacao(t)"
+            [class]="tipoTransacao() === t
+              ? t === 'DESPESA'
+                ? 'rounded-lg py-2 text-sm font-medium capitalize transition-all bg-destructive/20 text-destructive'
+                : 'rounded-lg py-2 text-sm font-medium capitalize transition-all bg-primary/20 text-primary'
+              : 'rounded-lg py-2 text-sm font-medium capitalize transition-all text-muted-foreground hover:text-foreground'"
+          >
+            {{ tipoLabel(t) }}
+          </button>
+        }
+      </div>
+
+      <!-- Descrição -->
+      <div class="grid gap-2">
+        <label for="desc" class="text-sm font-medium">Descrição</label>
+        <input
+          id="desc"
+          type="text"
+          name="descricao"
+          placeholder="Ex.: Mercado do mês"
+          [ngModel]="descricao()"
+          (ngModelChange)="descricao.set($event)"
+          class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm
+                 text-foreground placeholder:text-muted-foreground
+                 outline-none ring-ring transition-colors focus:border-primary/60 focus:ring-1"
+        />
+      </div>
+
+      <!-- Data (+ Recorrência apenas na criação) -->
+      @if (isEditMode()) {
+        <div class="grid gap-2">
+          <label for="data" class="text-sm font-medium">Data</label>
+          <input
+            id="data"
+            type="date"
+            name="dataLancamento"
+            [ngModel]="dataLancamento()"
+            (ngModelChange)="dataLancamento.set($event)"
+            class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm
+                   text-foreground outline-none ring-ring transition-colors
+                   focus:border-primary/60 focus:ring-1"
+          />
+        </div>
+      } @else {
+        <div class="grid grid-cols-2 gap-4">
+          <div class="grid gap-2">
+            <label for="data" class="text-sm font-medium">Data</label>
+            <input
+              id="data"
+              type="date"
+              name="dataLancamento"
+              [ngModel]="dataLancamento()"
+              (ngModelChange)="dataLancamento.set($event)"
+              class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm
+                     text-foreground outline-none ring-ring transition-colors
+                     focus:border-primary/60 focus:ring-1"
+            />
+          </div>
+
+          <div class="grid gap-2">
+            <label for="recorrencia" class="text-sm font-medium">Recorrência</label>
+            <div class="relative">
+              <select
+                id="recorrencia"
+                name="recorrencia"
+                [ngModel]="recorrencia()"
+                (ngModelChange)="setRecorrencia($event)"
+                class="w-full appearance-none rounded-xl border border-border bg-background
+                       px-3.5 py-2.5 text-sm text-foreground
+                       outline-none ring-ring transition-colors focus:border-primary/60 focus:ring-1"
+              >
+                @for (opcao of recorrenciaOptions; track opcao) {
+                  <option [value]="opcao">{{ opcao }}</option>
+                }
+              </select>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round"
+                   class="pointer-events-none absolute right-3 top-1/2 h-4 w-4
+                          -translate-y-1/2 text-muted-foreground">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        @if (isRecorrente()) {
+          <div class="grid gap-2">
+            <label for="vezes" class="text-sm font-medium">Quantas vezes</label>
+            <input
+              id="vezes"
+              type="number"
+              name="vezesRecorrencia"
+              min="2"
+              max="12"
+              [ngModel]="vezesRecorrencia()"
+              (ngModelChange)="vezesRecorrencia.set(+$event || 2)"
+              class="w-full max-w-[120px] rounded-xl border border-border bg-background px-3.5 py-2.5
+                     text-sm text-foreground outline-none ring-ring transition-colors
+                     focus:border-primary/60 focus:ring-1 tabular-nums"
+            />
+          </div>
+        }
+      }
+
+      <!-- Valor + Categoria -->
+      <div class="grid grid-cols-2 gap-3">
+
+        <div class="grid gap-2">
+          <label for="valor" class="text-sm font-medium">Valor (R$)</label>
+          <input
+            id="valor"
+            type="number"
+            name="valor"
+            min="0.01"
+            step="0.01"
+            placeholder="0,00"
+            [ngModel]="valor()"
+            (ngModelChange)="valor.set(+$event || null)"
+            class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5
+                   text-sm text-foreground placeholder:text-muted-foreground
+                   outline-none ring-ring transition-colors focus:border-primary/60 focus:ring-1
+                   tabular-nums"
+          />
+        </div>
+
+        <div class="grid gap-2">
+          <label for="categoria" class="text-sm font-medium">Categoria</label>
+          <div class="relative">
+            <select
+              id="categoria"
+              name="categoria"
+              [ngModel]="categoria()"
+              (ngModelChange)="categoria.set($event)"
+              class="w-full appearance-none rounded-xl border border-border bg-background
+                     px-3.5 py-2.5 text-sm text-foreground
+                     outline-none ring-ring transition-colors focus:border-primary/60 focus:ring-1"
+            >
+              <option value="">Selecionar</option>
+              @for (cat of categoriasFiltradas(); track cat) {
+                <option [value]="cat">{{ cat }}</option>
+              }
+            </select>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round"
+                 class="pointer-events-none absolute right-3 top-1/2 h-4 w-4
+                        -translate-y-1/2 text-muted-foreground">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Observações -->
+      <div class="grid gap-2">
+        <label for="obs" class="text-sm font-medium">Observações</label>
+        <textarea
+          id="obs"
+          name="observacoes"
+          placeholder="Opcional..."
+          rows="2"
+          [ngModel]="observacoes()"
+          (ngModelChange)="observacoes.set($event)"
+          class="w-full resize-none rounded-xl border border-border bg-background px-3.5 py-2.5
+                 text-sm text-foreground placeholder:text-muted-foreground
+                 outline-none ring-ring transition-colors focus:border-primary/60 focus:ring-1"
+        ></textarea>
+      </div>
+
+      <!-- ── Footer (DENTRO do form para submit funcionar) ── -->
+      <div class="flex items-center justify-end gap-3 border-t border-border pt-4">
+        <button
+          type="button"
+          (click)="close.emit()"
+          class="rounded-xl border border-border px-4 py-2 text-sm font-medium
+                 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          [disabled]="!isFormValid()"
+          class="rounded-xl bg-primary px-5 py-2 text-sm font-semibold
+                 text-primary-foreground shadow-sm shadow-primary/20
+                 transition-all hover:brightness-110 active:scale-95
+                 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {{ isEditMode() ? 'Salvar alterações' : 'Salvar lançamento' }}
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
