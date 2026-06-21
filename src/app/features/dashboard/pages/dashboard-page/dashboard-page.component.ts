@@ -5,16 +5,21 @@ import { Transaction } from '@app/shared/models/transaction.model';
 import { AllTransactionsModalComponent } from '@app/finance/components/all-transactions-modal/all-transactions-modal.component';
 import { CategoryChartComponent } from '@app/finance/components/category-chart/category-chart.component';
 import { NewTransactionDialogComponent } from '@app/finance/components/new-transaction-dialog/new-transaction-dialog.component';
-import { SummaryCardComponent, SummaryCardIcon } from '@app/finance/components/summary-card/summary-card.component';
+import {
+  SummaryCardComponent,
+  SummaryCardIcon,
+  SummaryCardVariant,
+} from '@app/finance/components/summary-card/summary-card.component';
 import { TransactionsTableComponent } from '@app/finance/components/transactions-table/transactions-table.component';
 
 interface SummaryCardData {
-  label:    string;
-  value:    string;
-  change:   string;
-  positive: boolean;
-  accent:   string;
-  icon:     SummaryCardIcon;
+  label:     string;
+  value:     string;
+  change:    string;
+  positive:  boolean;
+  variant:   SummaryCardVariant;
+  valueTone: SummaryCardVariant | null;
+  icon:      SummaryCardIcon;
 }
 
 @Component({
@@ -71,34 +76,47 @@ export class DashboardPageComponent {
   }
 
   readonly summaryCards = computed<SummaryCardData[]>(() => {
-    const s    = this.finance.stats();
-    const pPct = this.finance.pctOfTotal(s.pago);
-    const nPct = this.finance.pctOfTotal(s.pendente);
+    const receitas  = this.finance.totalReceitas();
+    const despesas  = this.finance.totalDespesas();
+    const pendentes = this.finance.totalPendentes();
+    const saldo     = this.finance.saldoDisponivel();
 
     return [
       {
-        label:    'Total do Mês',
-        value:    this.finance.formatCurrency(s.total),
-        change:   'todas as despesas',
-        positive: false,
-        accent:   'from-primary/30 to-primary/0',
-        icon:     'wallet',
+        label:     'Receitas',
+        value:     this.finance.formatCurrency(receitas),
+        change:    'entradas do mês',
+        positive:  true,
+        variant:   'green',
+        valueTone: null,
+        icon:      'trending-up',
       },
       {
-        label:    'Total Pago',
-        value:    this.finance.formatCurrency(s.pago),
-        change:   `${pPct}% do total`,
-        positive: true,
-        accent:   'from-chart-2/30 to-chart-2/0',
-        icon:     'check',
+        label:     'Despesas',
+        value:     this.finance.formatCurrency(despesas),
+        change:    'saídas do mês',
+        positive:  false,
+        variant:   'red',
+        valueTone: null,
+        icon:      'trending-down',
       },
       {
-        label:    'Total Pendente',
-        value:    this.finance.formatCurrency(s.pendente),
-        change:   `${nPct}% do total`,
-        positive: nPct === 0,
-        accent:   'from-destructive/25 to-destructive/0',
-        icon:     'clock',
+        label:     'Pendentes',
+        value:     this.finance.formatCurrency(pendentes),
+        change:    pendentes === 0 ? 'nenhum pendente' : 'aguardando pagamento',
+        positive:  pendentes === 0,
+        variant:   'amber',
+        valueTone: null,
+        icon:      'clock',
+      },
+      {
+        label:     'Saldo Disponível',
+        value:     this.finance.formatCurrency(saldo),
+        change:    saldo > 0 ? 'positivo no mês' : saldo < 0 ? 'negativo no mês' : 'saldo zerado',
+        positive:  saldo > 0,
+        variant:   'neutral',
+        valueTone: saldo > 0 ? 'green' : saldo < 0 ? 'red' : 'amber',
+        icon:      'wallet',
       },
     ];
   });

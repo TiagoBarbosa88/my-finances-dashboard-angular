@@ -72,6 +72,8 @@
           <input
             type="search"
             placeholder="Buscar lançamento..."
+            [value]="finance.termoBusca()"
+            (input)="finance.termoBusca.set($any($event.target).value)"
             class="h-10 w-full rounded-xl border border-border bg-card pl-9 pr-3 text-sm
                    outline-none ring-ring placeholder:text-muted-foreground focus:ring-1"
           />
@@ -82,14 +84,15 @@
   </header>
 
   <!-- ═══════════════ CARDS DE RESUMO ═══════════════ -->
-  <section class="grid grid-cols-1 gap-4 md:grid-cols-3">
+  <section class="grid grid-cols-2 gap-4 md:grid-cols-4">
     @for (card of summaryCards(); track card.label) {
       <app-summary-card
         [label]="card.label"
         [value]="card.value"
         [change]="card.change"
         [positive]="card.positive"
-        [accent]="card.accent"
+        [variant]="card.variant"
+        [valueTone]="card.valueTone"
         [icon]="card.icon"
       />
     }
@@ -105,6 +108,7 @@
   <!-- ═══════════════ TABELA DE LANÇAMENTOS ═══════════════ -->
   <app-transactions-table
     [transactions]="finance.filteredTransactions()"
+    [scrollableList]="true"
     (viewAll)="openAllTransactions()"
     (edit)="openEditTransaction($event)"
   />
