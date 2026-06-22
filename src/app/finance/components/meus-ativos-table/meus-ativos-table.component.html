@@ -1,0 +1,104 @@
+<section class="surface-card">
+
+  <div class="flex items-center justify-between gap-4">
+    <h2 class="text-display text-lg font-semibold">Meus Ativos</h2>
+    <span class="text-xs text-muted-foreground">
+      {{ totalPosicoes() }} posições
+    </span>
+  </div>
+
+  <div class="mt-4 space-y-8">
+    @for (grupo of grupos(); track grupo.tipo) {
+      <div>
+        <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          {{ grupo.tipo }}
+        </h3>
+
+        <table class="w-full table-fixed text-center text-xs sm:text-sm">
+          <thead>
+            <tr class="border-b border-gray-800 text-[10px] uppercase tracking-wide text-muted-foreground sm:text-xs">
+              <th class="px-1 py-2 font-medium">Ativo</th>
+              <th class="px-1 py-2 font-medium">Qtd</th>
+              <th class="px-1 py-2 font-medium">P. Médio</th>
+              <th class="px-1 py-2 font-medium">
+                P. Atual
+                @if (quotesLoading()) {
+                  <span class="ml-0.5 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-blue-400" title="Atualizando cotações"></span>
+                }
+              </th>
+              <th class="px-1 py-2 font-medium">Var.</th>
+              <th class="px-1 py-2 font-medium">Rent.</th>
+              <th class="px-1 py-2 font-medium">Total</th>
+              <th class="px-1 py-2 font-medium">% Cart.</th>
+              @if (showActions()) {
+                <th class="w-10 px-0.5 py-2 font-medium"></th>
+              }
+            </tr>
+          </thead>
+
+          <tbody>
+            @if (grupo.ativos.length === 0) {
+              <tr class="border-b border-gray-800">
+                <td
+                  [attr.colspan]="showActions() ? 9 : 8"
+                  class="px-1 py-4 text-center text-xs text-muted-foreground"
+                >
+                  Nenhum ativo nesta categoria
+                </td>
+              </tr>
+            } @else {
+              @for (ativo of grupo.ativos; track ativo.id) {
+              <tr class="border-b border-gray-800 transition-colors hover:bg-accent/20">
+                <td class="px-1 py-2 font-semibold text-foreground">{{ ativo.ticker }}</td>
+                <td class="px-1 py-2 text-mono text-muted-foreground">{{ ativo.qtd }}</td>
+                <td class="px-1 py-2 text-mono">{{ ativo.precoMedio | currencyBRL }}</td>
+                <td class="px-1 py-2 text-mono">{{ ativo.precoAtual | currencyBRL }}</td>
+                <td
+                  class="px-1 py-2 text-mono font-medium"
+                  [class.text-green-400]="ativo.variacaoPct >= 0"
+                  [class.text-red-400]="ativo.variacaoPct < 0"
+                >
+                  {{ ativo.variacaoPct | percentBR }}
+                </td>
+                <td
+                  class="px-1 py-2 text-mono font-medium"
+                  [class.text-green-400]="ativo.rentabilidadePct >= 0"
+                  [class.text-red-400]="ativo.rentabilidadePct < 0"
+                >
+                  {{ ativo.rentabilidadePct | percentBR }}
+                </td>
+                <td class="px-1 py-2 text-mono font-semibold text-foreground">
+                  {{ ativo.valorTotal | currencyBRL }}
+                </td>
+                <td class="px-1 py-2 text-mono text-muted-foreground">
+                  {{ ativo.pctCarteira | number:'1.0-2' }}%
+                </td>
+                @if (showActions()) {
+                  <td class="px-0.5 py-2">
+                    <div class="flex justify-center">
+                      <button
+                        type="button"
+                        (click)="edit.emit(ativo)"
+                        [attr.aria-label]="'Editar ' + ativo.ticker"
+                        class="grid h-7 w-7 place-items-center rounded-lg text-muted-foreground
+                               transition-colors hover:bg-accent hover:text-blue-400"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5">
+                          <path d="M12 20h9"/>
+                          <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                }
+              </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+</section>

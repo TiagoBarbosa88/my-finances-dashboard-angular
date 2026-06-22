@@ -1,0 +1,42 @@
+<div class="surface-card flex h-full flex-col">
+
+  <div class="flex items-center justify-between gap-4">
+    <h2 class="text-display text-lg font-semibold">Distribuição por Classe</h2>
+    <span class="text-mono shrink-0 rounded-full border border-border px-2.5 py-0.5 text-xs">
+      {{ patrimonio() | currencyBRL }}
+    </span>
+  </div>
+
+  <div class="mt-4">
+    <app-donut-chart
+      [data]="data()"
+      [centerText]="patrimonio() | currencyBRL"
+      [centerSub]="centerSub()"
+      [highlightedName]="highlightedClasse()"
+      [formatTooltip]="pieTooltipFn"
+      (sliceHighlight)="highlightedClasse.set($event)"
+    />
+  </div>
+
+  <ul class="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+    @for (item of data(); track item.name) {
+      <li
+        class="legend-item flex items-center justify-between gap-2"
+        [class.legend-item--active]="isLegendActive(item.name)"
+        [class.legend-item--dimmed]="isLegendDimmed(item.name)"
+        [attr.title]="pieTooltipFn(item.name, item.value)"
+        (mouseenter)="onLegendEnter(item.name)"
+        (mouseleave)="onLegendLeave()"
+      >
+        <span class="flex min-w-0 items-center gap-2 truncate text-muted-foreground">
+          <span class="h-2 w-2 shrink-0 rounded-full" [style]="classeDotStyle(item.name)"></span>
+          {{ item.name }}
+        </span>
+        <span class="text-mono text-foreground">
+          {{ item.value | number:'1.0-2' }}%
+        </span>
+      </li>
+    }
+  </ul>
+
+</div>

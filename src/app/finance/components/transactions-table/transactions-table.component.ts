@@ -1,5 +1,6 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 
+import { AuthService } from '@app/core/services/auth.service';
 import { DeleteConfirmationDialogComponent } from '@app/finance/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { FinanceService } from '@app/core/services/finance.service';
 import { Transaction } from '@app/shared/models/transaction.model';
@@ -40,6 +41,7 @@ export class TransactionsTableComponent {
   readonly pendingDelete = signal<Transaction | null>(null);
 
   readonly finance = inject(FinanceService);
+  readonly auth = inject(AuthService);
 
   /** Termo digitado no campo de busca do dashboard. */
   readonly termoBusca = this.finance.termoBusca;
@@ -75,6 +77,7 @@ export class TransactionsTableComponent {
   }
 
   openDeleteDialog(transaction: Transaction): void {
+    if (!this.auth.canDelete(transaction)) return;
     this.pendingDelete.set(transaction);
   }
 
@@ -88,6 +91,14 @@ export class TransactionsTableComponent {
 
   cancelDelete(): void {
     this.pendingDelete.set(null);
+  }
+
+  showActionsColumn(): boolean {
+    return this.showActions() && this.auth.canCreate();
+  }
+
+  canModify(transaction: Transaction): boolean {
+    return this.auth.canModify(transaction);
   }
 
   listContainerClass(): string {

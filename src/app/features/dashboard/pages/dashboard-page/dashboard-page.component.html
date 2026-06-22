@@ -139,7 +139,9 @@
     - rounded-full, h-14
     - Ícone + sempre visível; texto oculto em xs, visível a partir de sm
 -->
+<!-- FAB — Admin e Editor -->
 <button
+  *appHasRole="['admin', 'editor']"
   type="button"
   (click)="openNewTransaction()"
   aria-label="Novo lançamento"

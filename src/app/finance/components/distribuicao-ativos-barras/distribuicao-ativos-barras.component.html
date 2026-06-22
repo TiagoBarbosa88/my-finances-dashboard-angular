@@ -1,0 +1,58 @@
+<section class="surface-card flex h-full flex-col">
+
+  <div class="mb-4 flex flex-wrap items-start justify-between gap-2">
+    <div>
+      <h2 class="text-display text-lg font-semibold">Distribuição por Ativos</h2>
+      <p class="text-xs text-muted-foreground">Peso relativo dentro de cada categoria</p>
+    </div>
+
+    @if (hovered(); as seg) {
+      <p class="text-mono shrink-0 rounded-lg border border-border bg-muted/30 px-3 py-1.5 text-xs font-medium">
+        <span class="text-foreground">{{ seg.ticker }}</span>
+        <span class="text-muted-foreground"> · </span>
+        <span [style.color]="seg.color">{{ seg.pct | number:'1.0-2' }}%</span>
+      </p>
+    }
+  </div>
+
+  <div class="flex flex-1 items-end justify-center pb-1">
+    <div class="flex w-fit max-w-full items-end justify-center gap-3 sm:gap-4">
+      @for (cat of categorias(); track cat.tipo) {
+        <div class="flex w-5 shrink-0 flex-col items-center gap-1.5 sm:w-6">
+          @if (cat.vazia) {
+            <div
+              class="flex h-36 w-full items-center justify-center rounded-md
+                     border border-dashed border-border bg-muted/20
+                     text-[10px] text-muted-foreground sm:h-40"
+              title="Sem ativos"
+            >
+              <span class="sr-only">Sem ativos</span>
+            </div>
+          } @else {
+            <div
+              class="flex h-36 w-full flex-col-reverse overflow-hidden rounded-md
+                     bg-muted/30 ring-1 ring-border sm:h-40"
+            >
+            @for (seg of cat.segments; track seg.ticker) {
+              <div
+                class="w-full min-h-[3px] cursor-pointer transition-[filter,opacity]
+                       hover:brightness-110"
+                [style.height.%]="seg.pct"
+                [style.background]="seg.color"
+                [attr.aria-label]="seg.ticker + ': ' + (seg.pct | number:'1.0-2') + '%'"
+                (mouseenter)="onEnter(seg)"
+                (mouseleave)="onLeave()"
+              ></div>
+            }
+          </div>
+        }
+
+        <p class="max-w-[2.5rem] truncate text-center text-[10px] font-medium text-muted-foreground sm:max-w-[3rem] sm:text-xs">
+          {{ cat.tipo }}
+        </p>
+      </div>
+    }
+    </div>
+  </div>
+
+</section>

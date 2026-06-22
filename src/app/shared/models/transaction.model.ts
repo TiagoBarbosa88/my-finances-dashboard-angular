@@ -15,6 +15,8 @@ export interface Transaction {
   valor: number;       // sempre positivo — todas as entradas são despesas
   status: TransactionStatus;
   criado_por: string;
+  /** Dono do lançamento — usado para permissões Editor vs Admin. */
+  user_id?: number;
 }
 
 /** Resumo mensal baseado em despesas. */

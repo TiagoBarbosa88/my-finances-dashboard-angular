@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 
 import { FinanceService } from '@app/core/services/finance.service';
 import { Transaction } from '@app/shared/models/transaction.model';
+import { HasRoleDirective } from '@app/shared/directives/has-role.directive';
 import { AllTransactionsModalComponent } from '@app/finance/components/all-transactions-modal/all-transactions-modal.component';
 import { CategoryChartComponent } from '@app/finance/components/category-chart/category-chart.component';
 import { NewTransactionDialogComponent } from '@app/finance/components/new-transaction-dialog/new-transaction-dialog.component';
@@ -31,6 +32,7 @@ interface SummaryCardData {
     TransactionsTableComponent,
     NewTransactionDialogComponent,
     AllTransactionsModalComponent,
+    HasRoleDirective,
   ],
   templateUrl: './dashboard-page.component.html',
   styleUrl: './dashboard-page.component.css',
