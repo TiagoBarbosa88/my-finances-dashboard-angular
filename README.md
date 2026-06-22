@@ -2,6 +2,23 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.27.
 
+## Configuração de credenciais (obrigatório)
+
+O arquivo `src/environments/environment.ts` contém chaves do Supabase e da Brapi e **não é versionado**.
+
+```bash
+cp src/environments/environment.example.ts src/environments/environment.ts
+```
+
+Edite `environment.ts` com:
+
+- **Supabase:** Project URL + anon key ([dashboard](https://supabase.com/dashboard) → Settings → API)
+- **Brapi:** token em [brapi.dev/dashboard](https://brapi.dev/dashboard)
+
+Após `npm install`, o script `postinstall` cria `environment.ts` automaticamente se ele não existir.
+
+> Se você expôs chaves no GitHub, **revogue e gere novas** no painel da Brapi/Supabase.
+
 ## Development server
 
 To start a local development server, run:
