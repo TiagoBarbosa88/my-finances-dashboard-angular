@@ -1,5 +1,6 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 
+import { CATEGORIAS } from '@app/core/services/finance.data';
 import { AuthService } from '@app/core/services/auth.service';
 import { DeleteConfirmationDialogComponent } from '@app/finance/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { FinanceService } from '@app/core/services/finance.service';
@@ -101,8 +102,45 @@ export class TransactionsTableComponent {
     return this.auth.canModify(transaction);
   }
 
+  isReceita(transaction: Transaction): boolean {
+    return (CATEGORIAS.RECEITA as readonly string[]).includes(transaction.categoria);
+  }
+
+  categoryIconStyle(categoria: string): Record<string, string> {
+    const color = this.finance.getCategoryColor(categoria);
+    return {
+      background: `color-mix(in oklab, ${color} 85%, black)`,
+      color: '#fff',
+    };
+  }
+
+  amountPrefix(transaction: Transaction): string {
+    return this.isReceita(transaction) ? '+' : '−';
+  }
+
+  amountClass(transaction: Transaction): string {
+    return this.isReceita(transaction) ? 'text-green-400' : 'text-red-400';
+  }
+
+  indicatorClass(transaction: Transaction): string {
+    return this.isReceita(transaction) ? 'bg-green-500' : 'bg-red-500';
+  }
+
+  onMobileCardClick(transaction: Transaction): void {
+    if (this.canModify(transaction)) {
+      this.edit.emit(transaction);
+    }
+  }
+
+  mobileListClass(): string {
+    const base = 'mt-4 space-y-2 md:hidden';
+    return this.scrollableList()
+      ? `${base} max-h-[420px] overflow-y-auto scroll-elegant pr-0.5`
+      : base;
+  }
+
   listContainerClass(): string {
-    const base = 'mt-4 overflow-x-auto';
+    const base = 'mt-4 hidden overflow-x-auto md:block';
     return this.scrollableList()
       ? `${base} max-h-[400px] overflow-y-auto scroll-elegant`
       : base;

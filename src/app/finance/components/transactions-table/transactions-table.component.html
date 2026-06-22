@@ -14,7 +14,96 @@
     }
   </div>
 
-  <!-- Listagem com scroll vertical no dashboard -->
+  <!-- Mobile — cards (referência app financeiro moderno) -->
+  <div [class]="mobileListClass()">
+    @if (transactionsFiltradas().length === 0) {
+      <p class="py-10 text-center text-sm italic text-muted-foreground">
+        @if (termoBusca().trim()) {
+          Nenhum lançamento encontrado para "{{ termoBusca() }}".
+        } @else {
+          Nenhum lançamento encontrado para este mês.
+        }
+      </p>
+    } @else {
+      @for (t of transactionsFiltradas(); track t.id) {
+        <div
+          class="group flex items-center gap-3 rounded-2xl border border-border/70
+                 bg-muted/15 p-3.5 transition-colors hover:bg-accent/30"
+          [class.cursor-pointer]="canModify(t)"
+          (click)="onMobileCardClick(t)"
+          [attr.role]="canModify(t) ? 'button' : null"
+          [attr.tabindex]="canModify(t) ? 0 : null"
+          (keydown.enter)="canModify(t) && onMobileCardClick(t)"
+        >
+          <!-- Ícone da categoria -->
+          <div
+            class="grid h-11 w-11 shrink-0 place-items-center rounded-full
+                   text-sm font-bold shadow-sm"
+            [style]="categoryIconStyle(t.categoria)"
+          >
+            {{ t.categoria.charAt(0) }}
+          </div>
+
+          <!-- Título + meta -->
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-semibold text-foreground">{{ t.descricao }}</p>
+            <div class="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-muted-foreground">
+              <span>{{ t.categoria }}</span>
+              <span aria-hidden="true">·</span>
+              @if (canModify(t)) {
+                <button
+                  type="button"
+                  (click)="finance.toggleStatus(t.id); $event.stopPropagation()"
+                  class="rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors"
+                  [class]="t.status === 'pago'
+                    ? 'bg-green-900/30 text-green-400'
+                    : 'bg-yellow-900/30 text-yellow-400'"
+                >
+                  {{ finance.statusLabel(t.status) }}
+                </button>
+              } @else {
+                <span
+                  class="rounded-full px-2 py-0.5 text-[10px] font-medium"
+                  [class]="t.status === 'pago'
+                    ? 'bg-green-900/30 text-green-400'
+                    : 'bg-yellow-900/30 text-yellow-400'"
+                >
+                  {{ finance.statusLabel(t.status) }}
+                </span>
+              }
+            </div>
+          </div>
+
+          <!-- Valor + data -->
+          <div class="flex shrink-0 flex-col items-end gap-1 pr-1">
+            <span class="text-mono text-sm font-semibold" [class]="amountClass(t)">
+              {{ amountPrefix(t) }}{{ finance.formatCurrency(t.valor) }}
+            </span>
+            <span class="text-[11px] text-muted-foreground">
+              {{ finance.formatShortDate(t.data) }}
+            </span>
+          </div>
+
+          <!-- Indicador lateral (verde receita / vermelho despesa) -->
+          <span
+            class="h-9 w-1 shrink-0 rounded-full opacity-90"
+            [class]="indicatorClass(t)"
+            aria-hidden="true"
+          ></span>
+
+          @if (canModify(t)) {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round"
+                 class="h-4 w-4 shrink-0 text-muted-foreground/70" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          }
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Desktop — tabela -->
   <div [class]="listContainerClass()">
     <table class="w-full min-w-[640px] text-sm">
 
