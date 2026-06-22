@@ -1,9 +1,11 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
+import { AuthService } from '@app/core/services/auth.service';
 import { CLASSE_ATIVO_CORES } from '@app/core/services/investimentos.data';
 import { FinanceService } from '@app/core/services/finance.service';
-import { AtivoEnriquecido, GrupoAtivos, TipoAtivo } from '@app/shared/models/investimentos.model';
+import { AtivoEnriquecido, GrupoAtivos, SugestaoInvestimento, TipoAtivo } from '@app/shared/models/investimentos.model';
 import { CurrencyBrlPipe } from '@app/shared/pipes/currency-brl.pipe';
 import { PercentBrPipe } from '@app/shared/pipes/percent-br.pipe';
 
@@ -13,11 +15,12 @@ import { PercentBrPipe } from '@app/shared/pipes/percent-br.pipe';
 @Component({
   selector: 'app-meus-ativos-table',
   standalone: true,
-  imports: [CurrencyBrlPipe, PercentBrPipe, DecimalPipe],
+  imports: [FormsModule, CurrencyBrlPipe, PercentBrPipe, DecimalPipe],
   templateUrl: './meus-ativos-table.component.html',
 })
 export class MeusAtivosTableComponent {
   private readonly finance = inject(FinanceService);
+  private readonly auth = inject(AuthService);
 
   grupos = input.required<GrupoAtivos[]>();
   showActions = input(true);
@@ -43,6 +46,10 @@ export class MeusAtivosTableComponent {
     });
   }
 
+  canEditScore(): boolean {
+    return this.auth.canManageInvestments();
+  }
+
   totalPosicoes(): number {
     return this.grupos().reduce((s, g) => s + g.ativos.length, 0);
   }
@@ -56,6 +63,25 @@ export class MeusAtivosTableComponent {
       ...state,
       [tipo]: !state[tipo],
     }));
+  }
+
+  onScoreChange(ativo: AtivoEnriquecido, value: string | number): void {
+    const parsed = typeof value === 'string' ? parseFloat(value) : value;
+    if (Number.isNaN(parsed)) return;
+    this.finance.updateAtivoScore(ativo.id, parsed);
+  }
+
+  sugestaoClass(sugestao: SugestaoInvestimento): string {
+    switch (sugestao) {
+      case 'Comprar':
+        return 'bg-green-500 text-white';
+      case 'Risco (Concentrado)':
+        return 'bg-yellow-500 text-yellow-950';
+      case 'Reavaliar (Nota Baixa)':
+        return 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/40';
+      default:
+        return 'bg-red-600 text-white';
+    }
   }
 
   tipoIcon(tipo: TipoAtivo): string {

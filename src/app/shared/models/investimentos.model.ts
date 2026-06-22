@@ -4,6 +4,19 @@ export type TipoAtivo = 'Ações' | 'FIIs' | 'ETFs' | 'Tesouro Direto';
 /** Operação de lançamento na carteira. */
 export type OperacaoInvestimento = 'compra' | 'venda';
 
+/** Status de sugestão — semáforo de risco e alvo. */
+export type SugestaoInvestimento =
+  | 'Comprar'
+  | 'Segurar'
+  | 'Risco (Concentrado)'
+  | 'Reavaliar (Nota Baixa)';
+
+/** Nota mínima para sugerir compra (Critério C). */
+export const SCORE_MIN_COMPRA = 7;
+
+/** Limite de concentração por ativo na carteira (Critério B). */
+export const LIMITE_CONCENTRACAO_ATIVO = 15;
+
 /** Meta de alocação por classe de ativo (% da carteira). */
 export interface TargetMeta {
   tipo: string;
@@ -53,8 +66,6 @@ export interface Investimento {
   criado_por: string;
   /** Nota de qualidade (0–10). */
   score?: number;
-  /** Sugestão de compra calculada pelo rebalanceamento. */
-  buyRecommendation?: boolean;
 }
 
 export type InvestimentoDraft = Omit<Investimento, 'id' | 'valorTotal'>;
@@ -63,10 +74,12 @@ export type InvestimentoDraft = Omit<Investimento, 'id' | 'valorTotal'>;
 export interface AtivoEnriquecido extends Ativo {
   valorTotal: number;
   pctCarteira: number;
+  /** Meta de alocação da categoria (% da carteira). */
+  metaCategoria: number;
   variacaoPct: number;
   rentabilidadePct: number;
   score: number;
-  buyRecommendation: boolean;
+  sugestao: SugestaoInvestimento;
 }
 
 /** Agrupamento por tipo para a tabela de ativos. */

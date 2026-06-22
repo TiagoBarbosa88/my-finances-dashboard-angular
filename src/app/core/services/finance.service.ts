@@ -35,6 +35,9 @@ import {
   InvestimentoDraft,
   InvestimentosResumo,
   RebalanceTipo,
+  SCORE_MIN_COMPRA,
+  LIMITE_CONCENTRACAO_ATIVO,
+  SugestaoInvestimento,
   TargetMeta,
 } from '@app/shared/models/investimentos.model';
 import {
@@ -218,6 +221,34 @@ export class FinanceService {
   });
 
   /**
+   * Semáforo de rebalanceamento por risco e alvo.
+   * Comprar: Critério A (abaixo da meta) + B (< 15%) + C (nota ≥ 7).
+   */
+  getSugestao(
+    percentualAtual: number,
+    metaCategoria: number,
+    score: number,
+  ): SugestaoInvestimento {
+    if (percentualAtual >= LIMITE_CONCENTRACAO_ATIVO) {
+      return 'Risco (Concentrado)';
+    }
+
+    if (score < SCORE_MIN_COMPRA) {
+      return 'Reavaliar (Nota Baixa)';
+    }
+
+    const abaixoDaMeta = percentualAtual < metaCategoria;
+    const dentroDoLimite = percentualAtual < LIMITE_CONCENTRACAO_ATIVO;
+    const notaAlta = score >= SCORE_MIN_COMPRA;
+
+    if (abaixoDaMeta && dentroDoLimite && notaAlta) {
+      return 'Comprar';
+    }
+
+    return 'Segurar';
+  }
+
+  /**
    * Compara alocação atual vs meta: gap = (Patrimônio × Target%) − Valor atual do tipo.
    * Positivo indica déficit — falta aportar na classe.
    */
@@ -287,17 +318,19 @@ export class FinanceService {
         : 0;
       const rentabilidadePct = ativo.rentabilidadePct ?? variacaoPct;
       const score = ativo.score ?? 5;
-      const rebalance = rebalanceMap.get(ativo.tipo);
-      const buyRecommendation = !!(rebalance?.needsRebalance && score >= 5);
+      const metaCategoria = rebalanceMap.get(ativo.tipo)?.targetPercent ?? 0;
+      const pctCarteira = patrimonio > 0 ? (valorTotal / patrimonio) * 100 : 0;
+      const sugestao = this.getSugestao(pctCarteira, metaCategoria, score);
 
       return {
         ...ativo,
         valorTotal,
-        pctCarteira: patrimonio > 0 ? (valorTotal / patrimonio) * 100 : 0,
+        pctCarteira,
+        metaCategoria,
         variacaoPct,
         rentabilidadePct,
         score,
-        buyRecommendation,
+        sugestao,
       };
     });
   });
@@ -455,6 +488,15 @@ export class FinanceService {
         );
       },
     });
+  }
+
+  /** Atualiza nota (0–10) de um ativo na carteira. */
+  updateAtivoScore(id: number, score: number): void {
+    const ativo = this.carteiraAtivos().find((a) => a.id === id);
+    if (!ativo) return;
+
+    const clamped = Math.min(10, Math.max(0, Math.round(score)));
+    this.updateAtivo(id, { ...ativo, score: clamped });
   }
 
   loadInvestimentos(): void {

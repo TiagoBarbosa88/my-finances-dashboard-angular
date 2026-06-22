@@ -1982,7 +1982,8 @@
       "qtd": 15,
       "precoMedio": 41,
       "precoAtual": 39.87,
-      "rentabilidadePct": 0.83
+      "rentabilidadePct": 0.83,
+      "score": 9
     },
     {
       "id": 2,
@@ -1992,7 +1993,8 @@
       "qtd": 11,
       "precoMedio": 41.48,
       "precoAtual": 39.3,
-      "rentabilidadePct": -3.87
+      "rentabilidadePct": -3.87,
+      "score": 9
     },
     {
       "id": 3,
@@ -2002,7 +2004,8 @@
       "qtd": 33,
       "precoMedio": 12.15,
       "precoAtual": 8.12,
-      "rentabilidadePct": -31.6
+      "rentabilidadePct": -31.6,
+      "score": 3
     },
     {
       "id": 4,
@@ -2012,7 +2015,8 @@
       "qtd": 23,
       "precoMedio": 8.61,
       "precoAtual": 7.27,
-      "rentabilidadePct": 73.45
+      "rentabilidadePct": 73.45,
+      "score": 7
     },
     {
       "id": 5,
@@ -2022,7 +2026,8 @@
       "qtd": 6,
       "precoMedio": 23.37,
       "precoAtual": 19.42,
-      "rentabilidadePct": 75.93
+      "rentabilidadePct": 75.93,
+      "score": 7
     },
     {
       "id": 6,
@@ -2032,7 +2037,8 @@
       "qtd": 1,
       "precoMedio": 65.53,
       "precoAtual": 4.62,
-      "rentabilidadePct": -77.29
+      "rentabilidadePct": -77.29,
+      "score": 1
     },
     {
       "id": 7,
@@ -2042,7 +2048,8 @@
       "qtd": 1,
       "precoMedio": 118.29,
       "precoAtual": 80.26,
-      "rentabilidadePct": -9.35
+      "rentabilidadePct": -9.35,
+      "score": 7
     },
     {
       "id": 8,
@@ -2052,7 +2059,8 @@
       "qtd": 21,
       "precoMedio": 15.79,
       "precoAtual": 17.05,
-      "rentabilidadePct": 113.53
+      "rentabilidadePct": 113.53,
+      "score": 9
     }
   ],
   "usuarios": [
