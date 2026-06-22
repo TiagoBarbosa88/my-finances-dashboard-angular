@@ -3,6 +3,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { AuthService } from '@app/core/services/auth.service';
 import { FinanceService } from '@app/core/services/finance.service';
 import { HasRoleDirective } from '@app/shared/directives/has-role.directive';
+import { InvestimentosMetasComponent } from '@app/finance/components/investimentos-metas/investimentos-metas.component';
 import { DistribuicaoAtivosBarrasComponent } from '@app/finance/components/distribuicao-ativos-barras/distribuicao-ativos-barras.component';
 import { DistribuicaoClasseChartComponent } from '@app/finance/components/distribuicao-classe-chart/distribuicao-classe-chart.component';
 import { MeusAtivosTableComponent } from '@app/finance/components/meus-ativos-table/meus-ativos-table.component';
@@ -30,6 +31,7 @@ interface SummaryCardData {
   standalone: true,
   imports: [
     SummaryCardComponent,
+    InvestimentosMetasComponent,
     DistribuicaoAtivosBarrasComponent,
     DistribuicaoClasseChartComponent,
     MeusAtivosTableComponent,

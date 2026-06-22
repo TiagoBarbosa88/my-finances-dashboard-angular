@@ -1,13 +1,14 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, inject, input, output } from '@angular/core';
+import { Component, effect, inject, input, output, signal } from '@angular/core';
 
+import { CLASSE_ATIVO_CORES } from '@app/core/services/investimentos.data';
 import { FinanceService } from '@app/core/services/finance.service';
-import { AtivoEnriquecido, GrupoAtivos } from '@app/shared/models/investimentos.model';
+import { AtivoEnriquecido, GrupoAtivos, TipoAtivo } from '@app/shared/models/investimentos.model';
 import { CurrencyBrlPipe } from '@app/shared/pipes/currency-brl.pipe';
 import { PercentBrPipe } from '@app/shared/pipes/percent-br.pipe';
 
 /**
- * Tabela de ativos agrupados por tipo — componente burro (somente exibição).
+ * Carteira agrupada por tipo — acordeões expansíveis com coluna Ativo fixa no scroll horizontal.
  */
 @Component({
   selector: 'app-meus-ativos-table',
@@ -25,7 +26,90 @@ export class MeusAtivosTableComponent {
 
   readonly quotesLoading = this.finance.quotesLoading;
 
+  /** Estado aberto/fechado de cada tipo de ativo. */
+  private readonly expanded = signal<Record<string, boolean>>({});
+
+  constructor() {
+    effect(() => {
+      const grupos = this.grupos();
+      const current = this.expanded();
+
+      if (Object.keys(current).length > 0) return;
+
+      const first = grupos.find((g) => g.ativos.length > 0) ?? grupos[0];
+      if (first) {
+        this.expanded.set({ [first.tipo]: true });
+      }
+    });
+  }
+
   totalPosicoes(): number {
     return this.grupos().reduce((s, g) => s + g.ativos.length, 0);
+  }
+
+  isExpanded(tipo: string): boolean {
+    return this.expanded()[tipo] ?? false;
+  }
+
+  toggleGrupo(tipo: string): void {
+    this.expanded.update((state) => ({
+      ...state,
+      [tipo]: !state[tipo],
+    }));
+  }
+
+  tipoIcon(tipo: TipoAtivo): string {
+    switch (tipo) {
+      case 'FIIs':           return 'FII';
+      case 'ETFs':           return 'ETF';
+      case 'Tesouro Direto': return 'TD';
+      default:               return 'AÇ';
+    }
+  }
+
+  tipoIconStyle(tipo: TipoAtivo): Record<string, string> {
+    const color = CLASSE_ATIVO_CORES[tipo] ?? 'var(--chart-1)';
+    return {
+      background: `color-mix(in oklab, ${color} 25%, transparent)`,
+      color,
+      borderColor: `color-mix(in oklab, ${color} 45%, transparent)`,
+    };
+  }
+
+  patrimonioTotal(): number {
+    return this.grupos().reduce((s, g) => s + g.valorTotal, 0);
+  }
+
+  pctCarteiraGrupo(grupo: GrupoAtivos): number {
+    const total = this.patrimonioTotal();
+    return total > 0 ? (grupo.valorTotal / total) * 100 : 0;
+  }
+
+  variacaoGrupo(grupo: GrupoAtivos): number {
+    if (grupo.valorTotal <= 0 || grupo.ativos.length === 0) return 0;
+
+    const weighted = grupo.ativos.reduce(
+      (sum, a) => sum + a.variacaoPct * a.valorTotal,
+      0,
+    );
+
+    return weighted / grupo.valorTotal;
+  }
+
+  rentabilidadeGrupo(grupo: GrupoAtivos): number {
+    if (grupo.valorTotal <= 0 || grupo.ativos.length === 0) return 0;
+
+    const weighted = grupo.ativos.reduce(
+      (sum, a) => sum + a.rentabilidadePct * a.valorTotal,
+      0,
+    );
+
+    return weighted / grupo.valorTotal;
+  }
+
+  pctClass(value: number): string {
+    if (value > 0) return 'text-green-400';
+    if (value < 0) return 'text-red-400';
+    return 'text-muted-foreground';
   }
 }

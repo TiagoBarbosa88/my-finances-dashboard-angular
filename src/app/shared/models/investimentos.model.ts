@@ -4,6 +4,25 @@ export type TipoAtivo = 'Ações' | 'FIIs' | 'ETFs' | 'Tesouro Direto';
 /** Operação de lançamento na carteira. */
 export type OperacaoInvestimento = 'compra' | 'venda';
 
+/** Meta de alocação por classe de ativo (% da carteira). */
+export interface TargetMeta {
+  tipo: string;
+  targetPercent: number;
+}
+
+/** Resultado do rebalanceamento por tipo. */
+export interface RebalanceTipo {
+  tipo: string;
+  targetPercent: number;
+  currentPercent: number;
+  currentValue: number;
+  targetValue: number;
+  /** (Patrimônio × Target%) − Valor atual. Positivo = falta comprar. */
+  gap: number;
+  aporteSugerido: number;
+  needsRebalance: boolean;
+}
+
 /** Posição bruta — valores derivados são calculados no FinanceService. */
 export interface Ativo {
   id: number;
@@ -15,6 +34,8 @@ export interface Ativo {
   precoAtual: number;
   /** Rentabilidade total (incl. proventos) quando informada na origem. */
   rentabilidadePct?: number;
+  /** Nota de qualidade do ativo (0–10) para sugestão de compra. */
+  score?: number;
 }
 
 /** Lançamento de compra/venda persistido no JSON Server. */
@@ -30,6 +51,10 @@ export interface Investimento {
   outrosCustos: number;
   valorTotal: number;
   criado_por: string;
+  /** Nota de qualidade (0–10). */
+  score?: number;
+  /** Sugestão de compra calculada pelo rebalanceamento. */
+  buyRecommendation?: boolean;
 }
 
 export type InvestimentoDraft = Omit<Investimento, 'id' | 'valorTotal'>;
@@ -40,6 +65,8 @@ export interface AtivoEnriquecido extends Ativo {
   pctCarteira: number;
   variacaoPct: number;
   rentabilidadePct: number;
+  score: number;
+  buyRecommendation: boolean;
 }
 
 /** Agrupamento por tipo para a tabela de ativos. */

@@ -17,9 +17,11 @@ import {
   CATALOGO_ATIVOS,
   INITIAL_ATIVOS,
   INITIAL_INVESTIMENTOS,
+  INITIAL_TARGET_METAS,
   PROVENTOS_12M,
   PROVENTOS_ACUMULADOS,
   FATOR_AJUSTE_RENTABILIDADE_12M,
+  TARGET_METAS_STORAGE_KEY,
   TIPOS_ATIVO_ORDEM,
 } from '@app/core/services/investimentos.data';
 import { SupabaseService } from '@app/core/services/supabase.service';
@@ -32,6 +34,8 @@ import {
   Investimento,
   InvestimentoDraft,
   InvestimentosResumo,
+  RebalanceTipo,
+  TargetMeta,
 } from '@app/shared/models/investimentos.model';
 import {
   BarChartItem,
@@ -77,10 +81,26 @@ export class FinanceService {
   /** Indica busca de cotações na Brapi em andamento. */
   readonly quotesLoading = signal(false);
 
+  /** Metas de alocação por classe (% da carteira). */
+  readonly targetMetas = signal<TargetMeta[]>(FinanceService.loadTargetMetas());
+
   constructor() {
     this.loadTransactions();
     this.loadCarteiraAtivos();
     this.loadInvestimentos();
+  }
+
+  private static loadTargetMetas(): TargetMeta[] {
+    try {
+      const raw = localStorage.getItem(TARGET_METAS_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as TargetMeta[];
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {
+      /* fallback para defaults */
+    }
+    return INITIAL_TARGET_METAS.map((m) => ({ ...m }));
   }
 
   // ─── Derivados ────────────────────────────────────────────────────────────
@@ -186,8 +206,79 @@ export class FinanceService {
     variacaoPct:          this.variacaoPatrimonioPct(),
   }));
 
+  /** Rebalanceamento por classe — recalcula ao mudar metas ou carteira. */
+  readonly rebalancePorTipo = computed<RebalanceTipo[]>(() => this.calculateRebalance());
+
+  readonly rebalanceMap = computed(() => {
+    const map = new Map<string, RebalanceTipo>();
+    for (const item of this.rebalancePorTipo()) {
+      map.set(item.tipo, item);
+    }
+    return map;
+  });
+
+  /**
+   * Compara alocação atual vs meta: gap = (Patrimônio × Target%) − Valor atual do tipo.
+   * Positivo indica déficit — falta aportar na classe.
+   */
+  calculateRebalance(): RebalanceTipo[] {
+    const patrimonio = this.patrimonioTotal();
+    const valorPorTipo = new Map<string, number>();
+
+    for (const ativo of this.carteiraAtivos()) {
+      const valor = ativo.qtd * ativo.precoAtual;
+      valorPorTipo.set(ativo.tipo, (valorPorTipo.get(ativo.tipo) ?? 0) + valor);
+    }
+
+    return this.targetMetas().map((meta) => {
+      const currentValue = valorPorTipo.get(meta.tipo) ?? 0;
+      const targetValue = patrimonio * (meta.targetPercent / 100);
+      const gap = targetValue - currentValue;
+      const currentPercent = patrimonio > 0 ? (currentValue / patrimonio) * 100 : 0;
+
+      return {
+        tipo:           meta.tipo,
+        targetPercent:  meta.targetPercent,
+        currentPercent,
+        currentValue,
+        targetValue,
+        gap,
+        aporteSugerido: Math.max(0, gap),
+        needsRebalance: gap > 0,
+      };
+    });
+  }
+
+  updateTargetMeta(tipo: string, targetPercent: number): void {
+    const list = this.targetMetas();
+    const othersSum = list
+      .filter((m) => m.tipo !== tipo)
+      .reduce((s, m) => s + m.targetPercent, 0);
+    const maxAllowed = Math.max(0, 100 - othersSum);
+    const clamped = Math.min(maxAllowed, Math.max(0, targetPercent));
+
+    this.targetMetas.update((current) =>
+      current.map((m) => (m.tipo === tipo ? { ...m, targetPercent: clamped } : m)),
+    );
+
+    try {
+      localStorage.setItem(TARGET_METAS_STORAGE_KEY, JSON.stringify(this.targetMetas()));
+    } catch {
+      /* storage indisponível */
+    }
+  }
+
+  /** Máximo que `tipo` pode receber sem ultrapassar 100% no total. */
+  maxTargetFor(tipo: string): number {
+    const othersSum = this.targetMetas()
+      .filter((m) => m.tipo !== tipo)
+      .reduce((s, m) => s + m.targetPercent, 0);
+    return Math.max(0, 100 - othersSum);
+  }
+
   readonly ativosEnriquecidos = computed<AtivoEnriquecido[]>(() => {
     const patrimonio = this.patrimonioTotal();
+    const rebalanceMap = this.rebalanceMap();
 
     return this.carteiraAtivos().map((ativo) => {
       const valorTotal = ativo.qtd * ativo.precoAtual;
@@ -195,6 +286,9 @@ export class FinanceService {
         ? ((ativo.precoAtual - ativo.precoMedio) / ativo.precoMedio) * 100
         : 0;
       const rentabilidadePct = ativo.rentabilidadePct ?? variacaoPct;
+      const score = ativo.score ?? 5;
+      const rebalance = rebalanceMap.get(ativo.tipo);
+      const buyRecommendation = !!(rebalance?.needsRebalance && score >= 5);
 
       return {
         ...ativo,
@@ -202,6 +296,8 @@ export class FinanceService {
         pctCarteira: patrimonio > 0 ? (valorTotal / patrimonio) * 100 : 0,
         variacaoPct,
         rentabilidadePct,
+        score,
+        buyRecommendation,
       };
     });
   });
