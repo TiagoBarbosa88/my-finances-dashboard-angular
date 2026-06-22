@@ -23,6 +23,7 @@ import {
   TIPOS_ATIVO_ORDEM,
 } from '@app/core/services/investimentos.data';
 import { SupabaseService } from '@app/core/services/supabase.service';
+import { AuthService } from '@app/core/services/auth.service';
 import { StockService } from '@app/core/services/stock.service';
 import {
   Ativo,
@@ -46,6 +47,7 @@ import { environment } from '../../../environments/environment';
 export class FinanceService {
   private readonly http = inject(HttpClient);
   private readonly supabase = inject(SupabaseService);
+  private readonly auth = inject(AuthService);
   private readonly stockService = inject(StockService);
 
   private readonly transactionsUrl = `${environment.apiUrl}/transactions`;
@@ -610,7 +612,13 @@ export class FinanceService {
     transaction: Omit<Transaction, 'id'>,
     recorrencia?: TransactionRecurrence,
   ): void {
-    const entries = this.buildTransactionEntries(transaction, recorrencia);
+    if (!this.auth.canCreate()) {
+      console.warn('[FinanceService] addTransaction: permissão negada.');
+      return;
+    }
+
+    const owned = this.auth.stampOwnership(transaction);
+    const entries = this.buildTransactionEntries(owned, recorrencia);
 
     entries.forEach((entry) => {
       this.http.post<Transaction>(this.transactionsUrl, entry).subscribe({
@@ -659,14 +667,25 @@ export class FinanceService {
     const previous = this.transactions().find((t) => t.id === id);
     if (!previous) return;
 
+    if (!this.auth.canModify(previous)) {
+      console.warn('[FinanceService] updateTransaction: permissão negada.');
+      return;
+    }
+
+    const payload = {
+      ...transaction,
+      user_id: previous.user_id,
+      criado_por: previous.criado_por,
+    };
+
     this.transactions.update((list) =>
-      list.map((t) => (t.id === id ? { ...t, ...transaction } : t)),
+      list.map((t) => (t.id === id ? { ...t, ...payload } : t)),
     );
     this.persistStatuses();
 
     if (!this.supabase.isConfigured()) return;
 
-    this.supabase.updateTransaction(id, transaction).then((saved) => {
+    this.supabase.updateTransaction(id, payload).then((saved) => {
       if (saved) {
         this.transactions.update((list) =>
           list.map((t) => (t.id === id ? saved : t)),
@@ -686,6 +705,14 @@ export class FinanceService {
    * O signal é atualizado somente após resposta bem-sucedida.
    */
   deleteTransaction(id: number): void {
+    const target = this.transactions().find((t) => t.id === id);
+    if (!target) return;
+
+    if (!this.auth.canDelete(target)) {
+      console.warn('[FinanceService] deleteTransaction: permissão negada.');
+      return;
+    }
+
     this.http.delete<void>(`${this.transactionsUrl}/${id}`).subscribe({
       next: () => {
         this.transactions.update((list) => list.filter((t) => t.id !== id));
@@ -704,6 +731,14 @@ export class FinanceService {
    *   3. Reverte em caso de erro de rede.
    */
   toggleStatus(id: number): void {
+    const target = this.transactions().find((t) => t.id === id);
+    if (!target) return;
+
+    if (!this.auth.canModify(target)) {
+      console.warn('[FinanceService] toggleStatus: permissão negada.');
+      return;
+    }
+
     this.transactions.update((list) =>
       list.map((t) =>
         t.id === id
@@ -788,7 +823,7 @@ export class FinanceService {
       next: (data) => {
         const saved = this.readSavedStatuses();
         this.transactions.set(
-          data.map((t) => ({ ...t, status: saved[t.id] ?? t.status })),
+          data.map((t) => this.enrichTransaction({ ...t, status: saved[t.id] ?? t.status })),
         );
         this.loading.set(false);
       },
@@ -804,10 +839,16 @@ export class FinanceService {
 
   private loadLocalTransactions(): Transaction[] {
     const saved = this.readSavedStatuses();
-    return INITIAL_TRANSACTIONS.map((t) => ({
-      ...t,
-      status: saved[t.id] ?? t.status,
-    }));
+    return INITIAL_TRANSACTIONS.map((t) =>
+      this.enrichTransaction({ ...t, status: saved[t.id] ?? t.status }),
+    );
+  }
+
+  private enrichTransaction(transaction: Transaction): Transaction {
+    if (transaction.user_id != null) return transaction;
+
+    const userId = this.auth.resolveUserId(transaction.criado_por);
+    return userId != null ? { ...transaction, user_id: userId } : transaction;
   }
 
   private readSavedStatuses(): Record<number, TransactionStatus> {
