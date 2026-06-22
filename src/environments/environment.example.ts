@@ -1,16 +1,14 @@
 /**
- * Template de credenciais — copie para `environment.ts` e preencha localmente.
- *
- *   cp src/environments/environment.example.ts src/environments/environment.ts
- *
- * ⚠️  `environment.ts` está no .gitignore e NÃO deve ser commitado.
+ * Fallback estático — o fluxo recomendado é `.env` → `npm run env:sync`.
+ * Veja `.env.example` na raiz do projeto.
  */
 export const environment = {
   production: false,
   bypassAuth: true,
   supabase: {
-    url:     'https://SEU_PROJECT_ID.supabase.co',
-    anonKey: 'SUA_ANON_KEY_AQUI',
+    url:            'https://SEU_PROJECT_ID.supabase.co',
+    publishableKey: 'sb_publishable_SUA_CHAVE_AQUI',
+    jwksUrl:        'https://SEU_PROJECT_ID.supabase.co/auth/v1/.well-known/jwks.json',
   },
   apiUrl: 'http://localhost:3000',
   brapi: {

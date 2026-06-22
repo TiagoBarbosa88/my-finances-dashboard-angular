@@ -24,7 +24,7 @@ export class SupabaseService {
   /** Cliente Supabase — exposto para uso pontual em guards e serviços. */
   readonly client: SupabaseClient = createClient(
     environment.supabase.url,
-    environment.supabase.anonKey,
+    environment.supabase.publishableKey,
   );
 
   // ─── Estado de autenticação reativo ───────────────────────────────────────
@@ -146,14 +146,14 @@ export class SupabaseService {
     return true;
   }
 
-  /** `false` enquanto as credenciais no environment.ts ainda são placeholder. */
+  /** `false` enquanto as credenciais no `.env` ainda são placeholder. */
   isConfigured(): boolean {
-    const { url, anonKey } = environment.supabase;
+    const { url, publishableKey } = environment.supabase;
     return (
       url.length > 0 &&
       !url.includes('SEU_PROJECT_ID') &&
-      anonKey.length > 0 &&
-      !anonKey.includes('SUA_ANON_KEY')
+      publishableKey.length > 0 &&
+      !publishableKey.includes('SUA_CHAVE')
     );
   }
 }

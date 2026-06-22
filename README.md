@@ -1,76 +1,169 @@
-# MyFinancesDash
+# My Finances Dash
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.27.
+Dashboard financeiro pessoal em **Angular 19** — controle de lançamentos, carteira de investimentos, metas de alocação e sugestões inteligentes de compra com foco em **risco** e **qualidade**.
 
-## Configuração de credenciais (obrigatório)
+> Projeto privado · Tiago & Giselle · tema **Dark Financeiro**
 
-O arquivo `src/environments/environment.ts` contém chaves do Supabase e da Brapi e **não é versionado**.
+---
 
-```bash
-cp src/environments/environment.example.ts src/environments/environment.ts
-```
+## O que a aplicação faz
 
-Edite `environment.ts` com:
+| Módulo | Rota | Descrição |
+|--------|------|-----------|
+| **Painel** | `/` | KPIs do mês, gráficos de categorias, saldo e últimos lançamentos |
+| **Investimentos** | `/investimentos` | Carteira, cotações Brapi, metas por classe, semáforo de sugestão |
+| **Lançamentos** | `/lancamentos` | CRUD de receitas e despesas |
+| **Ajustes** | `/ajustes` | Conta, equipe e convites (Admin / Editor / Leitor) |
 
-- **Supabase:** Project URL + anon key ([dashboard](https://supabase.com/dashboard) → Settings → API)
-- **Brapi:** token em [brapi.dev/dashboard](https://brapi.dev/dashboard)
+### Destaques de investimentos
 
-Após `npm install`, o script `postinstall` cria `environment.ts` automaticamente se ele não existir.
+- **Metas de alocação** — Ações, FIIs, ETFs, Tesouro (total limitado a 100%)
+- **Semáforo por ativo** — `Comprar` · `Risco (Concentrado)` · `Reavaliar (Nota Baixa)` · `Segurar`
+- **Critérios de compra** — abaixo da meta da categoria + nota ≥ 7 + concentração &lt; 15%
+- **Cotações** — integração [Brapi](https://brapi.dev) (atualização manual)
+- **Import CSV/Excel** — lançamentos e posições em lote
 
-> Se você expôs chaves no GitHub, **revogue e gere novas** no painel da Brapi/Supabase.
+---
 
-## Development server
+## Stack
 
-To start a local development server, run:
+- **Angular 19** · standalone components · signals
+- **Tailwind CSS v4** · tema dark
+- **JSON Server** — API local de desenvolvimento (`db.json`)
+- **Supabase** — auth + Postgres (migração em andamento)
+- **Brapi** — cotações de ativos B3
 
-```bash
-ng serve
-```
+---
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Pré-requisitos
 
-## Code scaffolding
+- Node.js 20+
+- npm 10+
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+---
 
-```bash
-ng generate component component-name
-```
+## Configuração rápida
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+### 1. Clone e instale
 
 ```bash
-ng test
+git clone https://github.com/TiagoBarbosa88/my-finances-dashboard-angular.git
+cd my-finances-dashboard-angular
+npm install
 ```
 
-## Running end-to-end tests
+O `postinstall` gera `src/environments/environment.ts` a partir do `.env`.
 
-For end-to-end (e2e) testing, run:
+### 2. Credenciais (`.env`)
 
 ```bash
-ng e2e
+cp .env.example .env
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Edite `.env` na raiz:
 
-## Additional Resources
+```env
+# Supabase — Dashboard → Settings → API
+SUPABASE_URL=https://seu-projeto.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+SUPABASE_JWKS_URL=https://seu-projeto.supabase.co/auth/v1/.well-known/jwks.json
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+# ⚠️ Secret key: NUNCA use no frontend Angular
+SUPABASE_SECRET_KEY=sb_secret_...
+
+# Brapi — https://brapi.dev/dashboard
+BRAPI_TOKEN=sua_chave_aqui
+
+# API local
+API_URL=http://localhost:3000
+BYPASS_AUTH=true
+```
+
+| Variável | Onde usa | Commitar? |
+|----------|----------|-----------|
+| `SUPABASE_URL` | Frontend | ❌ só no `.env` |
+| `SUPABASE_PUBLISHABLE_KEY` | Frontend (`SupabaseService`) | ❌ |
+| `SUPABASE_SECRET_KEY` | Backend / Edge Functions apenas | ❌ |
+| `SUPABASE_JWKS_URL` | Validação JWT (futuro backend) | ❌ |
+| `BRAPI_TOKEN` | Frontend (`StockService`) | ❌ |
+
+Sincronizar manualmente após editar `.env`:
+
+```bash
+npm run env:sync
+```
+
+> **Segurança:** `.env` e `environment.ts` estão no `.gitignore`. Nunca commite chaves reais.
+
+### 3. Suba os serviços
+
+Terminal 1 — API mock:
+
+```bash
+npm run json-server
+```
+
+Terminal 2 — Angular:
+
+```bash
+npm run dev
+```
+
+Abra [http://localhost:4200](http://localhost:4200)
+
+---
+
+## Scripts
+
+| Comando | Descrição |
+|---------|-----------|
+| `npm run dev` | Servidor de desenvolvimento |
+| `npm run json-server` | JSON Server na porta 3000 |
+| `npm run env:sync` | `.env` → `environment.ts` |
+| `npm run build` | Build de produção |
+| `npm run format` | Prettier em todo o projeto |
+
+---
+
+## Arquitetura
+
+```
+src/app/
+├── core/           # FinanceService, AuthService, SupabaseService, guards
+├── features/       # Páginas por domínio (dashboard, investimentos, ajustes…)
+├── finance/        # Componentes reutilizáveis (tabelas, gráficos, modais)
+├── layout/         # Shell, sidebar, rotas
+└── shared/         # Models, pipes, directives (ex.: *appHasRole)
+```
+
+**Fluxo de dados hoje**
+
+1. `FinanceService` — estado global com signals (transações, carteira, metas)
+2. JSON Server — persistência local via `db.json`
+3. Supabase — parcial (`transactions` + auth); ver [`docs/SUPABASE-SETUP.md`](docs/SUPABASE-SETUP.md)
+
+---
+
+## Permissões
+
+| Papel | Criar | Editar | Excluir | Investimentos |
+|-------|-------|--------|---------|---------------|
+| Admin | ✅ | ✅ | ✅ | ✅ |
+| Editor | ✅ | ✅ | ❌ | ✅ |
+| Leitor | ❌ | ❌ | ❌ | ❌ |
+
+Controlado por `AuthService` + diretiva `*appHasRole`.
+
+---
+
+## Migração Supabase
+
+Guia completo de SQL, RLS e plano em 5 fases:
+
+📄 [`docs/SUPABASE-SETUP.md`](docs/SUPABASE-SETUP.md)
+
+---
+
+## Licença
+
+Uso privado — todos os direitos reservados.
