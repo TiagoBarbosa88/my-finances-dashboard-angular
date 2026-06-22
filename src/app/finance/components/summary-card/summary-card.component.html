@@ -54,6 +54,24 @@
           </svg>
         }
 
+        @case ('coins') {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+            <circle cx="8" cy="8" r="6"/>
+            <path d="M18.09 10.37A6 6 0 1 1 10.34 18"/>
+            <path d="M7 6h1v4"/><path d="m7 10 2 2"/>
+          </svg>
+        }
+
+        @case ('percent') {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+            <line x1="19" y1="5" x2="5" y2="19"/>
+            <circle cx="6.5" cy="6.5" r="2.5"/>
+            <circle cx="17.5" cy="17.5" r="2.5"/>
+          </svg>
+        }
+
       }
     </div>
   </div>
@@ -67,8 +85,15 @@
   </p>
 
   <!-- ── Rodapé ── -->
-  <p [class]="footerClass()" class="relative mt-2 text-xs font-medium">
-    {{ change() }}
-  </p>
+  @if (change().trim()) {
+    <p [class]="footerClass()" class="relative mt-2 text-xs font-medium">
+      {{ change() }}
+    </p>
+  }
+  @if (subChange().trim()) {
+    <p [class]="footerClass()" class="relative mt-1 text-xs font-medium">
+      {{ subChange() }}
+    </p>
+  }
 
 </div>

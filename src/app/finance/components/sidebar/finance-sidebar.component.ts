@@ -9,6 +9,8 @@ interface NavItem {
   url: string;
   exact: boolean;
   icon: SidebarIcon;
+  /** Itens ocultos temporariamente (Lançamentos → Relatórios). */
+  visible?: boolean;
 }
 
 export type SidebarIcon =
@@ -44,16 +46,18 @@ export class FinanceSidebarComponent {
   }
   /** Rotas sincronizadas com app.routes.ts */
   readonly navItems: NavItem[] = [
-    { title: 'Painel',        url: '/',              exact: true,  icon: 'dashboard' },
-    { title: 'Investimentos', url: '/investimentos',  exact: true,  icon: 'chart'     },
-    { title: 'Lançamentos',   url: '/lancamentos',    exact: true,  icon: 'wallet'    },
-    { title: 'Categorias',    url: '/categorias',     exact: true,  icon: 'pie'       },
-    { title: 'Metas',         url: '/metas',          exact: true,  icon: 'target'    },
-    { title: 'Relatórios',    url: '/relatorios',     exact: true,  icon: 'trending'  },
-    { title: 'Ajustes',       url: '/ajustes',        exact: true,  icon: 'settings'  },
+    { title: 'Painel',        url: '/',              exact: true,  icon: 'dashboard', visible: true  },
+    { title: 'Investimentos', url: '/investimentos',  exact: true,  icon: 'chart',     visible: true  },
+    // { title: 'Lançamentos',   url: '/lancamentos',    exact: true,  icon: 'wallet'    },
+    // { title: 'Categorias',    url: '/categorias',     exact: true,  icon: 'pie'       },
+    // { title: 'Metas',         url: '/metas',          exact: true,  icon: 'target'    },
+    // { title: 'Relatórios',    url: '/relatorios',     exact: true,  icon: 'trending'  },
+    { title: 'Ajustes',       url: '/ajustes',        exact: true,  icon: 'settings',  visible: true  },
   ];
 
-  readonly mobileItems = this.navItems.slice(0, 5);
+  readonly visibleNavItems = this.navItems.filter((item) => item.visible !== false);
+
+  readonly mobileItems = this.visibleNavItems;
 
   /** Classes do link baseadas no estado ativo. */
   linkClass(isActive: boolean): string {

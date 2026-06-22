@@ -5,7 +5,9 @@ export type SummaryCardIcon =
   | 'check'
   | 'clock'
   | 'trending-up'
-  | 'trending-down';
+  | 'trending-down'
+  | 'coins'
+  | 'percent';
 
 export type SummaryCardVariant = 'green' | 'red' | 'amber' | 'neutral';
 
@@ -22,6 +24,8 @@ export class SummaryCardComponent {
   label    = input.required<string>();
   value    = input.required<string>();
   change   = input.required<string>();
+  /** Linha extra no rodapé (ex.: detalhes de Lucro / Proventos). */
+  subChange  = input('');
   positive   = input(false);
   variant    = input<SummaryCardVariant>('neutral');
   /** Sobrescreve a cor do valor (ex.: saldo dinâmico no card neutro). */

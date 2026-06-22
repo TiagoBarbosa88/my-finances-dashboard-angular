@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
+import { forkJoin, Observable, of, tap } from 'rxjs';
 
 import {
   CATEGORIAS,
@@ -11,7 +12,26 @@ import {
   resolveCategoryColor,
   STATUS_STORAGE_KEY,
 } from '@app/core/services/finance.data';
+import {
+  CLASSE_ATIVO_CORES,
+  CATALOGO_ATIVOS,
+  INITIAL_ATIVOS,
+  INITIAL_INVESTIMENTOS,
+  PROVENTOS_12M,
+  PROVENTOS_ACUMULADOS,
+  FATOR_AJUSTE_RENTABILIDADE_12M,
+  TIPOS_ATIVO_ORDEM,
+} from '@app/core/services/investimentos.data';
 import { SupabaseService } from '@app/core/services/supabase.service';
+import { StockService } from '@app/core/services/stock.service';
+import {
+  Ativo,
+  AtivoEnriquecido,
+  GrupoAtivos,
+  Investimento,
+  InvestimentoDraft,
+  InvestimentosResumo,
+} from '@app/shared/models/investimentos.model';
 import {
   BarChartItem,
   FinanceStats,
@@ -26,8 +46,11 @@ import { environment } from '../../../environments/environment';
 export class FinanceService {
   private readonly http = inject(HttpClient);
   private readonly supabase = inject(SupabaseService);
+  private readonly stockService = inject(StockService);
 
   private readonly transactionsUrl = `${environment.apiUrl}/transactions`;
+  private readonly investimentosUrl = `${environment.apiUrl}/investimentos`;
+  private readonly ativosUrl = `${environment.apiUrl}/ativos`;
 
   // ─── Estado global ────────────────────────────────────────────────────────
 
@@ -43,8 +66,19 @@ export class FinanceService {
   /** Termo de busca compartilhado (header → tabela). */
   readonly termoBusca = signal('');
 
+  /** Posições da carteira (ativos). */
+  readonly carteiraAtivos = signal<Ativo[]>(INITIAL_ATIVOS);
+
+  /** Lançamentos de compra/venda persistidos no JSON Server. */
+  readonly investimentos = signal<Investimento[]>(INITIAL_INVESTIMENTOS);
+
+  /** Indica busca de cotações na Brapi em andamento. */
+  readonly quotesLoading = signal(false);
+
   constructor() {
     this.loadTransactions();
+    this.loadCarteiraAtivos();
+    this.loadInvestimentos();
   }
 
   // ─── Derivados ────────────────────────────────────────────────────────────
@@ -94,6 +128,434 @@ export class FinanceService {
   readonly saldoDisponivel = computed(
     () => this.totalReceitas() - this.totalDespesas(),
   );
+
+  // ─── Investimentos ────────────────────────────────────────────────────────
+
+  readonly patrimonioTotal = computed(() =>
+    this.carteiraAtivos().reduce((s, a) => s + a.qtd * a.precoAtual, 0),
+  );
+
+  readonly aportesTotal = computed(() =>
+    this.carteiraAtivos().reduce((s, a) => s + a.qtd * a.precoMedio, 0),
+  );
+
+  /** Ganho de capital = patrimônio atual − valor investido (aportes). */
+  readonly ganhoCapital = computed(
+    () => this.patrimonioTotal() - this.aportesTotal(),
+  );
+
+  /** Lucro total = ganho de capital + proventos acumulados. */
+  readonly lucroTotal = computed(
+    () => this.ganhoCapital() + PROVENTOS_ACUMULADOS,
+  );
+
+  readonly proventos12m = computed(() => PROVENTOS_12M);
+
+  readonly proventosAcumulados = computed(() => PROVENTOS_ACUMULADOS);
+
+  /**
+   * Rentabilidade da carteira = variação patrimonial ajustada pelos proventos 12M.
+   * Fórmula: (ganhoCapital − proventos12M / fator) / valorInvestido × 100
+   */
+  readonly rentabilidadeTotal = computed(() => {
+    const aportes = this.aportesTotal();
+    if (aportes <= 0) return 0;
+
+    const fatorAjuste = FATOR_AJUSTE_RENTABILIDADE_12M;
+
+    return (
+      (this.ganhoCapital() - this.proventos12m() / fatorAjuste) / aportes
+    ) * 100;
+  });
+
+  readonly variacaoPatrimonioPct = computed(() => {
+    const aportes = this.aportesTotal();
+    return aportes > 0 ? (this.ganhoCapital() / aportes) * 100 : 0;
+  });
+
+  readonly investimentosResumo = computed<InvestimentosResumo>(() => ({
+    patrimonioTotal:      this.patrimonioTotal(),
+    aportesTotal:         this.aportesTotal(),
+    ganhoCapital:         this.ganhoCapital(),
+    lucroTotal:           this.lucroTotal(),
+    proventos12m:         this.proventos12m(),
+    proventosAcumulados:  this.proventosAcumulados(),
+    rentabilidadeTotal:   this.rentabilidadeTotal(),
+    variacaoPct:          this.variacaoPatrimonioPct(),
+  }));
+
+  readonly ativosEnriquecidos = computed<AtivoEnriquecido[]>(() => {
+    const patrimonio = this.patrimonioTotal();
+
+    return this.carteiraAtivos().map((ativo) => {
+      const valorTotal = ativo.qtd * ativo.precoAtual;
+      const variacaoPct = ativo.precoMedio > 0
+        ? ((ativo.precoAtual - ativo.precoMedio) / ativo.precoMedio) * 100
+        : 0;
+      const rentabilidadePct = ativo.rentabilidadePct ?? variacaoPct;
+
+      return {
+        ...ativo,
+        valorTotal,
+        pctCarteira: patrimonio > 0 ? (valorTotal / patrimonio) * 100 : 0,
+        variacaoPct,
+        rentabilidadePct,
+      };
+    });
+  });
+
+  readonly ativosPorTipo = computed<GrupoAtivos[]>(() => {
+    const porTipo = new Map<string, AtivoEnriquecido[]>();
+
+    for (const ativo of this.ativosEnriquecidos()) {
+      const lista = porTipo.get(ativo.tipo) ?? [];
+      lista.push(ativo);
+      porTipo.set(ativo.tipo, lista);
+    }
+
+    return TIPOS_ATIVO_ORDEM.map((tipo) => {
+      const ativos = porTipo.get(tipo) ?? [];
+      return {
+        tipo,
+        ativos,
+        valorTotal: ativos.reduce((s, a) => s + a.valorTotal, 0),
+      };
+    });
+  });
+
+  readonly distribuicaoPorClasse = computed<PieChartItem[]>(() => {
+    const patrimonio = this.patrimonioTotal();
+    if (patrimonio <= 0) return [];
+
+    return this.ativosPorTipo().map((grupo) => ({
+      name:  grupo.tipo,
+      value: (grupo.valorTotal / patrimonio) * 100,
+      color: CLASSE_ATIVO_CORES[grupo.tipo],
+    }));
+  });
+
+  readonly distribuicaoPatrimonio = computed(
+    () => this.patrimonioTotal(),
+  );
+
+  /** Catálogo de tickers filtrável por tipo (select do modal). */
+  readonly catalogoAtivos = computed(() => CATALOGO_ATIVOS);
+
+  /** Valor total do lançamento = (qtd × preço) + outros custos. */
+  calcValorTotalInvestimento(quantidade: number, preco: number, outrosCustos: number): number {
+    return quantidade * preco + outrosCustos;
+  }
+
+  /** Monta payload completo a partir do rascunho. */
+  buildInvestimentoPayload(draft: InvestimentoDraft): Omit<Investimento, 'id'> {
+    return {
+      ...draft,
+      valorTotal: this.calcValorTotalInvestimento(draft.quantidade, draft.preco, draft.outrosCustos),
+    };
+  }
+
+  addInvestment(investimento: InvestimentoDraft): void {
+    const payload = this.buildInvestimentoPayload(investimento);
+
+    this.http.post<Investimento>(this.investimentosUrl, payload).subscribe({
+      next: (saved) => this.appendImportedInvestment(saved),
+      error: (err) => {
+        console.error('[FinanceService] addInvestment:', err);
+        const saved: Investimento = {
+          ...payload,
+          id: this.nextInvestimentoId(),
+        };
+        this.appendImportedInvestment(saved);
+      },
+    });
+  }
+
+  /** Persiste lançamento importado ou criado via POST. */
+  appendImportedInvestment(saved: Investimento): void {
+    this.investimentos.update((list) => [...list, saved]);
+    this.applyInvestimentoNaCarteira(saved);
+  }
+
+  /** POST em lote de rascunhos importados (CSV/Excel). */
+  importInvestmentsBatch(drafts: InvestimentoDraft[]): Observable<Investimento[]> {
+    if (drafts.length === 0) return of([]);
+
+    const requests = drafts.map((draft) =>
+      this.http.post<Investimento>(
+        this.investimentosUrl,
+        this.buildInvestimentoPayload(draft),
+      ),
+    );
+
+    return forkJoin(requests).pipe(
+      tap((saved) => saved.forEach((item) => this.appendImportedInvestment(item))),
+    );
+  }
+
+  updateInvestment(id: number, investimento: InvestimentoDraft): void {
+    const previous = this.investimentos().find((i) => i.id === id);
+    if (!previous) return;
+
+    const payload = this.buildInvestimentoPayload(investimento);
+
+    this.investimentos.update((list) =>
+      list.map((i) => (i.id === id ? { ...i, ...payload } : i)),
+    );
+    this.syncCarteiraComInvestimentos();
+
+    this.http.put<Investimento>(`${this.investimentosUrl}/${id}`, payload).subscribe({
+      next: (saved) => {
+        this.investimentos.update((list) =>
+          list.map((i) => (i.id === id ? saved : i)),
+        );
+        this.syncCarteiraComInvestimentos();
+      },
+      error: (err) => {
+        console.error('[FinanceService] updateInvestment:', err);
+        this.investimentos.update((list) =>
+          list.map((i) => (i.id === id ? { ...previous } : i)),
+        );
+        this.syncCarteiraComInvestimentos();
+      },
+    });
+  }
+
+  deleteInvestment(id: number): void {
+    const previous = this.investimentos();
+    this.investimentos.update((list) => list.filter((i) => i.id !== id));
+    this.syncCarteiraComInvestimentos();
+
+    this.http.delete<void>(`${this.investimentosUrl}/${id}`).subscribe({
+      next: () => this.syncCarteiraComInvestimentos(),
+      error: (err) => {
+        console.error('[FinanceService] deleteInvestment:', err);
+        this.investimentos.set(previous);
+        this.syncCarteiraComInvestimentos();
+      },
+    });
+  }
+
+  /** Atualiza posição existente na carteira (modo edição via ativo). */
+  updateAtivo(id: number, ativo: Omit<Ativo, 'id'>): void {
+    const previous = this.carteiraAtivos().find((a) => a.id === id);
+    if (!previous) return;
+
+    this.carteiraAtivos.update((list) =>
+      list.map((a) => (a.id === id ? { ...a, ...ativo } : a)),
+    );
+
+    this.http.put<Ativo>(`${this.ativosUrl}/${id}`, { ...ativo, id }).subscribe({
+      next: (saved) => {
+        this.carteiraAtivos.update((list) =>
+          list.map((a) => (a.id === id ? saved : a)),
+        );
+      },
+      error: (err) => {
+        console.error('[FinanceService] updateAtivo:', err);
+        this.carteiraAtivos.update((list) =>
+          list.map((a) => (a.id === id ? previous : a)),
+        );
+      },
+    });
+  }
+
+  loadInvestimentos(): void {
+    this.http.get<Investimento[]>(this.investimentosUrl).subscribe({
+      next: (data) => this.investimentos.set(data),
+      error: () => this.investimentos.set(INITIAL_INVESTIMENTOS),
+    });
+  }
+
+  loadCarteiraAtivos(): void {
+    this.http.get<Ativo[]>(this.ativosUrl).subscribe({
+      next: (data) => {
+        if (data.length > 0) {
+          this.carteiraAtivos.set(data);
+        }
+      },
+      error: () => this.carteiraAtivos.set(INITIAL_ATIVOS),
+    });
+  }
+
+  /** Atualiza precoAtual in-memory com cotações da Brapi (não persiste no JSON). */
+  refreshCarteiraQuotes(): void {
+    const tickers = this.carteiraAtivos()
+      .filter((a) => a.tipo !== 'Tesouro Direto')
+      .map((a) => a.ticker.toUpperCase());
+
+    const unique = [...new Set(tickers)];
+    if (unique.length === 0) return;
+
+    this.refreshMarketQuotes(unique);
+  }
+
+  private refreshMarketQuotes(tickers: string[]): void {
+    this.quotesLoading.set(true);
+
+    this.stockService.fetchQuotes(tickers).subscribe({
+      next: (quotes) => {
+        if (quotes.size > 0) {
+          this.carteiraAtivos.update((list) =>
+            list.map((ativo) => {
+              const price = quotes.get(ativo.ticker.toUpperCase());
+              return price != null ? { ...ativo, precoAtual: price } : ativo;
+            }),
+          );
+        }
+        this.quotesLoading.set(false);
+      },
+      error: () => this.quotesLoading.set(false),
+    });
+  }
+
+  private nextInvestimentoId(): number {
+    const ids = this.investimentos().map((i) => i.id);
+    return ids.length > 0 ? Math.max(...ids) + 1 : 1;
+  }
+
+  private nextAtivoId(): number {
+    const ids = this.carteiraAtivos().map((a) => a.id);
+    return ids.length > 0 ? Math.max(...ids) + 1 : 1;
+  }
+
+  private applyInvestimentoNaCarteira(lancamento: Investimento): void {
+    const key = `${lancamento.tipo}:${lancamento.ticker}`;
+    const list = [...this.carteiraAtivos()];
+    const index = list.findIndex((a) => `${a.tipo}:${a.ticker}` === key);
+
+    if (lancamento.operacao === 'compra') {
+      const custoTotal =
+        lancamento.quantidade * lancamento.preco + lancamento.outrosCustos;
+
+      if (index >= 0) {
+        const atual = list[index];
+        const novaQtd = atual.qtd + lancamento.quantidade;
+        const novoPM = novaQtd > 0
+          ? (atual.qtd * atual.precoMedio + custoTotal) / novaQtd
+          : lancamento.preco;
+
+        list[index] = {
+          ...atual,
+          qtd: novaQtd,
+          precoMedio: novoPM,
+          precoAtual: lancamento.preco,
+          setor: lancamento.setor || atual.setor,
+        };
+      } else {
+        list.push({
+          id: this.nextAtivoId(),
+          ticker: lancamento.ticker,
+          tipo: lancamento.tipo,
+          setor: lancamento.setor,
+          qtd: lancamento.quantidade,
+          precoMedio: lancamento.quantidade > 0
+            ? custoTotal / lancamento.quantidade
+            : lancamento.preco,
+          precoAtual: lancamento.preco,
+        });
+      }
+    } else {
+      if (index < 0) return;
+
+      const atual = list[index];
+      const novaQtd = atual.qtd - lancamento.quantidade;
+
+      if (novaQtd <= 0) {
+        list.splice(index, 1);
+      } else {
+        list[index] = {
+          ...atual,
+          qtd: novaQtd,
+          precoAtual: lancamento.preco,
+        };
+      }
+    }
+
+    this.carteiraAtivos.set(list);
+    this.persistCarteiraAtivos(list);
+  }
+
+  private syncCarteiraComInvestimentos(): void {
+    let carteira: Ativo[] = [];
+    let nextId = 1;
+
+    const sorted = [...this.investimentos()].sort(
+      (a, b) => a.data.localeCompare(b.data) || a.id - b.id,
+    );
+
+    for (const lancamento of sorted) {
+      carteira = this.applyLancamentoEmLista(carteira, lancamento, () => nextId++);
+    }
+
+    if (carteira.length === 0 && this.investimentos().length === 0) {
+      carteira = [...INITIAL_ATIVOS];
+    }
+
+    this.carteiraAtivos.set(carteira);
+    this.persistCarteiraAtivos(carteira);
+  }
+
+  private applyLancamentoEmLista(
+    list: Ativo[],
+    lancamento: Investimento,
+    nextId: () => number,
+  ): Ativo[] {
+    const copy = [...list];
+    const key = `${lancamento.tipo}:${lancamento.ticker}`;
+    const index = copy.findIndex((a) => `${a.tipo}:${a.ticker}` === key);
+
+    if (lancamento.operacao === 'compra') {
+      const custoTotal =
+        lancamento.quantidade * lancamento.preco + lancamento.outrosCustos;
+
+      if (index >= 0) {
+        const atual = copy[index];
+        const novaQtd = atual.qtd + lancamento.quantidade;
+        copy[index] = {
+          ...atual,
+          qtd: novaQtd,
+          precoMedio: novaQtd > 0
+            ? (atual.qtd * atual.precoMedio + custoTotal) / novaQtd
+            : lancamento.preco,
+          precoAtual: lancamento.preco,
+          setor: lancamento.setor || atual.setor,
+        };
+      } else {
+        copy.push({
+          id: nextId(),
+          ticker: lancamento.ticker,
+          tipo: lancamento.tipo,
+          setor: lancamento.setor,
+          qtd: lancamento.quantidade,
+          precoMedio: lancamento.quantidade > 0
+            ? custoTotal / lancamento.quantidade
+            : lancamento.preco,
+          precoAtual: lancamento.preco,
+        });
+      }
+    } else if (index >= 0) {
+      const atual = copy[index];
+      const novaQtd = atual.qtd - lancamento.quantidade;
+
+      if (novaQtd <= 0) {
+        copy.splice(index, 1);
+      } else {
+        copy[index] = { ...atual, qtd: novaQtd, precoAtual: lancamento.preco };
+      }
+    }
+
+    return copy;
+  }
+
+  private persistCarteiraAtivos(ativos: Ativo[]): void {
+    for (const ativo of ativos) {
+      this.http.put<Ativo>(`${this.ativosUrl}/${ativo.id}`, ativo).subscribe({
+        error: () => {
+          this.http.post<Ativo>(this.ativosUrl, ativo).subscribe();
+        },
+      });
+    }
+  }
 
   readonly pieData = computed<PieChartItem[]>(() => {
     const totals = this.groupExpensesByCategory();
