@@ -5,6 +5,7 @@ import { AuthService } from '@app/core/services/auth.service';
 import { TeamService } from '@app/core/services/team.service';
 import { HasRoleDirective } from '@app/shared/directives/has-role.directive';
 import {
+  Convite,
   ROLE_LABELS,
   ROLE_OPTIONS,
   UserRole,
@@ -34,6 +35,8 @@ export class AjustesPageComponent implements OnInit {
   readonly conviteMessage = signal<string | null>(null);
   readonly profileSaving = signal(false);
   readonly conviteSending = signal(false);
+  readonly conviteActionId = signal<number | null>(null);
+  readonly conviteEditEmail = signal<Record<number, string>>({});
 
   ngOnInit(): void {
     this.syncProfileFromAuth();
@@ -100,6 +103,116 @@ export class AjustesPageComponent implements OnInit {
         this.conviteSending.set(false);
       },
     });
+  }
+
+  atualizarRoleConvite(convite: Convite, role: UserRole): void {
+    if (convite.role === role) return;
+
+    this.conviteActionId.set(convite.id);
+    this.conviteMessage.set(null);
+
+    this.team.atualizarConvite(convite.id, { role }).subscribe({
+      next: () => {
+        this.conviteMessage.set('Permissão do convite atualizada.');
+        this.conviteActionId.set(null);
+      },
+      error: (err: Error) => {
+        this.conviteMessage.set(err.message || 'Falha ao atualizar convite.');
+        this.conviteActionId.set(null);
+      },
+    });
+  }
+
+  conviteEmailAtual(convite: Convite): string {
+    return this.conviteEditEmail()[convite.id] ?? convite.email;
+  }
+
+  setConviteEditEmail(conviteId: number, email: string): void {
+    this.conviteEditEmail.update((map) => ({ ...map, [conviteId]: email }));
+  }
+
+  emailConviteAlterado(convite: Convite): boolean {
+    const draft = this.conviteEmailAtual(convite).trim().toLowerCase();
+    return draft !== convite.email && draft.includes('@');
+  }
+
+  salvarEmailConvite(convite: Convite): void {
+    const email = this.conviteEmailAtual(convite).trim().toLowerCase();
+
+    if (!email.includes('@')) {
+      this.conviteMessage.set('Informe um e-mail válido.');
+      return;
+    }
+
+    if (email === convite.email) {
+      this.conviteMessage.set('O e-mail não foi alterado.');
+      return;
+    }
+
+    this.conviteActionId.set(convite.id);
+    this.conviteMessage.set(null);
+
+    this.team.atualizarConvite(convite.id, { email }).subscribe({
+      next: () => {
+        this.conviteEditEmail.update((map) => {
+          const next = { ...map };
+          delete next[convite.id];
+          return next;
+        });
+        this.conviteMessage.set(
+          environment.production
+            ? 'E-mail atualizado e convite reenviado para o novo endereço.'
+            : 'E-mail do convite atualizado.',
+        );
+        this.conviteActionId.set(null);
+      },
+      error: (err: Error) => {
+        this.conviteMessage.set(err.message || 'Falha ao atualizar e-mail.');
+        this.conviteActionId.set(null);
+      },
+    });
+  }
+
+  removerConvite(convite: Convite): void {
+    if (!confirm(`Remover convite para ${convite.email}?`)) return;
+
+    this.conviteActionId.set(convite.id);
+    this.conviteMessage.set(null);
+
+    this.team.removerConvite(convite.id).subscribe({
+      next: () => {
+        this.conviteMessage.set('Convite removido. Você pode enviar um novo convite.');
+        this.conviteActionId.set(null);
+      },
+      error: (err: Error) => {
+        this.conviteMessage.set(err.message || 'Falha ao remover convite.');
+        this.conviteActionId.set(null);
+      },
+    });
+  }
+
+  reenviarConvite(convite: Convite): void {
+    this.conviteActionId.set(convite.id);
+    this.conviteMessage.set(null);
+
+    this.team.reenviarConvite(convite.id).subscribe({
+      next: () => {
+        this.conviteMessage.set(
+          environment.production
+            ? 'E-mail reenviado. Peça ao convidado verificar a caixa de entrada e spam.'
+            : 'Reenvio só funciona em produção (Vercel).',
+        );
+        this.conviteActionId.set(null);
+      },
+      error: (err: Error) => {
+        this.conviteMessage.set(err.message || 'Falha ao reenviar convite.');
+        this.conviteActionId.set(null);
+      },
+    });
+  }
+
+  conviteBusy(conviteId: number): boolean {
+    return this.conviteActionId() === conviteId;
   }
 
   removerMembro(membro: Usuario): void {

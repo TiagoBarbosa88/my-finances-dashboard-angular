@@ -185,8 +185,17 @@
       @if (conviteMessage()) {
         <p
           class="text-sm"
-          [class.text-green-400]="conviteMessage()!.includes('pendente')"
-          [class.text-red-400]="conviteMessage()!.includes('Falha') || conviteMessage()!.includes('válido')"
+          [class.text-green-400]="
+            conviteMessage()!.includes('enviado') ||
+            conviteMessage()!.includes('atualizada') ||
+            conviteMessage()!.includes('removido') ||
+            conviteMessage()!.includes('registrado')
+          "
+          [class.text-red-400]="
+            conviteMessage()!.includes('Falha') ||
+            conviteMessage()!.includes('válido') ||
+            conviteMessage()!.includes('Informe')
+          "
         >
           {{ conviteMessage() }}
         </p>
@@ -197,14 +206,75 @@
           <p class="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Convites pendentes
           </p>
-          <ul class="space-y-2">
+          <ul class="space-y-3">
             @for (convite of team.convites(); track convite.id) {
               @if (convite.status === 'pendente') {
-                <li class="flex items-center justify-between gap-3 text-sm">
-                  <span class="truncate text-foreground">{{ convite.email }}</span>
-                  <span class="shrink-0 text-xs text-muted-foreground">
-                    {{ roleLabels[convite.role] }} · pendente
-                  </span>
+                <li class="flex flex-col gap-3 rounded-lg border border-border/60 bg-background/40 p-3">
+                  <div class="grid gap-2 sm:max-w-md">
+                    <label class="text-xs font-medium text-muted-foreground">E-mail</label>
+                    <input
+                      type="email"
+                      [ngModel]="conviteEmailAtual(convite)"
+                      (ngModelChange)="setConviteEditEmail(convite.id, $event)"
+                      [disabled]="conviteBusy(convite.id)"
+                      class="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm
+                             text-foreground outline-none ring-ring transition-colors
+                             focus:border-blue-500/60 focus:ring-1 disabled:opacity-50"
+                    />
+                    @if (emailConviteAlterado(convite)) {
+                      <button
+                        type="button"
+                        (click)="salvarEmailConvite(convite)"
+                        [disabled]="conviteBusy(convite.id)"
+                        class="w-fit rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white
+                               hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        Salvar e-mail e reenviar
+                      </button>
+                    }
+                    <p class="text-xs text-muted-foreground">
+                      Convidado por {{ convite.convidado_por }} · {{ convite.criado_em }}
+                    </p>
+                  </div>
+
+                  <div class="flex flex-wrap items-center gap-2">
+                    <select
+                      [ngModel]="convite.role"
+                      (ngModelChange)="atualizarRoleConvite(convite, $event)"
+                      [disabled]="conviteBusy(convite.id)"
+                      class="rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs
+                             text-foreground outline-none ring-ring transition-colors
+                             focus:border-blue-500/60 focus:ring-1 disabled:opacity-50"
+                    >
+                      @for (role of roleOptions; track role) {
+                        <option [value]="role">{{ roleLabels[role] }}</option>
+                      }
+                    </select>
+
+                    <button
+                      type="button"
+                      (click)="reenviarConvite(convite)"
+                      [disabled]="conviteBusy(convite.id)"
+                      class="rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium
+                             text-muted-foreground transition-colors
+                             hover:border-blue-500/40 hover:bg-blue-500/10 hover:text-blue-400
+                             disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {{ conviteBusy(convite.id) ? '…' : 'Reenviar' }}
+                    </button>
+
+                    <button
+                      type="button"
+                      (click)="removerConvite(convite)"
+                      [disabled]="conviteBusy(convite.id)"
+                      class="rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium
+                             text-muted-foreground transition-colors
+                             hover:border-destructive/40 hover:bg-destructive/10 hover:text-destructive
+                             disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Remover
+                    </button>
+                  </div>
                 </li>
               }
             }

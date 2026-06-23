@@ -121,6 +121,126 @@ export class TeamService {
     return body.convite;
   }
 
+  atualizarConvite(
+    id: number,
+    patch: { email?: string; role?: ConviteDraft['role'] },
+  ): Observable<Convite> {
+    if (this.supabase.isConfigured()) {
+      if (environment.production) {
+        return from(this.patchConviteViaApi(id, patch)).pipe(tap(() => this.loadConvites()));
+      }
+
+      return from(
+        this.supabase.updateConvite(id, patch).then((saved) => {
+          if (!saved) throw new Error('Falha ao atualizar convite.');
+          return saved;
+        }),
+      ).pipe(tap(() => this.loadConvites()));
+    }
+
+    return this.http.patch<Convite>(`${this.convitesUrl}/${id}`, patch).pipe(
+      tap((saved) => {
+        this.convites.update((list) => list.map((c) => (c.id === id ? saved : c)));
+      }),
+    );
+  }
+
+  removerConvite(id: number): Observable<void> {
+    if (this.supabase.isConfigured()) {
+      if (environment.production) {
+        return from(this.deleteConviteViaApi(id)).pipe(tap(() => this.loadConvites()));
+      }
+
+      return from(
+        this.supabase.deleteConvite(id).then((ok) => {
+          if (!ok) throw new Error('Falha ao remover convite.');
+        }),
+      ).pipe(
+        tap(() => {
+          this.convites.update((list) => list.filter((c) => c.id !== id));
+        }),
+      );
+    }
+
+    return this.http.delete<void>(`${this.convitesUrl}/${id}`).pipe(
+      tap(() => {
+        this.convites.update((list) => list.filter((c) => c.id !== id));
+      }),
+    );
+  }
+
+  reenviarConvite(id: number): Observable<Convite> {
+    if (this.supabase.isConfigured()) {
+      if (environment.production) {
+        return from(this.reenviarConviteViaApi(id)).pipe(tap(() => this.loadConvites()));
+      }
+
+      return from(Promise.reject(new Error('Reenvio de e-mail só funciona em produção (Vercel).')));
+    }
+
+    return from(Promise.reject(new Error('Reenvio de e-mail indisponível no JSON Server local.')));
+  }
+
+  private async conviteApiRequest(
+    method: 'PATCH' | 'DELETE' | 'POST',
+    body: Record<string, unknown>,
+  ): Promise<{ convite?: Convite }> {
+    const session = await this.supabase.getSession();
+    const token = session?.access_token;
+
+    if (!token) {
+      throw new Error('Sessão expirada. Faça login novamente.');
+    }
+
+    const response = await fetch('/api/convite', {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    const payload = (await response.json()) as {
+      convite?: Convite;
+      error?: string;
+      message?: string;
+    };
+
+    if (!response.ok) {
+      throw new Error(payload.error || 'Falha ao gerenciar convite.');
+    }
+
+    return payload;
+  }
+
+  private async patchConviteViaApi(
+    id: number,
+    patch: { email?: string; role?: ConviteDraft['role'] },
+  ): Promise<Convite> {
+    const payload = await this.conviteApiRequest('PATCH', { id, ...patch });
+
+    if (!payload.convite) {
+      throw new Error('Resposta inválida do servidor de convites.');
+    }
+
+    return payload.convite;
+  }
+
+  private async deleteConviteViaApi(id: number): Promise<void> {
+    await this.conviteApiRequest('DELETE', { id });
+  }
+
+  private async reenviarConviteViaApi(id: number): Promise<Convite> {
+    const payload = await this.conviteApiRequest('POST', { action: 'resend', id });
+
+    if (!payload.convite) {
+      throw new Error('Resposta inválida do servidor de convites.');
+    }
+
+    return payload.convite;
+  }
+
   removerMembro(id: string): Observable<void> {
     if (this.supabase.isConfigured()) {
       return from(Promise.reject(new Error('Remoção de membros via Supabase em breve.')));

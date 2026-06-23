@@ -184,6 +184,41 @@ export class SupabaseService {
     return conviteFromRow(data as ConviteRow);
   }
 
+  async updateConvite(
+    id: number,
+    patch: { email?: string; role?: ConviteDraft['role'] },
+  ): Promise<Convite | null> {
+    const updates: Record<string, string> = {};
+    if (patch.email) updates['email'] = patch.email.trim().toLowerCase();
+    if (patch.role) updates['role'] = patch.role;
+
+    const { data, error } = await this.client
+      .from('convites')
+      .update(updates)
+      .eq('id', id)
+      .eq('status', 'pendente')
+      .select()
+      .single();
+
+    if (error) {
+      console.error('[SupabaseService] updateConvite:', error.message);
+      return null;
+    }
+
+    return conviteFromRow(data as ConviteRow);
+  }
+
+  async deleteConvite(id: number): Promise<boolean> {
+    const { error } = await this.client.from('convites').delete().eq('id', id);
+
+    if (error) {
+      console.error('[SupabaseService] deleteConvite:', error.message);
+      return false;
+    }
+
+    return true;
+  }
+
   async fetchAtivos(): Promise<Ativo[]> {
     const { data, error } = await this.client
       .from('ativos')
