@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -19,7 +19,7 @@ import { environment } from 'src/environments/environment';
   imports: [FormsModule, AuthLayoutComponent],
   templateUrl: './login-page.component.html',
 })
-export class LoginPageComponent {
+export class LoginPageComponent implements OnInit {
   private readonly supabase = inject(SupabaseService);
   private readonly auth = inject(AuthService);
   private readonly finance = inject(FinanceService);
@@ -33,6 +33,10 @@ export class LoginPageComponent {
       const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? APP_HOME;
       this.router.navigateByUrl(returnUrl);
     }
+  }
+
+  ngOnInit(): void {
+    void this.handleAuthCallbackFromUrl();
   }
 
   readonly email = signal('');
@@ -84,6 +88,43 @@ export class LoginPageComponent {
     } catch (err) {
       console.error('[LoginPage] signIn unexpected:', err);
       this.error.set('Erro inesperado ao entrar. Tente novamente.');
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  /** Convite / magic link: Supabase devolve tokens no hash (#access_token=…). */
+  private async handleAuthCallbackFromUrl(): Promise<void> {
+    if (environment.bypassAuth || !this.supabase.isConfigured()) return;
+
+    const hash = window.location.hash;
+    if (!hash.includes('access_token=')) return;
+
+    this.loading.set(true);
+    this.error.set(null);
+
+    try {
+      // detectSessionInUrl processa o hash na inicialização do cliente
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+      const session = await this.supabase.getSession();
+
+      if (!session) {
+        this.error.set('Link de convite inválido ou expirado. Peça um novo convite.');
+        return;
+      }
+
+      window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+
+      await this.auth.refreshProfileFromSupabase();
+      this.finance.loadTransactions();
+      this.finance.loadCarteiraAtivos();
+      this.finance.loadInvestimentos();
+
+      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? APP_HOME;
+      await this.router.navigateByUrl(returnUrl);
+    } catch (err) {
+      console.error('[LoginPage] auth callback:', err);
+      this.error.set('Não foi possível concluir o convite. Tente o link novamente ou peça reenvio.');
     } finally {
       this.loading.set(false);
     }

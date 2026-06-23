@@ -6,6 +6,7 @@
  * Body: { email, role, convidado_por }
  */
 const { createClient } = require('@supabase/supabase-js');
+const { inviteRedirectUrl } = require('./_lib/site-url');
 
 function readBody(req) {
   if (req.body && typeof req.body === 'object') return req.body;
@@ -80,9 +81,7 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'E-mail inválido.' });
     }
 
-    const siteUrl =
-      process.env.SITE_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:4200');
+    const siteUrl = inviteRedirectUrl();
 
     const { error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
       redirectTo: siteUrl,

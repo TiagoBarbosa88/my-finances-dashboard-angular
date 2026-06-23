@@ -4,6 +4,7 @@
  * POST   /api/convite — { action: 'resend', id } reenvia e-mail
  */
 const { createClient } = require('@supabase/supabase-js');
+const { inviteRedirectUrl } = require('./_lib/site-url');
 
 function readBody(req) {
   if (req.body && typeof req.body === 'object') return req.body;
@@ -102,10 +103,7 @@ async function deleteAuthUserIfUnconfirmed(admin, email) {
 }
 
 function siteUrl() {
-  return (
-    process.env.SITE_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:4200')
-  );
+  return inviteRedirectUrl();
 }
 
 async function sendInviteEmail(admin, email, role) {
