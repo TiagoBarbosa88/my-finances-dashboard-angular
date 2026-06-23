@@ -52,9 +52,7 @@ export class LoginPageComponent implements OnInit {
     }
 
     if (!this.supabase.isConfigured()) {
-      this.error.set(
-        'Supabase não configurado neste deploy. Verifique URL e Publishable Key na Vercel.',
-      );
+      this.error.set('Serviço de login indisponível no momento. Tente novamente mais tarde.');
       return;
     }
 
@@ -137,18 +135,18 @@ export class LoginPageComponent implements OnInit {
       return 'E-mail ou senha incorretos.';
     }
     if (lower.includes('email not confirmed')) {
-      return 'Confirme seu e-mail antes de entrar (Authentication → Users no Supabase).';
+      return 'Confirme seu e-mail antes de entrar. Verifique sua caixa de entrada.';
     }
     if (lower.includes('too many requests')) {
       return 'Muitas tentativas. Aguarde alguns minutos.';
     }
     if (lower.includes('invalid api key') || lower.includes('invalid jwt')) {
-      return 'Chave Supabase inválida no deploy. Use a Publishable Key do projeto my-finances na Vercel.';
+      return 'Serviço temporariamente indisponível. Tente novamente mais tarde.';
     }
     if (lower.includes('failed to fetch') || lower.includes('network')) {
-      return 'Falha de rede ao conectar ao Supabase. Tente de novo em instantes.';
+      return 'Falha de conexão. Verifique sua internet e tente novamente.';
     }
 
-    return `Erro ao entrar: ${msg}`;
+    return 'Não foi possível entrar. Verifique e-mail e senha e tente novamente.';
   }
 }

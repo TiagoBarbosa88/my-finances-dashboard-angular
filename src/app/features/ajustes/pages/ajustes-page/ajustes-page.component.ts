@@ -28,15 +28,19 @@ export class AjustesPageComponent implements OnInit {
 
   readonly nome = signal('');
   readonly email = signal('');
+  readonly conviteNome = signal('');
   readonly conviteEmail = signal('');
   readonly conviteRole = signal<UserRole>('editor');
 
   readonly profileMessage = signal<string | null>(null);
+  readonly teamMessage = signal<string | null>(null);
   readonly conviteMessage = signal<string | null>(null);
   readonly profileSaving = signal(false);
   readonly conviteSending = signal(false);
   readonly conviteActionId = signal<number | null>(null);
+  readonly membroActionId = signal<string | null>(null);
   readonly conviteEditEmail = signal<Record<number, string>>({});
+  readonly membroRoleDraft = signal<Record<string, UserRole>>({});
 
   ngOnInit(): void {
     this.syncProfileFromAuth();
@@ -77,7 +81,13 @@ export class AjustesPageComponent implements OnInit {
   }
 
   enviarConvite(): void {
+    const nome = this.conviteNome().trim();
     const email = this.conviteEmail().trim();
+
+    if (!nome) {
+      this.conviteMessage.set('Informe o nome da pessoa.');
+      return;
+    }
 
     if (!email || !email.includes('@')) {
       this.conviteMessage.set('Informe um e-mail válido.');
@@ -87,14 +97,15 @@ export class AjustesPageComponent implements OnInit {
     this.conviteSending.set(true);
     this.conviteMessage.set(null);
 
-    this.team.enviarConvite(email, this.conviteRole()).subscribe({
+    this.team.enviarConvite(nome, email, this.conviteRole()).subscribe({
       next: () => {
+        this.conviteNome.set('');
         this.conviteEmail.set('');
         this.conviteRole.set('editor');
         this.conviteMessage.set(
           environment.production
-            ? 'Convite enviado por e-mail. Peça ao convidado verificar a caixa de entrada e spam.'
-            : 'Convite registrado na tabela convites (dev local — e-mail só na Vercel).',
+            ? `Convite enviado para ${nome}. Peça para verificar a caixa de entrada e o spam.`
+            : 'Convite registrado com sucesso.',
         );
         this.conviteSending.set(false);
       },
@@ -174,7 +185,7 @@ export class AjustesPageComponent implements OnInit {
   }
 
   removerConvite(convite: Convite): void {
-    if (!confirm(`Remover convite para ${convite.email}?`)) return;
+    if (!confirm(`Remover convite para ${convite.nome}?`)) return;
 
     this.conviteActionId.set(convite.id);
     this.conviteMessage.set(null);
@@ -199,8 +210,8 @@ export class AjustesPageComponent implements OnInit {
       next: () => {
         this.conviteMessage.set(
           environment.production
-            ? 'E-mail reenviado. Peça ao convidado verificar a caixa de entrada e spam.'
-            : 'Reenvio só funciona em produção (Vercel).',
+            ? `E-mail reenviado para ${convite.nome}. Confira também a pasta de spam.`
+            : 'Reenvio de e-mail indisponível neste ambiente.',
         );
         this.conviteActionId.set(null);
       },
@@ -215,13 +226,55 @@ export class AjustesPageComponent implements OnInit {
     return this.conviteActionId() === conviteId;
   }
 
+  membroRoleAtual(membro: Usuario): UserRole {
+    return this.membroRoleDraft()[membro.id] ?? membro.role;
+  }
+
+  setMembroRoleDraft(membroId: string, role: UserRole): void {
+    this.membroRoleDraft.update((map) => ({ ...map, [membroId]: role }));
+  }
+
+  roleMembroAlterado(membro: Usuario): boolean {
+    return this.membroRoleAtual(membro) !== membro.role;
+  }
+
+  atualizarMembroRole(membro: Usuario): void {
+    const role = this.membroRoleAtual(membro);
+
+    this.membroActionId.set(membro.id);
+    this.teamMessage.set(null);
+
+    this.team.atualizarMembroRole(membro.id, role).subscribe({
+      next: () => {
+        this.membroRoleDraft.update((map) => {
+          const next = { ...map };
+          delete next[membro.id];
+          return next;
+        });
+        this.teamMessage.set(`Permissão de ${membro.nome} atualizada.`);
+        this.membroActionId.set(null);
+      },
+      error: (err: Error) => {
+        this.teamMessage.set(err.message || 'Falha ao atualizar permissão.');
+        this.membroActionId.set(null);
+      },
+    });
+  }
+
+  membroBusy(membroId: string): boolean {
+    return this.membroActionId() === membroId;
+  }
+
   removerMembro(membro: Usuario): void {
     if (membro.id === this.auth.usuarioLogado()?.id) {
       return;
     }
 
+    if (!confirm(`Remover ${membro.nome} da equipe?`)) return;
+
     this.team.removerMembro(membro.id).subscribe({
-      error: () => console.error('[AjustesPage] removerMembro'),
+      next: () => this.teamMessage.set(`${membro.nome} removido da equipe.`),
+      error: (err: Error) => this.teamMessage.set(err.message || 'Falha ao remover membro.'),
     });
   }
 
@@ -236,7 +289,7 @@ export class AjustesPageComponent implements OnInit {
     }
   }
 
-  podeRemover(membro: Usuario): boolean {
+  podeGerenciarMembro(membro: Usuario): boolean {
     return membro.id !== this.auth.usuarioLogado()?.id;
   }
 }

@@ -7,7 +7,7 @@ import {
   User,
 } from '@supabase/supabase-js';
 
-import { Convite, ConviteDraft, Usuario } from '@app/shared/models/team.model';
+import { Convite, ConviteDraft, Usuario, UserRole } from '@app/shared/models/team.model';
 import { Transaction, TransactionStatus } from '@app/shared/models/transaction.model';
 import { environment } from '../../../environments/environment';
 import {
@@ -163,6 +163,7 @@ export class SupabaseService {
     invitedById: string,
   ): Promise<Convite | null> {
     const row = {
+      nome: draft.nome.trim(),
       email: draft.email.trim().toLowerCase(),
       role: draft.role,
       status: draft.status,
@@ -186,9 +187,10 @@ export class SupabaseService {
 
   async updateConvite(
     id: number,
-    patch: { email?: string; role?: ConviteDraft['role'] },
+    patch: { nome?: string; email?: string; role?: ConviteDraft['role'] },
   ): Promise<Convite | null> {
     const updates: Record<string, string> = {};
+    if (patch.nome) updates['nome'] = patch.nome.trim();
     if (patch.email) updates['email'] = patch.email.trim().toLowerCase();
     if (patch.role) updates['role'] = patch.role;
 
@@ -217,6 +219,25 @@ export class SupabaseService {
     }
 
     return true;
+  }
+
+  async updateMemberRole(userId: string, role: UserRole): Promise<Usuario | null> {
+    const { data, error } = await this.client
+      .from('profiles')
+      .update({
+        role,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', userId)
+      .select('id, full_name, email, role')
+      .single();
+
+    if (error) {
+      console.error('[SupabaseService] updateMemberRole:', error.message);
+      return null;
+    }
+
+    return profileToUsuario(data as ProfileRow);
   }
 
   async fetchAtivos(): Promise<Ativo[]> {

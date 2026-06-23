@@ -261,6 +261,7 @@ CREATE TABLE public.target_metas (
 -- ─── Convites de equipe ─────────────────────────────────────
 CREATE TABLE public.convites (
   id             BIGSERIAL PRIMARY KEY,
+  nome           TEXT,
   email          TEXT NOT NULL,
   role           app_role NOT NULL DEFAULT 'leitor',
   status         TEXT NOT NULL CHECK (status IN ('pendente', 'aceito', 'expirado')),

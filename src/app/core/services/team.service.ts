@@ -4,7 +4,7 @@ import { from, Observable, tap } from 'rxjs';
 
 import { AuthService } from '@app/core/services/auth.service';
 import { SupabaseService } from '@app/core/services/supabase.service';
-import { Convite, ConviteDraft, Usuario } from '@app/shared/models/team.model';
+import { Convite, ConviteDraft, Usuario, UserRole } from '@app/shared/models/team.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -51,9 +51,10 @@ export class TeamService {
     });
   }
 
-  enviarConvite(email: string, role: ConviteDraft['role']): Observable<Convite> {
+  enviarConvite(nome: string, email: string, role: ConviteDraft['role']): Observable<Convite> {
     const convidadoPor = this.auth.usuarioLogado()?.nome ?? 'Admin';
     const draft: ConviteDraft = {
+      nome: nome.trim(),
       email: email.trim().toLowerCase(),
       role,
       status: 'pendente',
@@ -75,7 +76,7 @@ export class TeamService {
 
       return from(
         this.supabase.insertConvite(draft, userId).then((saved) => {
-          if (!saved) throw new Error('Falha ao registrar convite no Supabase.');
+          if (!saved) throw new Error('Falha ao registrar convite.');
           return saved;
         }),
       ).pipe(tap(() => this.loadConvites()));
@@ -102,6 +103,7 @@ export class TeamService {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
+        nome: draft.nome,
         email: draft.email,
         role: draft.role,
         convidado_por: draft.convidado_por,
@@ -115,7 +117,7 @@ export class TeamService {
     }
 
     if (!body.convite) {
-      throw new Error('Resposta inválida do servidor de convites.');
+      throw new Error('Não foi possível concluir o envio do convite.');
     }
 
     return body.convite;
@@ -175,10 +177,10 @@ export class TeamService {
         return from(this.reenviarConviteViaApi(id)).pipe(tap(() => this.loadConvites()));
       }
 
-      return from(Promise.reject(new Error('Reenvio de e-mail só funciona em produção (Vercel).')));
+      return from(Promise.reject(new Error('Reenvio de e-mail indisponível no momento.')));
     }
 
-    return from(Promise.reject(new Error('Reenvio de e-mail indisponível no JSON Server local.')));
+    return from(Promise.reject(new Error('Reenvio de e-mail indisponível.')));
   }
 
   private async conviteApiRequest(
@@ -221,7 +223,7 @@ export class TeamService {
     const payload = await this.conviteApiRequest('PATCH', { id, ...patch });
 
     if (!payload.convite) {
-      throw new Error('Resposta inválida do servidor de convites.');
+      throw new Error('Não foi possível concluir o envio do convite.');
     }
 
     return payload.convite;
@@ -235,15 +237,36 @@ export class TeamService {
     const payload = await this.conviteApiRequest('POST', { action: 'resend', id });
 
     if (!payload.convite) {
-      throw new Error('Resposta inválida do servidor de convites.');
+      throw new Error('Não foi possível concluir o envio do convite.');
     }
 
     return payload.convite;
   }
 
+  atualizarMembroRole(id: string, role: UserRole): Observable<Usuario> {
+    if (this.supabase.isConfigured()) {
+      return from(
+        this.supabase.updateMemberRole(id, role).then((saved) => {
+          if (!saved) throw new Error('Falha ao atualizar permissão do membro.');
+          return saved;
+        }),
+      ).pipe(
+        tap((saved) => {
+          this.membros.update((list) => list.map((m) => (m.id === id ? saved : m)));
+        }),
+      );
+    }
+
+    return this.http.patch<Usuario>(`${this.usuariosUrl}/${id}`, { role }).pipe(
+      tap((saved) => {
+        this.membros.update((list) => list.map((m) => (m.id === id ? { ...m, ...saved } : m)));
+      }),
+    );
+  }
+
   removerMembro(id: string): Observable<void> {
     if (this.supabase.isConfigured()) {
-      return from(Promise.reject(new Error('Remoção de membros via Supabase em breve.')));
+      return from(Promise.reject(new Error('Remoção de membros indisponível no momento.')));
     }
 
     return this.http.delete<void>(`${this.usuariosUrl}/${id}`).pipe(

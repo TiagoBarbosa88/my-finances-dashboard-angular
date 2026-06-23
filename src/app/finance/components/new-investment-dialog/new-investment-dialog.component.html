@@ -50,7 +50,7 @@
     <form class="flex min-h-0 flex-1 flex-col" (ngSubmit)="salvar()">
 
       <div class="dialog-panel-body">
-      <div [class.hidden]="modoImportacao()" class="space-y-4">
+      <div [class.hidden]="modoImportacao()" class="dialog-form">
 
       <!-- Tabs Compra / Venda -->
       @if (!isEditAtivo()) {
@@ -132,7 +132,7 @@
 
           @if (showDropdown() && (searchResults().length > 0 || searchLoading())) {
             <ul
-              class="absolute top-[4.25rem] z-20 max-h-48 w-full overflow-y-auto rounded-xl
+              class="absolute top-[3.25rem] z-20 max-h-40 w-full overflow-y-auto rounded-lg
                      border border-border bg-card py-1 shadow-lg shadow-black/30"
             >
               @if (searchLoading()) {
@@ -235,10 +235,10 @@
       </div>
 
       <!-- Valor total calculado -->
-      <div class="rounded-xl border border-border bg-muted/30 px-4 py-3">
+      <div class="rounded-lg border border-border bg-muted/30 px-3 py-2">
         <div class="flex items-center justify-between gap-3">
-          <span class="text-sm font-medium text-muted-foreground">Valor total</span>
-          <span class="text-display text-mono text-lg font-semibold text-blue-400">
+          <span class="text-xs font-medium text-muted-foreground">Valor total</span>
+          <span class="text-display text-mono text-base font-semibold text-blue-400">
             {{ valorTotal() | currencyBRL }}
           </span>
         </div>
@@ -246,44 +246,32 @@
 
       </div>
 
-      <!-- Importação CSV/Excel (somente criação) -->
+      <!-- Importação de planilha (somente criação) -->
       @if (!isEditMode()) {
-        <div class="grid gap-2">
-          <span class="text-sm font-medium">Importar CSV / Excel</span>
+        <div class="dialog-field grid gap-1">
+          <span class="dialog-label text-xs font-medium">Importar planilha</span>
 
           <div
-            class="flex flex-col items-center justify-center gap-2 rounded-xl
-                   border-2 border-dashed px-4 py-5 text-center transition-colors"
-            [ngClass]="isDragOver()
-              ? 'border-blue-500 bg-blue-500/5'
-              : 'border-border'"
+            class="dialog-dropzone"
+            [class.is-dragover]="isDragOver()"
             (dragover)="onDragOver($event)"
             (dragleave)="onDragLeave($event)"
             (drop)="onDrop($event)"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" stroke-linejoin="round"
-                 class="h-7 w-7 text-muted-foreground">
+                 stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
               <polyline points="17 8 12 3 7 8"/>
               <line x1="12" y1="3" x2="12" y2="15"/>
             </svg>
 
             @if (importando()) {
-              <span class="text-sm text-muted-foreground">Processando arquivo...</span>
+              <span class="dialog-dropzone-label">Processando…</span>
             } @else {
-              <label
-                for="investimentos-import"
-                class="cursor-pointer text-sm text-muted-foreground hover:text-foreground"
-              >
-                Arraste um .xlsx, .xls ou .csv ou
-                <span class="font-medium text-blue-400">clique para selecionar</span>
+              <label for="investimentos-import" class="dialog-dropzone-label cursor-pointer">
+                <strong>Selecionar</strong> ou arrastar .csv / .xlsx
               </label>
             }
-
-            <span class="text-xs text-muted-foreground/80">
-              Colunas: ticker, quantidade (preco, tipo, operacao, data opcionais)
-            </span>
 
             <input
               id="investimentos-import"
@@ -302,7 +290,7 @@
 
       <!-- Lista de investimentos pendentes (importação em lote) -->
       @if (modoImportacao()) {
-        <div class="rounded-xl border border-border bg-muted/30 p-4">
+        <div class="rounded-lg border border-border bg-muted/30 p-3">
           <div class="mb-3 flex items-center justify-between gap-3">
             <p class="text-sm font-medium">
               {{ investimentosPendentes().length }} investimento(s) para importar

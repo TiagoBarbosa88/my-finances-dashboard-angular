@@ -304,7 +304,7 @@ export class NewInvestmentDialogComponent {
       },
       error: () => {
         this.importError.set(
-          'Falha ao salvar no servidor. Verifique se o JSON Server está rodando na porta 3000.',
+          'Não foi possível salvar. Tente novamente.',
         );
         this.importando.set(false);
       },

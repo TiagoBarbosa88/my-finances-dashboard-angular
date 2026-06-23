@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 
+import { AuthService } from '@app/core/services/auth.service';
 import { FinanceService } from '@app/core/services/finance.service';
 import { Transaction } from '@app/shared/models/transaction.model';
 import { HasRoleDirective } from '@app/shared/directives/has-role.directive';
@@ -39,6 +40,7 @@ interface SummaryCardData {
 })
 export class DashboardPageComponent {
   readonly finance = inject(FinanceService);
+  readonly auth = inject(AuthService);
 
   /** Controla a visibilidade do modal de novo lançamento. */
   readonly showDialog = signal(false);
@@ -70,11 +72,7 @@ export class DashboardPageComponent {
 
   /** Saudação dinâmica conforme o horário do dia. */
   getSaudacao(): string {
-    const hour = new Date().getHours();
-    const periodo =
-      hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
-
-    return `${periodo}, Tiago 👋`;
+    return this.auth.getSaudacao();
   }
 
   readonly summaryCards = computed<SummaryCardData[]>(() => {

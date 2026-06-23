@@ -8,6 +8,8 @@ import { from, Observable, tap } from 'rxjs';
 
 import { SupabaseService } from '@app/core/services/supabase.service';
 
+import { buildSaudacao } from '@app/core/utils/greeting.util';
+
 import { Usuario, UserRole } from '@app/shared/models/team.model';
 
 import { environment } from '../../../environments/environment';
@@ -348,6 +350,13 @@ export class AuthService {
 
 
 
+  /** Saudação no painel usando o nome do usuário logado. */
+  getSaudacao(): string {
+    return buildSaudacao(this.usuarioLogado()?.nome);
+  }
+
+
+
   updateProfile(nome: string, email: string): Observable<Usuario> {
 
     const current = this.usuarioLogado();
@@ -408,7 +417,7 @@ export class AuthService {
 
     if (!saved) {
 
-      throw new Error('Falha ao atualizar perfil no Supabase.');
+      throw new Error('Falha ao atualizar perfil.');
 
     }
 

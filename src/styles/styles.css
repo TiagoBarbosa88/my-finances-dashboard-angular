@@ -169,14 +169,68 @@
   }
 
   .dialog-panel-header {
-    @apply flex shrink-0 items-center justify-between border-b border-border px-4 py-3 sm:px-5 sm:py-4;
+    @apply flex shrink-0 items-center justify-between border-b border-border px-4 py-2.5 sm:px-5;
   }
 
   .dialog-panel-body {
-    @apply flex-1 space-y-4 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5;
+    @apply flex-1 space-y-3 overflow-y-auto px-4 py-3 sm:px-5 sm:py-4;
   }
 
   .dialog-panel-footer {
-    @apply shrink-0 border-t border-border px-4 py-3 sm:px-5 sm:py-4;
+    @apply shrink-0 border-t border-border px-4 py-2.5 sm:px-5 sm:py-3;
+  }
+
+  /* Campos compactos nos modais de lançamento / investimento */
+  .dialog-form {
+    @apply space-y-3;
+  }
+
+  .dialog-form .grid.gap-2 {
+    gap: 0.25rem;
+  }
+
+  .dialog-form .grid.gap-4 {
+    gap: 0.75rem;
+  }
+
+  .dialog-form label.text-sm.font-medium,
+  .dialog-form .dialog-label {
+    @apply text-xs;
+  }
+
+  .dialog-form input:not([type='file']):not(.sr-only),
+  .dialog-form select,
+  .dialog-form textarea {
+    @apply !rounded-lg !px-2.5 !py-1.5 text-sm;
+  }
+
+  .dialog-form .rounded-xl.bg-muted.p-1 button {
+    @apply rounded-md py-1.5 text-xs;
+  }
+
+  .dialog-form .rounded-xl.bg-muted.p-1 {
+    @apply rounded-lg p-0.5;
+  }
+
+  .dialog-dropzone {
+    @apply flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-border
+           px-3 py-2 text-xs text-muted-foreground transition-colors hover:border-primary/40
+           hover:bg-muted/30;
+  }
+
+  .dialog-dropzone.is-dragover {
+    @apply border-primary bg-primary/5;
+  }
+
+  .dialog-dropzone svg {
+    @apply h-4 w-4 shrink-0;
+  }
+
+  .dialog-dropzone-label {
+    @apply min-w-0 flex-1 leading-snug;
+  }
+
+  .dialog-dropzone-label strong {
+    @apply font-medium text-primary;
   }
 }

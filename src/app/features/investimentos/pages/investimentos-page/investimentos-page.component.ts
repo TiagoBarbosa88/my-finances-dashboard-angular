@@ -95,11 +95,7 @@ export class InvestimentosPageComponent {
   });
 
   getSaudacao(): string {
-    const hour = new Date().getHours();
-    const periodo =
-      hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
-
-    return `${periodo}, Tiago 👋`;
+    return this.auth.getSaudacao();
   }
 
   atualizarCotacoes(): void {

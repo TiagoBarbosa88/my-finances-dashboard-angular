@@ -12,6 +12,7 @@ export interface Usuario {
 
 export interface Convite {
   id: number;
+  nome: string;
   email: string;
   role: UserRole;
   status: ConviteStatus;
@@ -20,6 +21,7 @@ export interface Convite {
 }
 
 export interface ConviteDraft {
+  nome: string;
   email: string;
   role: UserRole;
   status: ConviteStatus;
@@ -28,9 +30,9 @@ export interface ConviteDraft {
 }
 
 export const ROLE_LABELS: Record<UserRole, string> = {
-  admin:  'Admin',
+  admin:  'Administrador',
   editor: 'Editor',
-  leitor: 'Leitor',
+  leitor: 'Somente leitura',
 };
 
 export const ROLE_OPTIONS: UserRole[] = ['admin', 'editor', 'leitor'];

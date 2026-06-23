@@ -73,9 +73,14 @@ module.exports = async (req, res) => {
     }
 
     const body = readBody(req);
+    const nome = String(body.nome || '').trim();
     const email = String(body.email || '').trim().toLowerCase();
     const role = body.role || 'leitor';
     const convidadoPor = body.convidado_por || profile.full_name || 'Admin';
+
+    if (!nome) {
+      return res.status(400).json({ error: 'Informe o nome da pessoa.' });
+    }
 
     if (!email.includes('@')) {
       return res.status(400).json({ error: 'E-mail inválido.' });
@@ -85,7 +90,7 @@ module.exports = async (req, res) => {
 
     const { error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
       redirectTo: siteUrl,
-      data: { role, full_name: email.split('@')[0] },
+      data: { role, full_name: nome },
     });
 
     if (inviteError) {
@@ -95,6 +100,7 @@ module.exports = async (req, res) => {
     const { data: convite, error: conviteError } = await admin
       .from('convites')
       .insert({
+        nome,
         email,
         role,
         status: 'pendente',
@@ -115,6 +121,7 @@ module.exports = async (req, res) => {
     return res.status(200).json({
       convite: {
         id: convite.id,
+        nome: convite.nome || nome,
         email: convite.email,
         role: convite.role,
         status: convite.status,

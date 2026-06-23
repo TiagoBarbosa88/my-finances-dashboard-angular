@@ -25,6 +25,7 @@ function mapConviteRow(convite) {
 
   return {
     id: convite.id,
+    nome: convite.nome || convite.email.split('@')[0],
     email: convite.email,
     role: convite.role,
     status: convite.status,
@@ -106,10 +107,11 @@ function siteUrl() {
   return inviteRedirectUrl();
 }
 
-async function sendInviteEmail(admin, email, role) {
+async function sendInviteEmail(admin, email, role, nome) {
+  const displayName = (nome || email.split('@')[0]).trim();
   const { error } = await admin.auth.admin.inviteUserByEmail(email, {
     redirectTo: siteUrl(),
-    data: { role, full_name: email.split('@')[0] },
+    data: { role, full_name: displayName },
   });
 
   if (error) throw error;
@@ -171,7 +173,7 @@ module.exports = async (req, res) => {
 
     if (req.method === 'POST' && body.action === 'resend') {
       await deleteAuthUserIfUnconfirmed(admin, convite.email);
-      await sendInviteEmail(admin, convite.email, convite.role);
+      await sendInviteEmail(admin, convite.email, convite.role, convite.nome);
 
       return res.status(200).json({
         convite: mapConviteRow(convite),
@@ -186,6 +188,7 @@ module.exports = async (req, res) => {
     // PATCH — atualizar e-mail e/ou role
     const nextEmail = body.email ? String(body.email).trim().toLowerCase() : convite.email;
     const nextRole = body.role || convite.role;
+    const nextNome = body.nome ? String(body.nome).trim() : convite.nome;
 
     if (!nextEmail.includes('@')) {
       return res.status(400).json({ error: 'E-mail inválido.' });
@@ -193,8 +196,9 @@ module.exports = async (req, res) => {
 
     const emailChanged = nextEmail !== convite.email;
     const roleChanged = nextRole !== convite.role;
+    const nomeChanged = nextNome && nextNome !== convite.nome;
 
-    if (!emailChanged && !roleChanged) {
+    if (!emailChanged && !roleChanged && !nomeChanged) {
       return res.status(200).json({
         convite: mapConviteRow(convite),
         message: 'Nada alterado.',
@@ -207,7 +211,7 @@ module.exports = async (req, res) => {
 
     const { data: updated, error: updateError } = await admin
       .from('convites')
-      .update({ email: nextEmail, role: nextRole })
+      .update({ email: nextEmail, role: nextRole, nome: nextNome })
       .eq('id', id)
       .select('*')
       .single();
@@ -217,7 +221,7 @@ module.exports = async (req, res) => {
     }
 
     if (emailChanged) {
-      await sendInviteEmail(admin, nextEmail, nextRole);
+      await sendInviteEmail(admin, nextEmail, nextRole, nextNome);
     }
 
     return res.status(200).json({

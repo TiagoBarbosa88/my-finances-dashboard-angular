@@ -64,6 +64,7 @@ export function transactionToRow(
 /** Linha da tabela `convites`. */
 export interface ConviteRow {
   id: number;
+  nome?: string | null;
   email: string;
   role: UserRole;
   status: 'pendente' | 'aceito' | 'expirado';
@@ -77,8 +78,11 @@ export function conviteFromRow(row: ConviteRow) {
     ? row.criado_em.split('T')[0]
     : row.criado_em;
 
+  const nomeFallback = row.email.split('@')[0];
+
   return {
     id: row.id,
+    nome: row.nome?.trim() || nomeFallback,
     email: row.email,
     role: row.role,
     status: row.status,
