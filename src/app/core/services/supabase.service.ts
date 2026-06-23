@@ -161,7 +161,6 @@ export class SupabaseService {
       email: draft.email.trim().toLowerCase(),
       role: draft.role,
       status: draft.status,
-      criado_em: draft.criado_em,
       convidado_por: draft.convidado_por,
       invited_by: invitedById,
     };

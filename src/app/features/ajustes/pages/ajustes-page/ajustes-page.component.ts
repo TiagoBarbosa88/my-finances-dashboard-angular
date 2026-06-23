@@ -10,6 +10,7 @@ import {
   UserRole,
   Usuario,
 } from '@app/shared/models/team.model';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-ajustes-page',
@@ -87,7 +88,11 @@ export class AjustesPageComponent implements OnInit {
       next: () => {
         this.conviteEmail.set('');
         this.conviteRole.set('editor');
-        this.conviteMessage.set('Convite registrado com status pendente.');
+        this.conviteMessage.set(
+          environment.production
+            ? 'Convite enviado por e-mail. Peça ao convidado verificar a caixa de entrada e spam.'
+            : 'Convite registrado na tabela convites (dev local — e-mail só na Vercel).',
+        );
         this.conviteSending.set(false);
       },
       error: (err: Error) => {

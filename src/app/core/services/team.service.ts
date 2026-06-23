@@ -67,17 +67,58 @@ export class TeamService {
         return from(Promise.reject(new Error('Usuário não autenticado.')));
       }
 
+      if (environment.production) {
+        return from(this.enviarConviteViaApi(draft)).pipe(
+          tap(() => this.loadConvites()),
+        );
+      }
+
       return from(
         this.supabase.insertConvite(draft, userId).then((saved) => {
           if (!saved) throw new Error('Falha ao registrar convite no Supabase.');
           return saved;
         }),
-      ).pipe(tap((saved) => this.convites.update((list) => [...list, saved])));
+      ).pipe(tap(() => this.loadConvites()));
     }
 
     return this.http.post<Convite>(this.convitesUrl, draft).pipe(
       tap((saved) => this.convites.update((list) => [...list, saved])),
     );
+  }
+
+  /** Produção: envia e-mail via Supabase Auth (API serverless na Vercel). */
+  private async enviarConviteViaApi(draft: ConviteDraft): Promise<Convite> {
+    const session = await this.supabase.getSession();
+    const token = session?.access_token;
+
+    if (!token) {
+      throw new Error('Sessão expirada. Faça login novamente.');
+    }
+
+    const response = await fetch('/api/invite-user', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        email: draft.email,
+        role: draft.role,
+        convidado_por: draft.convidado_por,
+      }),
+    });
+
+    const body = (await response.json()) as { convite?: Convite; error?: string; message?: string };
+
+    if (!response.ok) {
+      throw new Error(body.error || 'Falha ao enviar convite.');
+    }
+
+    if (!body.convite) {
+      throw new Error('Resposta inválida do servidor de convites.');
+    }
+
+    return body.convite;
   }
 
   removerMembro(id: string): Observable<void> {
