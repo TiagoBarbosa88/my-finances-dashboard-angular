@@ -7,6 +7,8 @@
     "postinstall": "node scripts/sync-environment.mjs",
     "prestart": "node scripts/sync-environment.mjs",
     "predev": "node scripts/sync-environment.mjs",
+    "prebuild": "node scripts/sync-environment.mjs",
+    "build:vercel": "ng build --configuration production",
     "start": "ng serve",
     "dev": "ng serve",
     "build": "ng build",

@@ -1,6 +1,10 @@
 /**
- * Lê `.env` na raiz e gera `src/environments/environment.ts`.
- * A SUPABASE_SECRET_KEY fica só no .env — nunca entra no bundle Angular.
+ * Gera `src/environments/environment.ts` a partir de:
+ *   1. process.env (Vercel / CI)
+ *   2. `.env` local
+ *   3. `.env.example` (fallback)
+ *
+ * SUPABASE_SECRET_KEY / SERVICE_ROLE nunca entram no bundle Angular.
  */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -10,7 +14,7 @@ const envFile = join(root, '.env');
 const exampleFile = join(root, '.env.example');
 const outFile = join(root, 'src/environments/environment.ts');
 
-function parseEnv(content) {
+function parseEnvFile(content) {
   const vars = {};
   for (const line of content.split('\n')) {
     const trimmed = line.trim();
@@ -18,50 +22,94 @@ function parseEnv(content) {
     const eq = trimmed.indexOf('=');
     if (eq === -1) continue;
     const key = trimmed.slice(0, eq).trim();
-    const value = trimmed.slice(eq + 1).trim();
+    let value = trimmed.slice(eq + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
     vars[key] = value;
   }
   return vars;
 }
 
-function loadEnvVars() {
+function loadFileVars() {
   const source = existsSync(envFile) ? envFile : exampleFile;
-
-  if (!existsSync(source)) {
-    console.warn('[env] Nenhum .env encontrado — copie .env.example para .env');
-    return parseEnv('');
+  if (!existsSync(source)) return {};
+  if (source === exampleFile && !existsSync(envFile)) {
+    console.warn('[env] Usando .env.example — crie um .env para desenvolvimento local.');
   }
+  return parseEnvFile(readFileSync(source, 'utf8'));
+}
 
-  if (source === exampleFile) {
-    console.warn('[env] Usando .env.example — crie um .env com suas chaves reais.');
-  }
+/** Mescla arquivo + process.env (Vercel injeta NEXT_PUBLIC_* e SUPABASE_*). */
+function loadVars() {
+  const file = loadFileVars();
+  const env = { ...file, ...process.env };
 
-  return parseEnv(readFileSync(source, 'utf8'));
+  const supabaseUrl =
+    env.SUPABASE_URL ||
+    env.NEXT_PUBLIC_SUPABASE_URL ||
+    '';
+
+  const publishableKey =
+    env.SUPABASE_PUBLISHABLE_KEY ||
+    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    env.SUPABASE_ANON_KEY ||
+    '';
+
+  const jwksUrl =
+    env.SUPABASE_JWKS_URL ||
+    (supabaseUrl ? `${supabaseUrl.replace(/\/$/, '')}/auth/v1/.well-known/jwks.json` : '');
+
+  const isProduction =
+    env.NODE_ENV === 'production' ||
+    env.VERCEL_ENV === 'production';
+
+  return {
+    production: isProduction,
+    bypassAuth: env.BYPASS_AUTH !== 'false' && !isProduction,
+    supabaseUrl,
+    publishableKey,
+    jwksUrl,
+    apiUrl: env.API_URL || 'http://localhost:3000',
+    brapiApiRoot: env.BRAPI_API_ROOT || 'https://brapi.dev/api',
+    brapiBaseUrl: env.BRAPI_BASE_URL || 'https://brapi.dev/api/v2/stocks',
+    brapiToken: env.BRAPI_TOKEN || '',
+  };
 }
 
 function esc(value) {
   return String(value ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
 
-const v = loadEnvVars();
+const v = loadVars();
 
-const content = `/** Gerado automaticamente por scripts/sync-environment.mjs — não edite manualmente. */
+const content = `/** Gerado por scripts/sync-environment.mjs — não edite manualmente. */
 export const environment = {
-  production: false,
-  bypassAuth: ${v.BYPASS_AUTH === 'false' ? 'false' : 'true'},
+  production: ${v.production},
+  bypassAuth: ${v.bypassAuth},
   supabase: {
-    url:            '${esc(v.SUPABASE_URL)}',
-    publishableKey: '${esc(v.SUPABASE_PUBLISHABLE_KEY)}',
-    jwksUrl:        '${esc(v.SUPABASE_JWKS_URL)}',
+    url:            '${esc(v.supabaseUrl)}',
+    publishableKey: '${esc(v.publishableKey)}',
+    jwksUrl:        '${esc(v.jwksUrl)}',
   },
-  apiUrl: '${esc(v.API_URL || 'http://localhost:3000')}',
+  apiUrl: '${esc(v.apiUrl)}',
   brapi: {
-    apiRoot: '${esc(v.BRAPI_API_ROOT || 'https://brapi.dev/api')}',
-    baseUrl: '${esc(v.BRAPI_BASE_URL || 'https://brapi.dev/api/v2/stocks')}',
-    token:   '${esc(v.BRAPI_TOKEN)}',
+    apiRoot: '${esc(v.brapiApiRoot)}',
+    baseUrl: '${esc(v.brapiBaseUrl)}',
+    token:   '${esc(v.brapiToken)}',
   },
 };
 `;
 
 writeFileSync(outFile, content, 'utf8');
-console.log('[env] environment.ts sincronizado a partir de', existsSync(envFile) ? '.env' : '.env.example');
+
+const source = existsSync(envFile)
+  ? '.env'
+  : process.env.VERCEL
+    ? 'Vercel env'
+    : '.env.example';
+
+console.log(`[env] environment.ts sincronizado (${source}) · production=${v.production}`);

@@ -146,14 +146,14 @@ export class SupabaseService {
     return true;
   }
 
-  /** `false` enquanto as credenciais no `.env` ainda são placeholder. */
+  /** `false` enquanto as credenciais ainda são placeholder. */
   isConfigured(): boolean {
     const { url, publishableKey } = environment.supabase;
-    return (
-      url.length > 0 &&
-      !url.includes('SEU_PROJECT_ID') &&
-      publishableKey.length > 0 &&
-      !publishableKey.includes('SUA_CHAVE')
-    );
+    const placeholder =
+      url.includes('SEU_PROJECT') ||
+      publishableKey.includes('SUA_CHAVE') ||
+      publishableKey.length < 20;
+
+    return url.length > 0 && publishableKey.length > 0 && !placeholder;
   }
 }

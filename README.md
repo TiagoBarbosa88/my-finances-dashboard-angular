@@ -113,6 +113,19 @@ Abra [http://localhost:4200](http://localhost:4200)
 
 ---
 
+## Deploy na Vercel
+
+Integração **Supabase + GitHub + Vercel** já compatível. O projeto inclui `vercel.json` para Angular SPA.
+
+1. Conecte o repo no Vercel (integração Supabase injeta `NEXT_PUBLIC_SUPABASE_*`)
+2. Adicione **`BRAPI_TOKEN`** manualmente em Environment Variables
+3. Rode o **SQL** do guia [`docs/SUPABASE-SETUP.md`](docs/SUPABASE-SETUP.md) (seção 4) — não use a demo `notes` da Vercel
+4. Configure **Auth redirect URLs** no Supabase com seu domínio `.vercel.app`
+
+> JSON Server não roda na Vercel — migre dados para Supabase (Fases 2–3 do guia).
+
+---
+
 ## Scripts
 
 | Comando | Descrição |
