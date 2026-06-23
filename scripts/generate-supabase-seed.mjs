@@ -2,11 +2,11 @@
  * Gera SQL de seed a partir de db.json para o Supabase.
  *
  * Uso:
- *   node scripts/generate-supabase-seed.mjs
- *   node scripts/generate-supabase-seed.mjs --email tiagobarbosa.dev@email.com
+ *   npm run seed:sql
+ *   node scripts/generate-supabase-seed.mjs --email=tiagobarbosa.dev@gmail.com
+ *   node scripts/generate-supabase-seed.mjs --email=... --uuid=50b94089-79f2-4a42-893d-be8fe26c26df
  *
- * Cole o arquivo gerado em docs/supabase-seed.sql no SQL Editor do Supabase
- * (projeto onde o usuário Auth já existe).
+ * Cole docs/supabase-seed.sql no SQL Editor do Supabase.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -16,13 +16,16 @@ const dbPath = join(root, 'db.json');
 const outPath = join(root, 'docs/supabase-seed.sql');
 
 const emailArg = process.argv.find((a) => a.startsWith('--email='));
-const ownerEmail = emailArg?.split('=')[1] ?? 'tiagobarbosa.dev@email.com';
+const uuidArg = process.argv.find((a) => a.startsWith('--uuid='));
+const ownerEmail = emailArg?.split('=')[1] ?? 'tiagobarbosa.dev@gmail.com';
+const ownerUuid = uuidArg?.split('=')[1] ?? '';
 
 /** Mapeia criado_por do JSON → e-mail do profile no Supabase. */
 const CREATOR_EMAIL = {
   Tiago: ownerEmail,
   Giselle: ownerEmail,
   Marina: ownerEmail,
+  Você: ownerEmail,
   'Importação Excel': ownerEmail,
 };
 
@@ -37,9 +40,12 @@ function sqlStr(value) {
   return `'${String(value ?? '').replace(/'/g, "''")}'`;
 }
 
-function userIdSubquery(criadoPor) {
-  const email = CREATOR_EMAIL[criadoPor] ?? ownerEmail;
-  return `(SELECT id FROM public.profiles WHERE email = ${sqlStr(email)} LIMIT 1)`;
+/** UUID fixo (recomendado) ou subquery por e-mail. */
+function userIdExpr() {
+  if (ownerUuid) {
+    return `'${ownerUuid}'::uuid`;
+  }
+  return `(SELECT id FROM public.profiles WHERE email = ${sqlStr(ownerEmail)} LIMIT 1)`;
 }
 
 function chunk(array, size) {
@@ -55,26 +61,43 @@ const db = JSON.parse(readFileSync(dbPath, 'utf8'));
 const lines = [
   '-- ============================================================',
   '-- Smart Finances — Seed a partir de db.json',
-  `-- Dono principal: ${ownerEmail}`,
-  '-- Rode DEPOIS do schema (seção 4 do SUPABASE-SETUP.md)',
-  '-- e DEPOIS de criar o usuário em Authentication.',
+  `-- Dono: ${ownerEmail}`,
+  ownerUuid ? `-- UUID: ${ownerUuid}` : '',
+  '-- Rode DEPOIS do schema (SUPABASE-SETUP.md seção 4) e com usuário Auth criado.',
   '-- ============================================================',
   '',
-  `-- Confirme que o profile existe:`,
-  `SELECT id, email, role FROM public.profiles WHERE email = ${sqlStr(ownerEmail)};`,
+  '-- 1) Confirme o profile (deve retornar 1 linha):',
+  ownerUuid
+    ? `SELECT id, email, role FROM public.profiles WHERE id = '${ownerUuid}';`
+    : `SELECT id, email, role FROM public.profiles WHERE email = ${sqlStr(ownerEmail)};`,
   '',
-  '-- Limpa dados anteriores deste seed (opcional — descomente se quiser reimportar)',
-  '-- TRUNCATE public.transactions, public.ativos, public.target_metas RESTART IDENTITY CASCADE;',
+  '-- 2) Aborta se o dono não existir (evita user_id NULL):',
+  'DO $$',
+  'DECLARE uid uuid;',
+  'BEGIN',
+  ownerUuid
+    ? `  SELECT id INTO uid FROM public.profiles WHERE id = '${ownerUuid}'::uuid;`
+    : `  SELECT id INTO uid FROM public.profiles WHERE email = ${sqlStr(ownerEmail)};`,
+  "  IF uid IS NULL THEN",
+  ownerUuid
+    ? `    RAISE EXCEPTION 'Profile não encontrado para UUID ${ownerUuid}. Crie o usuário em Authentication primeiro.';`
+    : `    RAISE EXCEPTION 'Profile não encontrado para e-mail ${ownerEmail}. Confira Authentication → Users.';`,
+  '  END IF;',
+  'END $$;',
   '',
-];
+  '-- 3) Limpa tentativa anterior (descomente se reimportar):',
+  '-- DELETE FROM public.transactions WHERE user_id = ' + userIdExpr() + ';',
+  '-- (ativos/target_metas usam ON CONFLICT abaixo)',
+  '',
+].filter(Boolean);
 
 // ─── transactions ───────────────────────────────────────────────────────────
-lines.push('-- ─── Lançamentos (190) ────────────────────────────────────────');
+lines.push('-- ─── Lançamentos (' + db.transactions.length + ') ────────────────────────────────────────');
 
 for (const batch of chunk(db.transactions, 50)) {
   const values = batch
     .map((t) => {
-      const uid = userIdSubquery(t.criado_por);
+      const uid = userIdExpr();
       return `  (${uid}, ${sqlStr(t.data)}, ${sqlStr(t.descricao)}, ${sqlStr(t.categoria)}, ${Number(t.valor)}, ${sqlStr(t.status)}, ${sqlStr(t.criado_por)})`;
     })
     .join(',\n');
@@ -88,11 +111,11 @@ for (const batch of chunk(db.transactions, 50)) {
 }
 
 // ─── ativos ─────────────────────────────────────────────────────────────────
-lines.push('-- ─── Carteira — ativos (8) ───────────────────────────────────');
+lines.push('-- ─── Carteira — ativos (' + db.ativos.length + ') ───────────────────────────────────');
 
 const ativoValues = db.ativos
   .map((a) => {
-    const uid = userIdSubquery('Tiago');
+    const uid = userIdExpr();
     const score = a.score != null ? Number(a.score) : 'NULL';
     const rent = a.rentabilidadePct != null ? Number(a.rentabilidadePct) : 'NULL';
     return `  (${uid}, ${sqlStr(a.ticker)}, ${sqlStr(a.tipo)}, ${sqlStr(a.setor ?? '')}, ${Number(a.qtd)}, ${Number(a.precoMedio)}, ${Number(a.precoAtual)}, ${rent}, ${score})`;
@@ -117,7 +140,7 @@ lines.push(
 lines.push('-- ─── Metas de alocação ───────────────────────────────────────');
 
 const metaValues = TARGET_METAS.map((m) => {
-  const uid = userIdSubquery('Tiago');
+  const uid = userIdExpr();
   return `  (${uid}, ${sqlStr(m.tipo)}, ${m.target_percent})`;
 }).join(',\n');
 
@@ -132,8 +155,7 @@ lines.push(
 );
 
 lines.push(
-  '-- db.json "investimentos" (20) são snapshots de carteira, não lançamentos compra/venda —',
-  '-- não importados para public.investimentos.',
+  '-- db.json "investimentos" (20) são snapshots — não importados para public.investimentos.',
   '',
   'SELECT',
   "  (SELECT count(*) FROM public.transactions) AS transactions,",
@@ -143,4 +165,8 @@ lines.push(
 
 writeFileSync(outPath, lines.join('\n'), 'utf8');
 console.log(`[seed] Gerado ${outPath}`);
-console.log(`[seed] Owner: ${ownerEmail} · ${db.transactions.length} transactions · ${db.ativos.length} ativos`);
+console.log(
+  `[seed] Owner: ${ownerEmail}` +
+    (ownerUuid ? ` · uuid=${ownerUuid}` : '') +
+    ` · ${db.transactions.length} transactions · ${db.ativos.length} ativos`,
+);
