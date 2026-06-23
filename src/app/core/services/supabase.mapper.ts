@@ -59,3 +59,29 @@ export function transactionToRow(
     criado_por: transaction.criado_por,
   };
 }
+
+/** Linha da tabela `convites`. */
+export interface ConviteRow {
+  id: number;
+  email: string;
+  role: UserRole;
+  status: 'pendente' | 'aceito' | 'expirado';
+  criado_em: string;
+  convidado_por: string;
+  invited_by?: string | null;
+}
+
+export function conviteFromRow(row: ConviteRow) {
+  const date = row.criado_em.includes('T')
+    ? row.criado_em.split('T')[0]
+    : row.criado_em;
+
+  return {
+    id: row.id,
+    email: row.email,
+    role: row.role,
+    status: row.status,
+    criado_em: date,
+    convidado_por: row.convidado_por,
+  };
+}

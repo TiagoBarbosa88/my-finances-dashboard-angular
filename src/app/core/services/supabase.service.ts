@@ -7,10 +7,12 @@ import {
   User,
 } from '@supabase/supabase-js';
 
-import { Usuario } from '@app/shared/models/team.model';
+import { Convite, ConviteDraft, Usuario } from '@app/shared/models/team.model';
 import { Transaction, TransactionStatus } from '@app/shared/models/transaction.model';
 import { environment } from '../../../environments/environment';
 import {
+  conviteFromRow,
+  ConviteRow,
   profileToUsuario,
   ProfileRow,
   transactionFromRow,
@@ -101,6 +103,81 @@ export class SupabaseService {
     }
 
     return profileToUsuario(data as ProfileRow);
+  }
+
+  async updateProfile(userId: string, nome: string, email: string): Promise<Usuario | null> {
+    const { data, error } = await this.client
+      .from('profiles')
+      .update({
+        full_name: nome.trim(),
+        email: email.trim(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', userId)
+      .select('id, full_name, email, role')
+      .single();
+
+    if (error || !data) {
+      console.error('[SupabaseService] updateProfile:', error?.message);
+      return null;
+    }
+
+    return profileToUsuario(data as ProfileRow);
+  }
+
+  async fetchProfiles(): Promise<Usuario[]> {
+    const { data, error } = await this.client
+      .from('profiles')
+      .select('id, full_name, email, role')
+      .order('full_name');
+
+    if (error) {
+      console.error('[SupabaseService] fetchProfiles:', error.message);
+      return [];
+    }
+
+    return (data ?? []).map((row) => profileToUsuario(row as ProfileRow));
+  }
+
+  async fetchConvites(): Promise<Convite[]> {
+    const { data, error } = await this.client
+      .from('convites')
+      .select('*')
+      .order('criado_em', { ascending: false });
+
+    if (error) {
+      console.error('[SupabaseService] fetchConvites:', error.message);
+      return [];
+    }
+
+    return (data ?? []).map((row) => conviteFromRow(row as ConviteRow));
+  }
+
+  async insertConvite(
+    draft: ConviteDraft,
+    invitedById: string,
+  ): Promise<Convite | null> {
+    const row = {
+      email: draft.email.trim().toLowerCase(),
+      role: draft.role,
+      status: draft.status,
+      criado_em: draft.criado_em,
+      convidado_por: draft.convidado_por,
+      invited_by: invitedById,
+    };
+
+    const { data, error } = await this.client
+      .from('convites')
+      .insert([row])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('[SupabaseService] insertConvite:', error.message);
+      return null;
+    }
+
+    return conviteFromRow(data as ConviteRow);
   }
 
   // ─── CRUD — tabela `transactions` ─────────────────────────────────────────

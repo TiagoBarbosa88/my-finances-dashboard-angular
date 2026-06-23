@@ -133,4 +133,33 @@
   .scroll-elegant::-webkit-scrollbar-thumb:hover {
     background: color-mix(in oklab, var(--muted-foreground) 65%, transparent);
   }
+
+  /* Sidebar expand — CSS puro (Tailwind group/sidebar falha no build prod v4) */
+  @media (min-width: 768px) {
+    .finance-sidebar {
+      width: 4.5rem;
+      transition: width 300ms ease-out;
+    }
+
+    .finance-sidebar:hover {
+      width: 15rem;
+    }
+
+    .finance-sidebar:hover .finance-sidebar-reveal {
+      opacity: 1;
+    }
+
+    .finance-sidebar:hover .finance-sidebar-reveal-flex {
+      display: flex;
+    }
+  }
+
+  .finance-sidebar-reveal {
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+  }
+
+  .finance-sidebar-reveal-flex {
+    display: none;
+  }
 }

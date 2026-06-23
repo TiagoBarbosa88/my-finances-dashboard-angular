@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { from, Observable, tap } from 'rxjs';
 
 import { AuthService } from '@app/core/services/auth.service';
+import { SupabaseService } from '@app/core/services/supabase.service';
 import { Convite, ConviteDraft, Usuario } from '@app/shared/models/team.model';
 import { environment } from '../../../environments/environment';
 
@@ -10,6 +11,7 @@ import { environment } from '../../../environments/environment';
 export class TeamService {
   private readonly http = inject(HttpClient);
   private readonly auth = inject(AuthService);
+  private readonly supabase = inject(SupabaseService);
 
   private readonly usuariosUrl = `${environment.apiUrl}/usuarios`;
   private readonly convitesUrl = `${environment.apiUrl}/convites`;
@@ -22,14 +24,27 @@ export class TeamService {
   loadMembros(): void {
     this.loading.set(true);
 
+    if (this.supabase.isConfigured()) {
+      void this.supabase.fetchProfiles().then((data) => {
+        this.membros.set(data);
+        this.loading.set(false);
+      });
+      return;
+    }
+
     this.http.get<Usuario[]>(this.usuariosUrl).subscribe({
-      next: (data) => this.membros.set(data),
+      next: (data) => this.membros.set(data.map((u) => ({ ...u, id: String(u.id) }))),
       error: () => this.loading.set(false),
       complete: () => this.loading.set(false),
     });
   }
 
   loadConvites(): void {
+    if (this.supabase.isConfigured()) {
+      void this.supabase.fetchConvites().then((data) => this.convites.set(data));
+      return;
+    }
+
     this.http.get<Convite[]>(this.convitesUrl).subscribe({
       next: (data) => this.convites.set(data),
       error: () => this.convites.set([]),
@@ -38,7 +53,7 @@ export class TeamService {
 
   enviarConvite(email: string, role: ConviteDraft['role']): Observable<Convite> {
     const convidadoPor = this.auth.usuarioLogado()?.nome ?? 'Admin';
-    const draft: Omit<Convite, 'id'> = {
+    const draft: ConviteDraft = {
       email: email.trim().toLowerCase(),
       role,
       status: 'pendente',
@@ -46,12 +61,30 @@ export class TeamService {
       convidado_por: convidadoPor,
     };
 
+    if (this.supabase.isConfigured()) {
+      const userId = this.auth.usuarioLogado()?.id;
+      if (!userId) {
+        return from(Promise.reject(new Error('Usuário não autenticado.')));
+      }
+
+      return from(
+        this.supabase.insertConvite(draft, userId).then((saved) => {
+          if (!saved) throw new Error('Falha ao registrar convite no Supabase.');
+          return saved;
+        }),
+      ).pipe(tap((saved) => this.convites.update((list) => [...list, saved])));
+    }
+
     return this.http.post<Convite>(this.convitesUrl, draft).pipe(
       tap((saved) => this.convites.update((list) => [...list, saved])),
     );
   }
 
   removerMembro(id: string): Observable<void> {
+    if (this.supabase.isConfigured()) {
+      return from(Promise.reject(new Error('Remoção de membros via Supabase em breve.')));
+    }
+
     return this.http.delete<void>(`${this.usuariosUrl}/${id}`).pipe(
       tap(() => {
         this.membros.update((list) => list.filter((m) => m.id !== id));

@@ -65,8 +65,8 @@ export class AjustesPageComponent implements OnInit {
         this.profileMessage.set('Perfil atualizado com sucesso.');
         this.profileSaving.set(false);
       },
-      error: () => {
-        this.profileMessage.set('Não foi possível salvar. Verifique o JSON Server.');
+      error: (err: Error) => {
+        this.profileMessage.set(err.message || 'Não foi possível salvar o perfil.');
         this.profileSaving.set(false);
       },
     });
@@ -90,8 +90,8 @@ export class AjustesPageComponent implements OnInit {
         this.conviteMessage.set('Convite registrado com status pendente.');
         this.conviteSending.set(false);
       },
-      error: () => {
-        this.conviteMessage.set('Falha ao enviar convite. Verifique o JSON Server.');
+      error: (err: Error) => {
+        this.conviteMessage.set(err.message || 'Falha ao enviar convite.');
         this.conviteSending.set(false);
       },
     });

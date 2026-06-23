@@ -12,6 +12,16 @@
     <h2 class="text-display text-lg font-semibold">Minha Conta</h2>
     <p class="mt-0.5 text-xs text-muted-foreground">Edite seu nome e e-mail de acesso.</p>
 
+    @if (auth.usuarioLogado(); as user) {
+      <p class="mt-2 text-xs text-muted-foreground">
+        Permissão atual:
+        <span class="font-medium text-foreground">{{ roleLabels[user.role] }}</span>
+        @if (user.role === 'leitor') {
+          — peça a um admin para promover sua conta no Supabase.
+        }
+      </p>
+    }
+
     <form class="mt-5 grid gap-4 sm:max-w-md" (ngSubmit)="salvarPerfil()">
       <div class="grid gap-2">
         <label for="nome" class="text-sm font-medium">Nome</label>

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { from, Observable, tap } from 'rxjs';
 
 import { SupabaseService } from '@app/core/services/supabase.service';
 import { Usuario, UserRole } from '@app/shared/models/team.model';
@@ -71,6 +71,7 @@ export class AuthService {
       return;
     }
 
+    console.warn('[AuthService] profile não encontrado — usando fallback leitor.');
     this.usuarioLogado.set({
       id: user.id,
       nome: user.user_metadata?.['full_name'] ?? user.email?.split('@')[0] ?? 'Usuário',
@@ -178,11 +179,42 @@ export class AuthService {
       throw new Error('Nenhum usuário logado.');
     }
 
+    if (this.supabase.isConfigured()) {
+      return from(this.updateProfileSupabase(current.id, nome, email)).pipe(
+        tap((saved) => {
+          if (saved) this.usuarioLogado.set(saved);
+        }),
+      );
+    }
+
     const payload = { ...current, nome: nome.trim(), email: email.trim() };
 
     return this.http.put<Usuario>(`${this.usuariosUrl}/${current.id}`, payload).pipe(
       tap((saved) => this.usuarioLogado.set({ ...saved, id: String(saved.id) })),
     );
+  }
+
+  private async updateProfileSupabase(
+    userId: string,
+    nome: string,
+    email: string,
+  ): Promise<Usuario> {
+    const trimmedEmail = email.trim();
+    const saved = await this.supabase.updateProfile(userId, nome, trimmedEmail);
+
+    if (!saved) {
+      throw new Error('Falha ao atualizar perfil no Supabase.');
+    }
+
+    const current = this.usuarioLogado();
+    if (current && trimmedEmail !== current.email) {
+      const { error } = await this.supabase.client.auth.updateUser({ email: trimmedEmail });
+      if (error) {
+        console.warn('[AuthService] auth.updateUser email:', error.message);
+      }
+    }
+
+    return saved;
   }
 }
 
