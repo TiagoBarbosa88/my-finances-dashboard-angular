@@ -76,7 +76,7 @@ export class FinanceService {
   readonly termoBusca = signal('');
 
   /** Posições da carteira (ativos). */
-  readonly carteiraAtivos = signal<Ativo[]>(INITIAL_ATIVOS);
+  readonly carteiraAtivos = signal<Ativo[]>([]);
 
   /** Lançamentos de compra/venda persistidos no JSON Server. */
   readonly investimentos = signal<Investimento[]>(INITIAL_INVESTIMENTOS);
@@ -91,6 +91,18 @@ export class FinanceService {
     this.loadTransactions();
     this.loadCarteiraAtivos();
     this.loadInvestimentos();
+    void this.syncTargetMetasFromRemote();
+
+    if (this.supabase.isConfigured()) {
+      this.supabase.client.auth.onAuthStateChange((_event, session) => {
+        if (session) {
+          this.loadTransactions();
+          this.loadCarteiraAtivos();
+          this.loadInvestimentos();
+          void this.syncTargetMetasFromRemote();
+        }
+      });
+    }
   }
 
   private static loadTargetMetas(): TargetMeta[] {
@@ -500,21 +512,70 @@ export class FinanceService {
   }
 
   loadInvestimentos(): void {
+    if (this.supabase.isConfigured()) {
+      void this.loadInvestimentosFromSupabase();
+      return;
+    }
+
     this.http.get<Investimento[]>(this.investimentosUrl).subscribe({
       next: (data) => this.investimentos.set(data),
-      error: () => this.investimentos.set(INITIAL_INVESTIMENTOS),
+      error: () => {
+        this.investimentos.set(environment.bypassAuth ? INITIAL_INVESTIMENTOS : []);
+      },
     });
   }
 
+  private async loadInvestimentosFromSupabase(): Promise<void> {
+    const session = await this.supabase.getSession();
+    if (!session) {
+      this.investimentos.set([]);
+      return;
+    }
+    // Lançamentos compra/venda — fase futura; posições vêm de `ativos`.
+    this.investimentos.set([]);
+  }
+
   loadCarteiraAtivos(): void {
+    if (this.supabase.isConfigured()) {
+      void this.loadCarteiraFromSupabase();
+      return;
+    }
+
     this.http.get<Ativo[]>(this.ativosUrl).subscribe({
       next: (data) => {
         if (data.length > 0) {
           this.carteiraAtivos.set(data);
+        } else if (environment.bypassAuth) {
+          this.carteiraAtivos.set(INITIAL_ATIVOS);
         }
       },
-      error: () => this.carteiraAtivos.set(INITIAL_ATIVOS),
+      error: () => {
+        this.carteiraAtivos.set(environment.bypassAuth ? INITIAL_ATIVOS : []);
+      },
     });
+  }
+
+  private async loadCarteiraFromSupabase(): Promise<void> {
+    const session = await this.supabase.getSession();
+    if (!session) {
+      this.carteiraAtivos.set([]);
+      return;
+    }
+
+    const data = await this.supabase.fetchAtivos();
+    this.carteiraAtivos.set(data);
+  }
+
+  private async syncTargetMetasFromRemote(): Promise<void> {
+    if (!this.supabase.isConfigured()) return;
+
+    const session = await this.supabase.getSession();
+    if (!session) return;
+
+    const remote = await this.supabase.fetchTargetMetas();
+    if (remote.length > 0) {
+      this.targetMetas.set(remote);
+    }
   }
 
   /** Atualiza precoAtual in-memory com cotações da Brapi (não persiste no JSON). */

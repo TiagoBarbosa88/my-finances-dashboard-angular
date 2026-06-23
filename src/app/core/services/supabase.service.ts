@@ -11,14 +11,19 @@ import { Convite, ConviteDraft, Usuario } from '@app/shared/models/team.model';
 import { Transaction, TransactionStatus } from '@app/shared/models/transaction.model';
 import { environment } from '../../../environments/environment';
 import {
+  ativoFromRow,
+  AtivoRow,
   conviteFromRow,
   ConviteRow,
   profileToUsuario,
   ProfileRow,
+  targetMetaFromRow,
+  TargetMetaRow,
   transactionFromRow,
   TransactionRow,
   transactionToRow,
 } from './supabase.mapper';
+import { Ativo, TargetMeta } from '@app/shared/models/investimentos.model';
 
 /**
  * Camada fina sobre o cliente Supabase.
@@ -177,6 +182,34 @@ export class SupabaseService {
     }
 
     return conviteFromRow(data as ConviteRow);
+  }
+
+  async fetchAtivos(): Promise<Ativo[]> {
+    const { data, error } = await this.client
+      .from('ativos')
+      .select('*')
+      .order('ticker');
+
+    if (error) {
+      console.error('[SupabaseService] fetchAtivos:', error.message);
+      return [];
+    }
+
+    return (data ?? []).map((row) => ativoFromRow(row as AtivoRow));
+  }
+
+  async fetchTargetMetas(): Promise<TargetMeta[]> {
+    const { data, error } = await this.client
+      .from('target_metas')
+      .select('tipo, target_percent')
+      .order('tipo');
+
+    if (error) {
+      console.error('[SupabaseService] fetchTargetMetas:', error.message);
+      return [];
+    }
+
+    return (data ?? []).map((row) => targetMetaFromRow(row as TargetMetaRow));
   }
 
   // ─── CRUD — tabela `transactions` ─────────────────────────────────────────

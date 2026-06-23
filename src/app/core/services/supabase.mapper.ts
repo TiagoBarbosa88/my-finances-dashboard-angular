@@ -1,4 +1,5 @@
 import { Usuario, UserRole } from '@app/shared/models/team.model';
+import { Ativo, TipoAtivo, TargetMeta } from '@app/shared/models/investimentos.model';
 import { Transaction, TransactionStatus } from '@app/shared/models/transaction.model';
 
 /** Linha da tabela `profiles`. */
@@ -83,5 +84,47 @@ export function conviteFromRow(row: ConviteRow) {
     status: row.status,
     criado_em: date,
     convidado_por: row.convidado_por,
+  };
+}
+
+/** Linha da tabela `ativos`. */
+export interface AtivoRow {
+  id: number;
+  user_id: string;
+  ticker: string;
+  tipo: string;
+  setor: string;
+  qtd: number;
+  preco_medio: number;
+  preco_atual: number;
+  rentabilidade_pct?: number | null;
+  score?: number | null;
+}
+
+export function ativoFromRow(row: AtivoRow): Ativo {
+  return {
+    id: row.id,
+    ticker: row.ticker,
+    tipo: row.tipo as TipoAtivo,
+    setor: row.setor ?? '',
+    qtd: Number(row.qtd),
+    precoMedio: Number(row.preco_medio),
+    precoAtual: Number(row.preco_atual),
+    rentabilidadePct:
+      row.rentabilidade_pct != null ? Number(row.rentabilidade_pct) : undefined,
+    score: row.score != null ? Number(row.score) : undefined,
+  };
+}
+
+/** Linha da tabela `target_metas`. */
+export interface TargetMetaRow {
+  tipo: string;
+  target_percent: number;
+}
+
+export function targetMetaFromRow(row: TargetMetaRow): TargetMeta {
+  return {
+    tipo: row.tipo,
+    targetPercent: Number(row.target_percent),
   };
 }

@@ -8,15 +8,14 @@
   aria-labelledby="investment-dialog-title"
 >
   <div
-    class="w-full max-w-lg rounded-2xl border border-border bg-card
-           shadow-2xl shadow-black/40"
+    class="dialog-panel"
     (click)="$event.stopPropagation()"
   >
 
     <!-- Header -->
-    <div class="flex items-center justify-between border-b border-border p-6">
+    <div class="dialog-panel-header">
       <div>
-        <h2 id="investment-dialog-title" class="text-display text-xl font-semibold">
+        <h2 id="investment-dialog-title" class="text-display text-lg font-semibold">
           @if (isEditLancamento()) {
             Editar investimento
           } @else if (isEditAtivo()) {
@@ -48,8 +47,9 @@
       </button>
     </div>
 
-    <form class="space-y-4 p-6" (ngSubmit)="salvar()">
+    <form class="flex min-h-0 flex-1 flex-col" (ngSubmit)="salvar()">
 
+      <div class="dialog-panel-body">
       <div [class.hidden]="modoImportacao()" class="space-y-4">
 
       <!-- Tabs Compra / Venda -->
@@ -349,8 +349,10 @@
         </div>
       }
 
+      </div>
+
       <!-- Footer -->
-      <div class="flex items-center justify-end gap-3 border-t border-border pt-4">
+      <div class="dialog-panel-footer flex items-center justify-end gap-3">
         <button
           type="button"
           (click)="close.emit()"

@@ -74,8 +74,10 @@ export class LoginPageComponent {
         return;
       }
 
-      await this.auth.refreshProfileFromSupabase();
-      this.finance.loadTransactions();
+    await this.auth.refreshProfileFromSupabase();
+    this.finance.loadTransactions();
+    this.finance.loadCarteiraAtivos();
+    this.finance.loadInvestimentos();
 
       const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? APP_HOME;
       await this.router.navigateByUrl(returnUrl);
