@@ -51,7 +51,7 @@ export class TeamService {
     );
   }
 
-  removerMembro(id: number): Observable<void> {
+  removerMembro(id: string): Observable<void> {
     return this.http.delete<void>(`${this.usuariosUrl}/${id}`).pipe(
       tap(() => {
         this.membros.update((list) => list.filter((m) => m.id !== id));

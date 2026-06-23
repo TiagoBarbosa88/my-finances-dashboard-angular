@@ -43,6 +43,10 @@ function loadFileVars() {
   return parseEnvFile(readFileSync(source, 'utf8'));
 }
 
+function projectRef(url) {
+  return url.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1] ?? '';
+}
+
 /** Mescla arquivo + process.env (Vercel injeta NEXT_PUBLIC_* e SUPABASE_*). */
 function loadVars() {
   const file = loadFileVars();
@@ -53,10 +57,12 @@ function loadVars() {
     env.NEXT_PUBLIC_SUPABASE_URL ||
     '';
 
+  /** JWT anon é o mais compatível com @supabase/supabase-js Auth. */
   const publishableKey =
+    env.SUPABASE_ANON_KEY ||
+    env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
     env.SUPABASE_PUBLISHABLE_KEY ||
     env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-    env.SUPABASE_ANON_KEY ||
     '';
 
   const jwksUrl =
@@ -73,6 +79,7 @@ function loadVars() {
     supabaseUrl,
     publishableKey,
     jwksUrl,
+    projectRef: projectRef(supabaseUrl),
     apiUrl: env.API_URL || 'http://localhost:3000',
     brapiApiRoot: env.BRAPI_API_ROOT || 'https://brapi.dev/api',
     brapiBaseUrl: env.BRAPI_BASE_URL || 'https://brapi.dev/api/v2/stocks',
@@ -112,4 +119,14 @@ const source = existsSync(envFile)
     ? 'Vercel env'
     : '.env.example';
 
-console.log(`[env] environment.ts sincronizado (${source}) · production=${v.production}`);
+console.log(
+  `[env] environment.ts sincronizado (${source}) · production=${v.production}` +
+    (v.projectRef ? ` · supabase=${v.projectRef}` : ''),
+);
+
+if (v.projectRef && v.projectRef !== 'sakwtegkqzgpphmcsrac' && v.production) {
+  console.warn(
+    `[env] AVISO: projeto Supabase "${v.projectRef}" difere de "sakwtegkqzgpphmcsrac" ` +
+      '(onde o schema SQL e o usuário admin foram criados). Login na Vercel falhará até alinhar as vars.',
+  );
+}

@@ -3,7 +3,8 @@ export type UserRole = 'admin' | 'editor' | 'leitor';
 export type ConviteStatus = 'pendente' | 'aceito' | 'expirado';
 
 export interface Usuario {
-  id: number;
+  /** UUID (Supabase) ou id string do JSON Server local. */
+  id: string;
   nome: string;
   email: string;
   role: UserRole;

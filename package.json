@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "env:sync": "node scripts/sync-environment.mjs",
+    "seed:sql": "node scripts/generate-supabase-seed.mjs",
     "postinstall": "node scripts/sync-environment.mjs",
     "prestart": "node scripts/sync-environment.mjs",
     "predev": "node scripts/sync-environment.mjs",

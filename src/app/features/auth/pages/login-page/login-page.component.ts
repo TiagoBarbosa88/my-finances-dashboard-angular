@@ -2,6 +2,9 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { APP_HOME } from '@app/core/guards/auth.guard';
+import { AuthService } from '@app/core/services/auth.service';
+import { FinanceService } from '@app/core/services/finance.service';
 import { SupabaseService } from '@app/core/services/supabase.service';
 import { AuthLayoutComponent } from '@app/layout/auth-layout/auth-layout.component';
 import { environment } from 'src/environments/environment';
@@ -26,13 +29,14 @@ import { environment } from 'src/environments/environment';
 })
 export class LoginPageComponent {
   private readonly supabase = inject(SupabaseService);
+  private readonly auth     = inject(AuthService);
+  private readonly finance  = inject(FinanceService);
   private readonly router   = inject(Router);
   private readonly route    = inject(ActivatedRoute);
 
   constructor() {
-    // Em modo dev (bypassAuth), pula o login e vai direto ao dashboard.
     if (environment.bypassAuth) {
-      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
+      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? APP_HOME;
       this.router.navigateByUrl(returnUrl);
     }
   }
@@ -65,7 +69,10 @@ export class LoginPageComponent {
       return;
     }
 
-    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
+    await this.auth.refreshProfileFromSupabase();
+    this.finance.loadTransactions();
+
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? APP_HOME;
     this.router.navigateByUrl(returnUrl);
   }
 

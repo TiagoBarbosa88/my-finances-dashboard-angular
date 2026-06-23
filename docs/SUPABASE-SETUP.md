@@ -582,7 +582,34 @@ npm run dev
 
 A integração **Vercel + Supabase** injeta variáveis automaticamente. O quickstart da Vercel é para **Next.js** — este projeto é **Angular**; ignore os passos de `app/notes/page.tsx`.
 
-### 12.1 O que a Vercel já fornece
+### 12.1 ⚠️ Projeto Supabase correto (causa #1 de “e-mail ou senha inválidos”)
+
+A integração Vercel pode linkar um projeto **diferente** do que você usou no SQL Editor.
+
+| Projeto | ID | Uso |
+|---------|-----|-----|
+| **my-finances** (correto) | `sakwtegkqzgpphmcsrac` | Schema SQL, usuário `tiagobarbosa.dev@email.com`, admin |
+| Outro (integração Vercel) | `nuxueulwvkhbazzwbsza` | **Não** tem seu usuário → login falha |
+
+**Sintoma:** `Invalid login credentials` na Vercel, mas funciona local.
+
+**Correção na Vercel → Settings → Environment Variables** (Production):
+
+| Variável | Valor |
+|----------|--------|
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://sakwtegkqzgpphmcsrac.supabase.co` |
+| `SUPABASE_ANON_KEY` | anon JWT do projeto **sakwtegkqzgpphmcsrac** (Settings → API) |
+
+Opcional: remova ou sobrescreva vars do projeto errado (`nuxueulwvkhbazzwbsza`).
+
+Depois: **Redeploy** (Deployments → ⋯ → Redeploy).
+
+No Supabase **sakwtegkqzgpphmcsrac** → Authentication → URL Configuration:
+
+- Site URL: `https://my-finances-dashboard-angular.vercel.app`
+- Redirect URLs: `https://my-finances-dashboard-angular.vercel.app/**` e `http://localhost:4200/**`
+
+### 12.2 O que a Vercel injeta
 
 | Variável Vercel | Usada pelo Angular |
 |-----------------|-------------------|
@@ -595,7 +622,7 @@ A integração **Vercel + Supabase** injeta variáveis automaticamente. O quicks
 
 O script `scripts/sync-environment.mjs` roda no **build** e lê `process.env` da Vercel.
 
-### 12.2 Configuração do repositório
+### 12.3 Configuração do repositório
 
 Já incluído no projeto:
 
@@ -608,7 +635,7 @@ Já incluído no projeto:
 }
 ```
 
-### 12.3 Variáveis extras na Vercel (manual)
+### 12.4 Variáveis extras na Vercel (manual)
 
 Em **Vercel → Project → Settings → Environment Variables**, adicione:
 
@@ -619,7 +646,7 @@ Em **Vercel → Project → Settings → Environment Variables**, adicione:
 
 As variáveis `NEXT_PUBLIC_*` da integração Supabase **já bastam** para conectar o cliente.
 
-### 12.4 Supabase — Auth e SQL
+### 12.5 Supabase — Auth, SQL e seed
 
 1. **SQL Editor** → rode o script da **seção 4** (não use a tabela demo `notes` do quickstart Vercel)
 2. **Authentication → URL Configuration** → adicione:
@@ -627,7 +654,13 @@ As variáveis `NEXT_PUBLIC_*` da integração Supabase **já bastam** para conec
    - `http://localhost:4200` (dev)
 3. **Site URL** e **Redirect URLs** com o domínio Vercel
 
-### 12.5 Limitação importante: JSON Server
+3. **Importar dados do `db.json`:**
+   ```bash
+   npm run seed:sql
+   ```
+   Cole `docs/supabase-seed.sql` no SQL Editor (190 lançamentos + 8 ativos + metas).
+
+### 12.6 Limitação importante: JSON Server
 
 O deploy Vercel é **estático** — `npm run json-server` **não roda** na nuvem.
 
@@ -639,7 +672,7 @@ O deploy Vercel é **estático** — `npm run json-server` **não roda** na nuve
 
 Até migrar, o app na Vercel pode carregar **fallback local** ou falhar chamadas HTTP para `API_URL=localhost:3000`.
 
-### 12.6 Desenvolvimento local com vars da Vercel
+### 12.7 Desenvolvimento local com vars da Vercel
 
 ```bash
 npm i -g vercel

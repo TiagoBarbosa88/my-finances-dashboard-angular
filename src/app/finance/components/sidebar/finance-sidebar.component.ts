@@ -42,17 +42,17 @@ export class FinanceSidebarComponent {
 
   async signOut(): Promise<void> {
     await this.supabase.signOut();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/']);
   }
   /** Rotas sincronizadas com app.routes.ts */
   readonly navItems: NavItem[] = [
-    { title: 'Painel',        url: '/',              exact: true,  icon: 'dashboard', visible: true  },
-    { title: 'Investimentos', url: '/investimentos',  exact: true,  icon: 'chart',     visible: true  },
+    { title: 'Painel',        url: '/app/painel',        exact: true,  icon: 'dashboard', visible: true  },
+    { title: 'Investimentos', url: '/app/investimentos', exact: true,  icon: 'chart',     visible: true  },
     // { title: 'Lançamentos',   url: '/lancamentos',    exact: true,  icon: 'wallet'    },
     // { title: 'Categorias',    url: '/categorias',     exact: true,  icon: 'pie'       },
     // { title: 'Metas',         url: '/metas',          exact: true,  icon: 'target'    },
     // { title: 'Relatórios',    url: '/relatorios',     exact: true,  icon: 'trending'  },
-    { title: 'Ajustes',       url: '/ajustes',        exact: true,  icon: 'settings',  visible: true  },
+    { title: 'Ajustes',       url: '/app/ajustes',       exact: true,  icon: 'settings',  visible: true  },
   ];
 
   readonly visibleNavItems = this.navItems.filter((item) => item.visible !== false);

@@ -758,6 +758,24 @@ export class FinanceService {
     const owned = this.auth.stampOwnership(transaction);
     const entries = this.buildTransactionEntries(owned, recorrencia);
 
+    void this.persistNewTransactions(entries);
+  }
+
+  private async persistNewTransactions(entries: Omit<Transaction, 'id'>[]): Promise<void> {
+    if (this.supabase.isConfigured()) {
+      const session = await this.supabase.getSession();
+      if (session?.user) {
+        for (const entry of entries) {
+          const saved = await this.supabase.insertTransaction(entry, session.user.id);
+          if (saved) {
+            this.transactions.update((list) => [...list, saved]);
+            this.persistStatuses();
+          }
+        }
+        return;
+      }
+    }
+
     entries.forEach((entry) => {
       this.http.post<Transaction>(this.transactionsUrl, entry).subscribe({
         next: (saved) => {
@@ -823,7 +841,10 @@ export class FinanceService {
 
     if (!this.supabase.isConfigured()) return;
 
-    this.supabase.updateTransaction(id, payload).then((saved) => {
+    const userId = String(previous.user_id ?? this.auth.usuarioLogado()?.id ?? '');
+    if (!userId) return;
+
+    this.supabase.updateTransaction(id, payload, userId).then((saved) => {
       if (saved) {
         this.transactions.update((list) =>
           list.map((t) => (t.id === id ? saved : t)),
@@ -849,6 +870,22 @@ export class FinanceService {
     if (!this.auth.canDelete(target)) {
       console.warn('[FinanceService] deleteTransaction: permissão negada.');
       return;
+    }
+
+    void this.persistDeleteTransaction(id);
+  }
+
+  private async persistDeleteTransaction(id: number): Promise<void> {
+    if (this.supabase.isConfigured()) {
+      const session = await this.supabase.getSession();
+      if (session?.user) {
+        const ok = await this.supabase.deleteTransaction(id);
+        if (ok) {
+          this.transactions.update((list) => list.filter((t) => t.id !== id));
+          this.persistStatuses();
+        }
+        return;
+      }
     }
 
     this.http.delete<void>(`${this.transactionsUrl}/${id}`).subscribe({
@@ -956,6 +993,22 @@ export class FinanceService {
   /** Carrega lançamentos do JSON Server local (porta 3000). */
   loadTransactions(): void {
     this.loading.set(true);
+    void this.loadTransactionsAsync();
+  }
+
+  private async loadTransactionsAsync(): Promise<void> {
+    if (this.supabase.isConfigured()) {
+      const session = await this.supabase.getSession();
+      if (session?.user) {
+        const data = await this.supabase.fetchTransactions();
+        const saved = this.readSavedStatuses();
+        this.transactions.set(
+          data.map((t) => this.enrichTransaction({ ...t, status: saved[t.id] ?? t.status })),
+        );
+        this.loading.set(false);
+        return;
+      }
+    }
 
     this.http.get<Transaction[]>(this.transactionsUrl).subscribe({
       next: (data) => {
