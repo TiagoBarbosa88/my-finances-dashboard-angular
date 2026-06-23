@@ -55,7 +55,7 @@ export class FinanceSidebarComponent {
     // { title: 'Categorias',    url: '/categorias',     exact: true,  icon: 'pie'       },
     // { title: 'Metas',         url: '/metas',          exact: true,  icon: 'target'    },
     // { title: 'Relatórios',    url: '/relatorios',     exact: true,  icon: 'trending'  },
-    { title: 'Ajustes',       url: '/app/ajustes',       exact: true,  icon: 'settings',  visible: true  },
+    { title: 'Configurações', url: '/app/configuracoes', exact: true, icon: 'settings', visible: true },
   ];
 
   readonly visibleNavItems = this.navItems.filter((item) => item.visible !== false);

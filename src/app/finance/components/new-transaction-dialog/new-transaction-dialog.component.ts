@@ -1,4 +1,4 @@
-import { DecimalPipe, NgClass } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx';
@@ -24,7 +24,7 @@ interface ExcelRow {
 @Component({
   selector: 'app-new-transaction-dialog',
   standalone: true,
-  imports: [FormsModule, DecimalPipe, NgClass],
+  imports: [FormsModule, DecimalPipe],
   templateUrl: './new-transaction-dialog.component.html',
 })
 export class NewTransactionDialogComponent {

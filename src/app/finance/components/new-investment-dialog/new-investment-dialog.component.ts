@@ -1,4 +1,4 @@
-import { DecimalPipe, NgClass } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -28,7 +28,7 @@ import { CurrencyBrlPipe } from '@app/shared/pipes/currency-brl.pipe';
 @Component({
   selector: 'app-new-investment-dialog',
   standalone: true,
-  imports: [FormsModule, DecimalPipe, CurrencyBrlPipe, NgClass],
+  imports: [FormsModule, DecimalPipe, CurrencyBrlPipe],
   templateUrl: './new-investment-dialog.component.html',
 })
 export class NewInvestmentDialogComponent {

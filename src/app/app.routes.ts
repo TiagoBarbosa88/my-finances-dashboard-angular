@@ -91,7 +91,12 @@ export const routes: Routes = [
       },
       {
         path: 'ajustes',
-        title: `Ajustes — ${APP_NAME}`,
+        pathMatch: 'full',
+        redirectTo: 'configuracoes',
+      },
+      {
+        path: 'configuracoes',
+        title: `Configurações — ${APP_NAME}`,
         loadComponent: () =>
           import('./features/ajustes/pages/ajustes-page/ajustes-page.component').then(
             (m) => m.AjustesPageComponent,
@@ -106,7 +111,7 @@ export const routes: Routes = [
   { path: 'categorias', redirectTo: 'app/categorias', pathMatch: 'full' },
   { path: 'metas', redirectTo: 'app/metas', pathMatch: 'full' },
   { path: 'relatorios', redirectTo: 'app/relatorios', pathMatch: 'full' },
-  { path: 'ajustes', redirectTo: 'app/ajustes', pathMatch: 'full' },
+  { path: 'ajustes', redirectTo: 'app/configuracoes', pathMatch: 'full' },
 
   // ── Fallback ──────────────────────────────────────────────────────────────
   {
