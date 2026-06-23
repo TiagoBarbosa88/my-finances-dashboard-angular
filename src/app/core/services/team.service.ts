@@ -149,19 +149,7 @@ export class TeamService {
 
   removerConvite(id: number): Observable<void> {
     if (this.supabase.isConfigured()) {
-      if (environment.production) {
-        return from(this.deleteConviteViaApi(id)).pipe(tap(() => this.loadConvites()));
-      }
-
-      return from(
-        this.supabase.deleteConvite(id).then((ok) => {
-          if (!ok) throw new Error('Falha ao remover convite.');
-        }),
-      ).pipe(
-        tap(() => {
-          this.convites.update((list) => list.filter((c) => c.id !== id));
-        }),
-      );
+      return from(this.removerConviteInternal(id)).pipe(tap(() => this.loadConvites()));
     }
 
     return this.http.delete<void>(`${this.convitesUrl}/${id}`).pipe(
@@ -177,10 +165,26 @@ export class TeamService {
         return from(this.reenviarConviteViaApi(id)).pipe(tap(() => this.loadConvites()));
       }
 
-      return from(Promise.reject(new Error('Reenvio de e-mail indisponível no momento.')));
+      return from(Promise.reject(new Error('Reenvio de e-mail indisponível neste ambiente.')));
     }
 
     return from(Promise.reject(new Error('Reenvio de e-mail indisponível.')));
+  }
+
+  private async removerConviteInternal(id: number): Promise<void> {
+    if (environment.production) {
+      try {
+        await this.deleteConviteViaApi(id);
+        return;
+      } catch {
+        // API indisponível ou falhou — tenta direto no banco (admin RLS)
+      }
+    }
+
+    const ok = await this.supabase.deleteConvite(id);
+    if (!ok) {
+      throw new Error('Falha ao remover convite.');
+    }
   }
 
   private async conviteApiRequest(
@@ -266,7 +270,19 @@ export class TeamService {
 
   removerMembro(id: string): Observable<void> {
     if (this.supabase.isConfigured()) {
-      return from(Promise.reject(new Error('Remoção de membros indisponível no momento.')));
+      if (environment.production) {
+        return from(this.deleteMembroViaApi(id)).pipe(tap(() => this.loadMembros()));
+      }
+
+      return from(
+        this.supabase.deleteMemberProfile(id).then((ok) => {
+          if (!ok) throw new Error('Falha ao remover membro.');
+        }),
+      ).pipe(
+        tap(() => {
+          this.membros.update((list) => list.filter((m) => m.id !== id));
+        }),
+      );
     }
 
     return this.http.delete<void>(`${this.usuariosUrl}/${id}`).pipe(
@@ -274,5 +290,29 @@ export class TeamService {
         this.membros.update((list) => list.filter((m) => m.id !== id));
       }),
     );
+  }
+
+  private async deleteMembroViaApi(id: string): Promise<void> {
+    const session = await this.supabase.getSession();
+    const token = session?.access_token;
+
+    if (!token) {
+      throw new Error('Sessão expirada. Faça login novamente.');
+    }
+
+    const response = await fetch('/api/membro', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id }),
+    });
+
+    const payload = (await response.json()) as { error?: string };
+
+    if (!response.ok) {
+      throw new Error(payload.error || 'Falha ao remover membro.');
+    }
   }
 }

@@ -240,6 +240,18 @@ export class SupabaseService {
     return profileToUsuario(data as ProfileRow);
   }
 
+  /** Dev local: remove só o profile (sem Auth admin). */
+  async deleteMemberProfile(userId: string): Promise<boolean> {
+    const { error } = await this.client.from('profiles').delete().eq('id', userId);
+
+    if (error) {
+      console.error('[SupabaseService] deleteMemberProfile:', error.message);
+      return false;
+    }
+
+    return true;
+  }
+
   async fetchAtivos(): Promise<Ativo[]> {
     const { data, error } = await this.client
       .from('ativos')

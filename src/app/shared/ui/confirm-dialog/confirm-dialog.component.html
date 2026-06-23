@@ -1,0 +1,72 @@
+<div
+  class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+  role="alertdialog"
+  aria-modal="true"
+  aria-labelledby="confirm-dialog-title"
+  (click)="cancel.emit()"
+>
+  <div
+    class="w-full max-w-sm rounded-2xl border border-border bg-card shadow-2xl shadow-black/40"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="px-6 py-5 text-center">
+      <div
+        class="mx-auto mb-3 grid h-10 w-10 place-items-center rounded-full"
+        [class.bg-destructive/15]="destructive()"
+        [class.text-destructive]="destructive()"
+        [class.bg-muted]="!destructive()"
+        [class.text-muted-foreground]="!destructive()"
+      >
+        @if (destructive()) {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            <path d="M10 11v6"/><path d="M14 11v6"/>
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+          </svg>
+        } @else {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        }
+      </div>
+
+      <h2 id="confirm-dialog-title" class="text-display text-base font-semibold">
+        {{ title() }}
+      </h2>
+
+      @if (message()) {
+        <p class="mt-2 text-sm text-muted-foreground">{{ message() }}</p>
+      }
+    </div>
+
+    <div class="flex items-center justify-end gap-3 border-t border-border px-6 py-4">
+      <button
+        type="button"
+        (click)="cancel.emit()"
+        class="cursor-pointer rounded-xl border border-border px-4 py-2 text-sm font-medium
+               text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+      >
+        {{ cancelLabel() }}
+      </button>
+      <button
+        type="button"
+        (click)="confirm.emit()"
+        class="cursor-pointer rounded-xl px-4 py-2 text-sm font-semibold transition-all
+               active:scale-95"
+        [class.bg-destructive]="destructive()"
+        [class.text-destructive-foreground]="destructive()"
+        [class.hover:brightness-110]="destructive()"
+        [class.bg-primary]="!destructive()"
+        [class.text-primary-foreground]="!destructive()"
+        [class.hover:brightness-110]="!destructive()"
+      >
+        {{ confirmLabel() }}
+      </button>
+    </div>
+  </div>
+</div>

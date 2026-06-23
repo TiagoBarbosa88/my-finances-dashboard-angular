@@ -50,3 +50,9 @@ BEGIN
   RETURN NEW;
 END;
 $$;
+
+-- Admin pode remover membros da equipe (profiles)
+DROP POLICY IF EXISTS "profiles_delete_admin" ON public.profiles;
+CREATE POLICY "profiles_delete_admin"
+  ON public.profiles FOR DELETE TO authenticated
+  USING (public.is_admin());

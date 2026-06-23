@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '@app/core/services/auth.service';
@@ -11,12 +11,17 @@ import {
   UserRole,
   Usuario,
 } from '@app/shared/models/team.model';
+import { ConfirmDialogComponent } from '@app/shared/ui/confirm-dialog/confirm-dialog.component';
 import { environment } from 'src/environments/environment';
+
+type ConfirmTarget =
+  | { kind: 'convite'; convite: Convite }
+  | { kind: 'membro'; membro: Usuario };
 
 @Component({
   selector: 'app-ajustes-page',
   standalone: true,
-  imports: [FormsModule, HasRoleDirective],
+  imports: [FormsModule, HasRoleDirective, ConfirmDialogComponent],
   templateUrl: './ajustes-page.component.html',
 })
 export class AjustesPageComponent implements OnInit {
@@ -41,6 +46,38 @@ export class AjustesPageComponent implements OnInit {
   readonly membroActionId = signal<string | null>(null);
   readonly conviteEditEmail = signal<Record<number, string>>({});
   readonly membroRoleDraft = signal<Record<string, UserRole>>({});
+  readonly confirmTarget = signal<ConfirmTarget | null>(null);
+
+  readonly convitesPendentes = computed(() =>
+    this.team.convites().filter((c) => c.status === 'pendente'),
+  );
+
+  readonly usuarioAtual = computed(() => {
+    const id = this.auth.usuarioLogado()?.id;
+    if (!id) return null;
+    return this.team.membros().find((m) => m.id === id) ?? null;
+  });
+
+  readonly outrosMembros = computed(() => {
+    const id = this.auth.usuarioLogado()?.id;
+    return this.team.membros().filter((m) => m.id !== id);
+  });
+
+  readonly confirmTitle = computed(() => {
+    const target = this.confirmTarget();
+    if (!target) return '';
+    if (target.kind === 'convite') return 'Remover convite?';
+    return 'Remover membro?';
+  });
+
+  readonly confirmMessage = computed(() => {
+    const target = this.confirmTarget();
+    if (!target) return '';
+    if (target.kind === 'convite') {
+      return `O convite para ${target.convite.nome} (${target.convite.email}) será cancelado.`;
+    }
+    return `${target.membro.nome} perderá o acesso ao Smart Finances.`;
+  });
 
   ngOnInit(): void {
     this.syncProfileFromAuth();
@@ -184,9 +221,33 @@ export class AjustesPageComponent implements OnInit {
     });
   }
 
-  removerConvite(convite: Convite): void {
-    if (!confirm(`Remover convite para ${convite.nome}?`)) return;
+  solicitarRemoverConvite(convite: Convite): void {
+    this.confirmTarget.set({ kind: 'convite', convite });
+  }
 
+  solicitarRemoverMembro(membro: Usuario): void {
+    this.confirmTarget.set({ kind: 'membro', membro });
+  }
+
+  cancelarConfirmacao(): void {
+    this.confirmTarget.set(null);
+  }
+
+  executarConfirmacao(): void {
+    const target = this.confirmTarget();
+    if (!target) return;
+
+    this.confirmTarget.set(null);
+
+    if (target.kind === 'convite') {
+      this.executarRemoverConvite(target.convite);
+      return;
+    }
+
+    this.executarRemoverMembro(target.membro);
+  }
+
+  private executarRemoverConvite(convite: Convite): void {
     this.conviteActionId.set(convite.id);
     this.conviteMessage.set(null);
 
@@ -265,16 +326,21 @@ export class AjustesPageComponent implements OnInit {
     return this.membroActionId() === membroId;
   }
 
-  removerMembro(membro: Usuario): void {
-    if (membro.id === this.auth.usuarioLogado()?.id) {
-      return;
-    }
+  private executarRemoverMembro(membro: Usuario): void {
+    if (membro.id === this.auth.usuarioLogado()?.id) return;
 
-    if (!confirm(`Remover ${membro.nome} da equipe?`)) return;
+    this.membroActionId.set(membro.id);
+    this.teamMessage.set(null);
 
     this.team.removerMembro(membro.id).subscribe({
-      next: () => this.teamMessage.set(`${membro.nome} removido da equipe.`),
-      error: (err: Error) => this.teamMessage.set(err.message || 'Falha ao remover membro.'),
+      next: () => {
+        this.teamMessage.set(`${membro.nome} removido da equipe.`);
+        this.membroActionId.set(null);
+      },
+      error: (err: Error) => {
+        this.teamMessage.set(err.message || 'Falha ao remover membro.');
+        this.membroActionId.set(null);
+      },
     });
   }
 
@@ -287,9 +353,5 @@ export class AjustesPageComponent implements OnInit {
       default:
         return 'bg-muted text-muted-foreground ring-border';
     }
-  }
-
-  podeGerenciarMembro(membro: Usuario): boolean {
-    return membro.id !== this.auth.usuarioLogado()?.id;
   }
 }
