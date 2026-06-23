@@ -54,7 +54,7 @@ const db = JSON.parse(readFileSync(dbPath, 'utf8'));
 
 const lines = [
   '-- ============================================================',
-  '-- My Finances Dash — Seed a partir de db.json',
+  '-- Smart Finances — Seed a partir de db.json',
   `-- Dono principal: ${ownerEmail}`,
   '-- Rode DEPOIS do schema (seção 4 do SUPABASE-SETUP.md)',
   '-- e DEPOIS de criar o usuário em Authentication.',

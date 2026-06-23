@@ -1,4 +1,4 @@
-# Guia Supabase — My Finances Dash (Angular)
+# Guia Supabase — Smart Finances (Angular)
 
 Este documento descreve **como conectar o projeto ao Supabase**, criar o banco com **RLS**, migrar gradualmente do **JSON Server** (`localhost:3000`) e ativar **Auth + papéis** (Admin / Editor / Leitor) sem quebrar o dashboard.
 

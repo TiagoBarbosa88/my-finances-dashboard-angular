@@ -57,12 +57,15 @@ function loadVars() {
     env.NEXT_PUBLIC_SUPABASE_URL ||
     '';
 
-  /** JWT anon é o mais compatível com @supabase/supabase-js Auth. */
+  /**
+   * Chave pública do cliente Supabase.
+   * Publishable (sb_publishable_*) tem prioridade — evita anon legada errada na Vercel.
+   */
   const publishableKey =
+    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    env.SUPABASE_PUBLISHABLE_KEY ||
     env.SUPABASE_ANON_KEY ||
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    env.SUPABASE_PUBLISHABLE_KEY ||
-    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
     '';
 
   const jwksUrl =

@@ -1,4 +1,4 @@
-# My Finances Dash
+# Smart Finances
 
 Dashboard financeiro pessoal em **Angular 19** — controle de lançamentos, carteira de investimentos, metas de alocação e sugestões inteligentes de compra com foco em **risco** e **qualidade**.
 

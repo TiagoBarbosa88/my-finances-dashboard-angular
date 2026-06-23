@@ -2,6 +2,7 @@ import { NgClass } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
+import { APP_NAME } from '@app/core/constants/app-brand';
 import { SupabaseService } from '@app/core/services/supabase.service';
 
 interface NavItem {
@@ -35,7 +36,9 @@ export type SidebarIcon =
 })
 export class FinanceSidebarComponent {
   private readonly supabase = inject(SupabaseService);
-  private readonly router   = inject(Router);
+  private readonly router = inject(Router);
+
+  readonly appName = APP_NAME;
 
   /** Dados do usuário atual — exibidos no rodapé da sidebar. */
   readonly currentUser = this.supabase.currentUser;
