@@ -37,8 +37,7 @@
         type="button"
         (click)="close.emit()"
         aria-label="Fechar"
-        class="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground
-               transition-colors hover:bg-accent hover:text-foreground"
+        class="dialog-close-btn"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
              stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
@@ -344,8 +343,7 @@
         <button
           type="button"
           (click)="close.emit()"
-          class="rounded-xl border border-border px-4 py-2 text-sm font-medium
-                 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          class="btn-cancel"
         >
           Cancelar
         </button>

@@ -64,15 +64,14 @@ export class FinanceSidebarComponent {
 
   /** Classes do link baseadas no estado ativo. */
   linkClass(isActive: boolean): string {
-    const base =
-      'group/item relative flex h-11 items-center gap-3 overflow-hidden rounded-xl px-3 text-sm font-medium transition-colors';
     return isActive
-      ? `${base} bg-accent text-foreground`
-      : `${base} text-muted-foreground hover:bg-accent/60 hover:text-foreground`;
+      ? 'finance-sidebar-link finance-sidebar-link--active'
+      : 'finance-sidebar-link';
   }
 
   mobileLinkClass(isActive: boolean): string {
-    const base = 'flex flex-1 flex-col items-center justify-center gap-1 py-2 text-xs transition-colors';
-    return isActive ? `${base} text-primary` : `${base} text-muted-foreground`;
+    return isActive
+      ? 'finance-mobile-nav-link finance-mobile-nav-link--active'
+      : 'finance-mobile-nav-link';
   }
 }

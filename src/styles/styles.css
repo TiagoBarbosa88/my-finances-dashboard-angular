@@ -92,6 +92,35 @@
   body {
     @apply bg-background font-sans text-foreground antialiased;
   }
+
+  button:not(:disabled),
+  input[type='button']:not(:disabled),
+  input[type='submit']:not(:disabled),
+  input[type='reset']:not(:disabled) {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  button:not(:disabled) {
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      filter 0.15s ease,
+      transform 0.1s ease;
+  }
+
+  button:not(:disabled):hover {
+    box-shadow: 0 1px 4px color-mix(in oklab, black 28%, transparent);
+  }
+
+  button:not(:disabled):active {
+    transform: scale(0.98);
+  }
 }
 
 @layer utilities {
@@ -105,6 +134,19 @@
 
   .surface-card {
     @apply rounded-2xl border border-border bg-card/80 p-6 shadow-sm backdrop-blur-sm;
+  }
+
+  .ajustes-top-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  @media (min-width: 768px) {
+    .ajustes-top-grid {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   .glow-primary {
@@ -163,6 +205,100 @@
     display: none;
   }
 
+  /* Links da sidebar — CSS puro (hover Tailwind falha no build prod v4) */
+  .finance-sidebar-link {
+    position: relative;
+    display: flex;
+    height: 2.75rem;
+    align-items: center;
+    gap: 0.75rem;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    padding-inline: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    color: var(--muted-foreground);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .finance-sidebar-link:hover {
+    background: color-mix(in oklab, var(--accent) 65%, transparent);
+    color: var(--foreground);
+    box-shadow: 0 1px 4px color-mix(in oklab, black 24%, transparent);
+  }
+
+  .finance-sidebar-link--active {
+    background: var(--accent);
+    color: var(--foreground);
+  }
+
+  .finance-sidebar-link--active:hover {
+    background: color-mix(in oklab, var(--accent) 85%, var(--primary) 8%);
+    color: var(--foreground);
+  }
+
+  .finance-sidebar-signout {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.75rem;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .finance-sidebar-signout:hover {
+    background: color-mix(in oklab, var(--destructive) 14%, transparent);
+    color: var(--destructive);
+    box-shadow: 0 1px 4px color-mix(in oklab, black 22%, transparent);
+  }
+
+  .finance-mobile-nav-link {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding-block: 0.5rem;
+    font-size: 0.625rem;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .finance-mobile-nav-link:hover {
+    background: color-mix(in oklab, var(--accent) 55%, transparent);
+    color: var(--foreground);
+  }
+
+  .finance-mobile-nav-link--active {
+    color: var(--primary);
+  }
+
+  .finance-mobile-nav-link--active:hover {
+    background: color-mix(in oklab, var(--primary) 12%, transparent);
+    color: var(--primary);
+  }
+
   .dialog-panel {
     @apply flex w-full max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-black/40;
     max-height: min(72vh, 520px);
@@ -170,6 +306,103 @@
 
   .dialog-panel-header {
     @apply flex shrink-0 items-center justify-between border-b border-border px-4 py-2.5 sm:px-5;
+  }
+
+  .dialog-close-btn {
+    display: grid;
+    height: 2rem;
+    width: 2rem;
+    flex-shrink: 0;
+    place-items: center;
+    border-radius: 0.5rem;
+    border: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+    color: var(--muted-foreground);
+    background: color-mix(in oklab, var(--muted) 35%, transparent);
+    box-shadow: 0 1px 3px color-mix(in oklab, black 22%, transparent);
+    cursor: pointer;
+  }
+
+  .dialog-close-btn:hover {
+    border-color: color-mix(in oklab, var(--primary) 35%, var(--border));
+    background: color-mix(in oklab, var(--accent) 90%, transparent);
+    color: var(--foreground);
+    box-shadow: 0 2px 8px color-mix(in oklab, black 35%, transparent);
+  }
+
+  .team-member-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.875rem 0;
+  }
+
+  .team-member-identity {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.375rem 0.75rem;
+    min-width: 0;
+  }
+
+  .team-member-name {
+    flex-shrink: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+    color: var(--foreground);
+  }
+
+  .team-member-email {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+  }
+
+  .team-member-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .team-member-tag {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+  }
+
+  .btn-cancel {
+    border-radius: 0.75rem;
+    border: 1px solid color-mix(in oklab, var(--destructive) 38%, var(--border));
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    color: color-mix(in oklab, var(--destructive) 88%, var(--foreground));
+    background: color-mix(in oklab, var(--destructive) 10%, transparent);
+    cursor: pointer;
+    box-shadow: 0 1px 4px color-mix(in oklab, var(--destructive) 22%, transparent);
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      transform 0.1s ease;
+  }
+
+  .btn-cancel:hover {
+    background: color-mix(in oklab, var(--destructive) 18%, transparent);
+    color: var(--destructive);
+    border-color: color-mix(in oklab, var(--destructive) 55%, var(--border));
+    box-shadow: 0 2px 10px color-mix(in oklab, var(--destructive) 32%, transparent);
+  }
+
+  .btn-cancel:active {
+    transform: scale(0.98);
   }
 
   .dialog-panel-body {

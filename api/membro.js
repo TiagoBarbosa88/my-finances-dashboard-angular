@@ -3,6 +3,7 @@
  * Body: { id: uuid }
  */
 const { createClient } = require('@supabase/supabase-js');
+const { userFacingError } = require('./_lib/user-message');
 
 function readBody(req) {
   if (req.body && typeof req.body === 'object') return req.body;
@@ -77,13 +78,17 @@ module.exports = async (req, res) => {
 
     const { error: authError } = await admin.auth.admin.deleteUser(targetId);
     if (authError) {
-      return res.status(400).json({ error: authError.message });
+      return res.status(400).json({
+        error: userFacingError(authError.message, 'Falha ao remover membro.'),
+      });
     }
 
     await admin.from('profiles').delete().eq('id', targetId);
 
     return res.status(200).json({ message: 'Membro removido.' });
   } catch (err) {
-    return res.status(500).json({ error: err.message || 'Erro interno.' });
+    return res.status(500).json({
+      error: userFacingError(err.message, 'Falha ao remover membro.'),
+    });
   }
 };

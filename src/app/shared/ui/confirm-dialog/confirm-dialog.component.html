@@ -12,10 +12,11 @@
     <div class="px-6 py-5 text-center">
       <div
         class="mx-auto mb-3 grid h-10 w-10 place-items-center rounded-full"
-        [class.bg-destructive/15]="destructive()"
-        [class.text-destructive]="destructive()"
-        [class.bg-muted]="!destructive()"
-        [class.text-muted-foreground]="!destructive()"
+        [ngClass]="
+          destructive()
+            ? 'bg-destructive/15 text-destructive'
+            : 'bg-muted text-muted-foreground'
+        "
       >
         @if (destructive()) {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -48,8 +49,7 @@
       <button
         type="button"
         (click)="cancel.emit()"
-        class="cursor-pointer rounded-xl border border-border px-4 py-2 text-sm font-medium
-               text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        class="btn-cancel"
       >
         {{ cancelLabel() }}
       </button>
@@ -57,13 +57,12 @@
         type="button"
         (click)="confirm.emit()"
         class="cursor-pointer rounded-xl px-4 py-2 text-sm font-semibold transition-all
-               active:scale-95"
-        [class.bg-destructive]="destructive()"
-        [class.text-destructive-foreground]="destructive()"
-        [class.hover:brightness-110]="destructive()"
-        [class.bg-primary]="!destructive()"
-        [class.text-primary-foreground]="!destructive()"
-        [class.hover:brightness-110]="!destructive()"
+               hover:brightness-110 active:scale-95"
+        [ngClass]="
+          destructive()
+            ? 'bg-destructive text-destructive-foreground'
+            : 'bg-primary text-primary-foreground'
+        "
       >
         {{ confirmLabel() }}
       </button>

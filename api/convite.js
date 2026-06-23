@@ -5,6 +5,7 @@
  */
 const { createClient } = require('@supabase/supabase-js');
 const { inviteRedirectUrl } = require('./_lib/site-url');
+const { userFacingError } = require('./_lib/user-message');
 
 function readBody(req) {
   if (req.body && typeof req.body === 'object') return req.body;
@@ -43,7 +44,7 @@ function getSupabaseClients() {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !anonKey || !serviceKey) {
-    throw new Error('Supabase não configurado no servidor (Vercel env vars).');
+    throw new Error('Serviço indisponível no momento.');
   }
 
   const userClient = createClient(url, anonKey, {
@@ -165,7 +166,9 @@ module.exports = async (req, res) => {
 
       const { error } = await admin.from('convites').delete().eq('id', id);
       if (error) {
-        return res.status(500).json({ error: error.message });
+        return res.status(500).json({
+          error: userFacingError(error.message, 'Falha ao remover convite.'),
+        });
       }
 
       return res.status(200).json({ message: 'Convite removido.' });
@@ -182,7 +185,7 @@ module.exports = async (req, res) => {
     }
 
     if (req.method === 'POST') {
-      return res.status(400).json({ error: 'Ação inválida. Use action: "resend".' });
+      return res.status(400).json({ error: 'Ação não reconhecida.' });
     }
 
     // PATCH — atualizar e-mail e/ou role
@@ -217,7 +220,9 @@ module.exports = async (req, res) => {
       .single();
 
     if (updateError) {
-      return res.status(500).json({ error: updateError.message });
+      return res.status(500).json({
+        error: userFacingError(updateError.message, 'Falha ao atualizar convite.'),
+      });
     }
 
     if (emailChanged) {
@@ -232,6 +237,8 @@ module.exports = async (req, res) => {
     });
   } catch (err) {
     const status = err.status || 500;
-    return res.status(status).json({ error: err.message || 'Erro interno.' });
+    return res.status(status).json({
+      error: userFacingError(err.message, 'Não foi possível gerenciar o convite.'),
+    });
   }
 };

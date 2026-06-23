@@ -12,6 +12,7 @@ import {
   Usuario,
 } from '@app/shared/models/team.model';
 import { ConfirmDialogComponent } from '@app/shared/ui/confirm-dialog/confirm-dialog.component';
+import { userFacingMessage } from '@app/core/utils/user-message.util';
 import { environment } from 'src/environments/environment';
 
 type ConfirmTarget =
@@ -53,15 +54,17 @@ export class AjustesPageComponent implements OnInit {
   );
 
   readonly usuarioAtual = computed(() => {
-    const id = this.auth.usuarioLogado()?.id;
-    if (!id) return null;
-    return this.team.membros().find((m) => m.id === id) ?? null;
+    const authUser = this.auth.usuarioLogado();
+    if (!authUser) return null;
+    return this.team.membros().find((m) => m.id === authUser.id) ?? authUser;
   });
 
   readonly outrosMembros = computed(() => {
     const id = this.auth.usuarioLogado()?.id;
     return this.team.membros().filter((m) => m.id !== id);
   });
+
+  readonly totalMembros = computed(() => this.team.membros().length);
 
   readonly confirmTitle = computed(() => {
     const target = this.confirmTarget();
@@ -141,13 +144,15 @@ export class AjustesPageComponent implements OnInit {
         this.conviteRole.set('editor');
         this.conviteMessage.set(
           environment.production
-            ? `Convite enviado para ${nome}. Peça para verificar a caixa de entrada e o spam.`
-            : 'Convite registrado com sucesso.',
+            ? `Convite enviado para ${nome}. Peça para a pessoa verificar o e-mail.`
+            : `Convite registrado para ${nome}.`,
         );
         this.conviteSending.set(false);
       },
       error: (err: Error) => {
-        this.conviteMessage.set(err.message || 'Falha ao enviar convite.');
+        this.conviteMessage.set(
+          userFacingMessage(err.message, 'Falha ao enviar convite.'),
+        );
         this.conviteSending.set(false);
       },
     });
@@ -271,8 +276,8 @@ export class AjustesPageComponent implements OnInit {
       next: () => {
         this.conviteMessage.set(
           environment.production
-            ? `E-mail reenviado para ${convite.nome}. Confira também a pasta de spam.`
-            : 'Reenvio de e-mail indisponível neste ambiente.',
+            ? `E-mail reenviado para ${convite.nome}.`
+            : 'Não foi possível reenviar o e-mail agora.',
         );
         this.conviteActionId.set(null);
       },

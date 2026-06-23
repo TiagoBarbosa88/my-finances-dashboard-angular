@@ -7,6 +7,7 @@
  */
 const { createClient } = require('@supabase/supabase-js');
 const { inviteRedirectUrl } = require('./_lib/site-url');
+const { userFacingError } = require('./_lib/user-message');
 
 function readBody(req) {
   if (req.body && typeof req.body === 'object') return req.body;
@@ -46,7 +47,7 @@ module.exports = async (req, res) => {
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!url || !anonKey || !serviceKey) {
-      return res.status(500).json({ error: 'Supabase não configurado no servidor (Vercel env vars).' });
+      return res.status(500).json({ error: userFacingError('', 'Serviço indisponível no momento.') });
     }
 
     const userClient = createClient(url, anonKey, {
@@ -94,7 +95,9 @@ module.exports = async (req, res) => {
     });
 
     if (inviteError) {
-      return res.status(400).json({ error: inviteError.message });
+      return res.status(400).json({
+        error: userFacingError(inviteError.message, 'Não foi possível enviar o convite.'),
+      });
     }
 
     const { data: convite, error: conviteError } = await admin
@@ -111,7 +114,9 @@ module.exports = async (req, res) => {
       .single();
 
     if (conviteError) {
-      return res.status(500).json({ error: conviteError.message });
+      return res.status(500).json({
+        error: userFacingError(conviteError.message, 'Convite enviado, mas não foi possível registrá-lo.'),
+      });
     }
 
     const criadoEm = convite.criado_em?.includes('T')
@@ -131,6 +136,8 @@ module.exports = async (req, res) => {
       message: 'Convite enviado por e-mail.',
     });
   } catch (err) {
-    return res.status(500).json({ error: err.message || 'Erro interno.' });
+    return res.status(500).json({
+      error: userFacingError(err.message, 'Não foi possível enviar o convite.'),
+    });
   }
 };

@@ -22,10 +22,13 @@
       <button
         type="button"
         (click)="close.emit()"
-        class="rounded-xl border border-border px-4 py-2 text-sm font-medium
-               text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        aria-label="Fechar"
+        class="dialog-close-btn"
       >
-        Fechar
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
       </button>
     </div>
 

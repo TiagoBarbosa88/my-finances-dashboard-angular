@@ -383,7 +383,7 @@ export class NewTransactionDialogComponent {
           : item.categoria || 'Outros',
     );
     this.status.set(item.status);
-    this.observacoes.set('Importado via Excel');
+    this.observacoes.set('Importado da planilha');
   }
 
   private loadTransaction(t: Transaction): void {

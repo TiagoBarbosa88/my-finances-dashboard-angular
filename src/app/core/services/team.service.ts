@@ -4,6 +4,7 @@ import { from, Observable, tap } from 'rxjs';
 
 import { AuthService } from '@app/core/services/auth.service';
 import { SupabaseService } from '@app/core/services/supabase.service';
+import { userFacingMessage } from '@app/core/utils/user-message.util';
 import { Convite, ConviteDraft, Usuario, UserRole } from '@app/shared/models/team.model';
 import { environment } from '../../../environments/environment';
 
@@ -113,7 +114,7 @@ export class TeamService {
     const body = (await response.json()) as { convite?: Convite; error?: string; message?: string };
 
     if (!response.ok) {
-      throw new Error(body.error || 'Falha ao enviar convite.');
+      throw new Error(userFacingMessage(body.error, 'Falha ao enviar convite.'));
     }
 
     if (!body.convite) {
@@ -165,7 +166,7 @@ export class TeamService {
         return from(this.reenviarConviteViaApi(id)).pipe(tap(() => this.loadConvites()));
       }
 
-      return from(Promise.reject(new Error('Reenvio de e-mail indisponível neste ambiente.')));
+      return from(Promise.reject(new Error('Não foi possível reenviar o e-mail agora.')));
     }
 
     return from(Promise.reject(new Error('Reenvio de e-mail indisponível.')));
@@ -214,7 +215,7 @@ export class TeamService {
     };
 
     if (!response.ok) {
-      throw new Error(payload.error || 'Falha ao gerenciar convite.');
+      throw new Error(userFacingMessage(payload.error, 'Falha ao gerenciar convite.'));
     }
 
     return payload;
@@ -312,7 +313,7 @@ export class TeamService {
     const payload = (await response.json()) as { error?: string };
 
     if (!response.ok) {
-      throw new Error(payload.error || 'Falha ao remover membro.');
+      throw new Error(userFacingMessage(payload.error, 'Falha ao remover membro.'));
     }
   }
 }
