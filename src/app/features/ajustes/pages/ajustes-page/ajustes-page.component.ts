@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '@app/core/services/auth.service';
@@ -25,9 +25,11 @@ type ConfirmTarget =
   imports: [FormsModule, HasRoleDirective, ConfirmDialogComponent],
   templateUrl: './ajustes-page.component.html',
 })
-export class AjustesPageComponent implements OnInit {
+export class AjustesPageComponent implements OnInit, OnDestroy {
   readonly auth = inject(AuthService);
   readonly team = inject(TeamService);
+
+  private cooldownTimer: ReturnType<typeof setInterval> | null = null;
 
   readonly roleOptions = ROLE_OPTIONS;
   readonly roleLabels = ROLE_LABELS;
@@ -43,6 +45,8 @@ export class AjustesPageComponent implements OnInit {
   readonly conviteMessage = signal<string | null>(null);
   readonly profileSaving = signal(false);
   readonly conviteSending = signal(false);
+  readonly conviteCooldownUntil = signal(0);
+  readonly conviteCooldownTick = signal(0);
   readonly conviteActionId = signal<number | null>(null);
   readonly membroActionId = signal<string | null>(null);
   readonly conviteEditEmail = signal<Record<number, string>>({});
@@ -51,6 +55,16 @@ export class AjustesPageComponent implements OnInit {
 
   readonly convitesPendentes = computed(() =>
     this.team.convites().filter((c) => c.status === 'pendente'),
+  );
+
+  readonly conviteCooldownSec = computed(() => {
+    this.conviteCooldownTick();
+    const remain = Math.ceil((this.conviteCooldownUntil() - Date.now()) / 1000);
+    return remain > 0 ? remain : 0;
+  });
+
+  readonly conviteButtonDisabled = computed(
+    () => this.conviteSending() || this.conviteCooldownSec() > 0,
   );
 
   readonly usuarioAtual = computed(() => {
@@ -86,6 +100,29 @@ export class AjustesPageComponent implements OnInit {
     this.syncProfileFromAuth();
     this.team.loadMembros();
     this.team.loadConvites();
+  }
+
+  ngOnDestroy(): void {
+    if (this.cooldownTimer) {
+      clearInterval(this.cooldownTimer);
+    }
+  }
+
+  private armConviteCooldown(durationMs: number): void {
+    this.conviteCooldownUntil.set(Date.now() + durationMs);
+
+    if (this.cooldownTimer) {
+      clearInterval(this.cooldownTimer);
+    }
+
+    this.cooldownTimer = setInterval(() => {
+      if (this.conviteCooldownSec() <= 0) {
+        clearInterval(this.cooldownTimer!);
+        this.cooldownTimer = null;
+        this.conviteCooldownUntil.set(0);
+      }
+      this.conviteCooldownTick.update((n) => n + 1);
+    }, 1000);
   }
 
   syncProfileFromAuth(): void {
@@ -125,6 +162,12 @@ export class AjustesPageComponent implements OnInit {
   }
 
   enviarConvite(): void {
+    const cooldown = this.conviteCooldownSec();
+    if (cooldown > 0) {
+      this.conviteMessage.set(`Aguarde ${cooldown}s antes de enviar outro convite.`);
+      return;
+    }
+
     const nome = this.conviteNome().trim();
     const email = this.conviteEmail().trim();
 
@@ -140,6 +183,7 @@ export class AjustesPageComponent implements OnInit {
 
     this.conviteSending.set(true);
     this.conviteMessage.set(null);
+    this.armConviteCooldown(30_000);
 
     this.team.enviarConvite(nome, email, this.conviteRole()).subscribe({
       next: () => {
@@ -152,12 +196,17 @@ export class AjustesPageComponent implements OnInit {
             : `Convite registrado para ${nome}.`,
         );
         this.conviteSending.set(false);
+        this.armConviteCooldown(60_000);
       },
       error: (err: Error) => {
-        this.conviteMessage.set(
-          userFacingMessage(err.message, 'Falha ao enviar convite.'),
-        );
+        const message = userFacingMessage(err.message, 'Falha ao enviar convite.');
+        this.conviteMessage.set(message);
         this.conviteSending.set(false);
+
+        const lower = message.toLowerCase();
+        if (lower.includes('aguarde') || lower.includes('limite')) {
+          this.armConviteCooldown(120_000);
+        }
       },
     });
   }

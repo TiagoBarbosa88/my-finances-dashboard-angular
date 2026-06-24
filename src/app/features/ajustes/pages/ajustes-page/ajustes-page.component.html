@@ -254,12 +254,18 @@
           <button
             type="button"
             (click)="enviarConvite()"
-            [disabled]="conviteSending()"
+            [disabled]="conviteButtonDisabled()"
             class="h-[38px] shrink-0 cursor-pointer rounded-lg bg-blue-600 px-5 text-sm font-semibold
                    text-white shadow-sm shadow-blue-600/25 transition-all hover:bg-blue-500
                    disabled:cursor-not-allowed disabled:opacity-40 sm:min-w-[9.5rem]"
           >
-            {{ conviteSending() ? 'Enviando…' : 'Enviar convite' }}
+            @if (conviteSending()) {
+              Enviando…
+            } @else if (conviteCooldownSec() > 0) {
+              Aguarde {{ conviteCooldownSec() }}s
+            } @else {
+              Enviar convite
+            }
           </button>
         </div>
       </div>

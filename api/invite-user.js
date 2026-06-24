@@ -1,16 +1,10 @@
 /**
  * POST /api/invite-user
  * Envia convite real via Supabase Auth (service role — só no servidor Vercel).
- *
- * Headers: Authorization: Bearer <access_token do usuário admin>
- * Body: { email, role, convidado_por, nome }
  */
 const { createClient } = require('@supabase/supabase-js');
-const {
-  deleteAuthUserIfUnconfirmed,
-  findUserByEmail,
-  mapConviteRow,
-} = require('./_lib/invite-helpers');
+const { mapConviteRow, sendInviteEmail } = require('./_lib/invite-helpers');
+const { consumeRateLimit } = require('./_lib/rate-limit');
 const { inviteRedirectUrl } = require('./_lib/site-url');
 const { userFacingError } = require('./_lib/user-message');
 
@@ -52,7 +46,15 @@ module.exports = async (req, res) => {
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!url || !anonKey || !serviceKey) {
-      return res.status(500).json({ error: userFacingError('', 'Serviço indisponível no momento.') });
+      console.error('[invite-user] env ausente:', {
+        url: Boolean(url),
+        anonKey: Boolean(anonKey),
+        serviceKey: Boolean(serviceKey),
+      });
+      return res.status(503).json({
+        error:
+          'Envio de convites indisponível. O responsável técnico precisa concluir a configuração do servidor.',
+      });
     }
 
     const userClient = createClient(url, anonKey, {
@@ -62,6 +64,13 @@ module.exports = async (req, res) => {
     const { data: userData, error: userErr } = await userClient.auth.getUser(token);
     if (userErr || !userData.user) {
       return res.status(401).json({ error: 'Sessão inválida. Faça login novamente.' });
+    }
+
+    const rate = consumeRateLimit(`invite:${userData.user.id}`, { limit: 3, windowMs: 120_000 });
+    if (!rate.allowed) {
+      return res.status(429).json({
+        error: `Aguarde ${rate.retryAfterSec} segundos antes de enviar outro convite.`,
+      });
     }
 
     const admin = createClient(url, serviceKey, {
@@ -92,13 +101,6 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'E-mail inválido.' });
     }
 
-    const existingUser = await findUserByEmail(admin, email);
-    if (existingUser?.email_confirmed_at) {
-      return res.status(400).json({
-        error: 'Este e-mail já possui acesso ao Smart Finances.',
-      });
-    }
-
     const { data: profileByEmail } = await admin
       .from('profiles')
       .select('id')
@@ -127,8 +129,9 @@ module.exports = async (req, res) => {
 
     const siteUrl = inviteRedirectUrl();
     let convite = existingConvite;
+    let isResend = existingConvite?.status === 'pendente';
 
-    if (existingConvite?.status === 'pendente') {
+    if (isResend) {
       const { data: updated, error: updateError } = await admin
         .from('convites')
         .update({
@@ -171,20 +174,13 @@ module.exports = async (req, res) => {
       convite = inserted;
     }
 
-    await deleteAuthUserIfUnconfirmed(admin, email);
+    const inviteResult = await sendInviteEmail(admin, email, role, nome, siteUrl);
 
-    const { error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
-      redirectTo: siteUrl,
-      data: { role, full_name: nome },
-    });
-
-    if (inviteError) {
-      if (!existingConvite) {
+    if (!inviteResult.ok) {
+      if (!isResend) {
         await admin.from('convites').delete().eq('id', convite.id);
       }
-      return res.status(400).json({
-        error: userFacingError(inviteError.message, 'Não foi possível enviar o convite.'),
-      });
+      return res.status(400).json({ error: inviteResult.error });
     }
 
     const { data: conviteAtualizado } = await admin
@@ -198,11 +194,10 @@ module.exports = async (req, res) => {
 
     return res.status(200).json({
       convite: mapConviteRow(finalConvite, nome),
-      message: existingConvite?.status === 'pendente'
-        ? 'Convite reenviado por e-mail.'
-        : 'Convite enviado por e-mail.',
+      message: isResend ? 'Convite reenviado por e-mail.' : 'Convite enviado por e-mail.',
     });
   } catch (err) {
+    console.error('[invite-user] erro:', err);
     return res.status(500).json({
       error: userFacingError(err.message, 'Não foi possível enviar o convite.'),
     });

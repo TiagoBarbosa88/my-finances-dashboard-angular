@@ -7,7 +7,9 @@ const { createClient } = require('@supabase/supabase-js');
 const {
   deleteAuthUserIfUnconfirmed,
   mapConviteRow,
+  sendInviteEmail,
 } = require('./_lib/invite-helpers');
+const { consumeRateLimit } = require('./_lib/rate-limit');
 const { inviteRedirectUrl } = require('./_lib/site-url');
 const { userFacingError } = require('./_lib/user-message');
 
@@ -72,16 +74,6 @@ function siteUrl() {
   return inviteRedirectUrl();
 }
 
-async function sendInviteEmail(admin, email, role, nome) {
-  const displayName = (nome || email.split('@')[0]).trim();
-  const { error } = await admin.auth.admin.inviteUserByEmail(email, {
-    redirectTo: siteUrl(),
-    data: { role, full_name: displayName },
-  });
-
-  if (error) throw error;
-}
-
 async function fetchConvite(admin, id) {
   const { data, error } = await admin.from('convites').select('*').eq('id', id).single();
   if (error || !data) {
@@ -110,7 +102,14 @@ module.exports = async (req, res) => {
     }
 
     const { userClient, admin } = getSupabaseClients();
-    await assertAdmin(userClient, admin, token);
+    const { user } = await assertAdmin(userClient, admin, token);
+
+    const rate = consumeRateLimit(`invite:${user.id}`, { limit: 3, windowMs: 120_000 });
+    if (!rate.allowed) {
+      return res.status(429).json({
+        error: `Aguarde ${rate.retryAfterSec} segundos antes de enviar outro convite.`,
+      });
+    }
 
     const body = readBody(req);
     const id = Number(body.id);
@@ -139,8 +138,10 @@ module.exports = async (req, res) => {
     }
 
     if (req.method === 'POST' && body.action === 'resend') {
-      await deleteAuthUserIfUnconfirmed(admin, convite.email);
-      await sendInviteEmail(admin, convite.email, convite.role, convite.nome);
+      const result = await sendInviteEmail(admin, convite.email, convite.role, convite.nome, siteUrl());
+      if (!result.ok) {
+        return res.status(400).json({ error: result.error });
+      }
 
       return res.status(200).json({
         convite: mapConviteRow(convite),
@@ -190,7 +191,10 @@ module.exports = async (req, res) => {
     }
 
     if (emailChanged) {
-      await sendInviteEmail(admin, nextEmail, nextRole, nextNome);
+      const result = await sendInviteEmail(admin, nextEmail, nextRole, nextNome, siteUrl());
+      if (!result.ok) {
+        return res.status(400).json({ error: result.error });
+      }
     }
 
     return res.status(200).json({

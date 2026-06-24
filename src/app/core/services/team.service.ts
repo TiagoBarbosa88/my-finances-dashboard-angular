@@ -122,7 +122,16 @@ export class TeamService {
       }),
     });
 
-    const body = (await response.json()) as { convite?: Convite; error?: string; message?: string };
+    let body: { convite?: Convite; error?: string; message?: string } = {};
+    try {
+      body = (await response.json()) as typeof body;
+    } catch {
+      throw new Error(
+        response.status === 503
+          ? 'Envio de convites indisponível. O responsável técnico precisa concluir a configuração do servidor.'
+          : 'Falha ao enviar convite.',
+      );
+    }
 
     if (!response.ok) {
       throw new Error(userFacingMessage(body.error, 'Falha ao enviar convite.'));

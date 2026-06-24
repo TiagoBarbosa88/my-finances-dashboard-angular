@@ -1,5 +1,5 @@
 /**
- * Converte erros técnicos (Supabase, infra) em mensagens amigáveis para a UI.
+ * Converte erros técnicos em mensagens amigáveis para a UI.
  */
 function userFacingError(raw, fallback = 'Não foi possível concluir a operação. Tente novamente.') {
   if (!raw || typeof raw !== 'string') return fallback;
@@ -8,9 +8,17 @@ function userFacingError(raw, fallback = 'Não foi possível concluir a operaç�
   const lower = msg.toLowerCase();
 
   if (lower.includes('method not allowed')) return fallback;
-  if (lower.includes('supabase') || lower.includes('vercel') || lower.includes('env var')) {
-    return 'Serviço indisponível no momento. Tente novamente mais tarde.';
+
+  if (
+    lower.includes('service role') ||
+    lower.includes('service_role') ||
+    lower.includes('missing env') ||
+    lower.includes('env var') ||
+    lower.includes('not configured')
+  ) {
+    return 'Envio de convites indisponível. O responsável técnico precisa concluir a configuração do servidor.';
   }
+
   if (lower.includes('invalid login credentials') || lower.includes('invalid credentials')) {
     return 'E-mail ou senha incorretos.';
   }
@@ -23,11 +31,15 @@ function userFacingError(raw, fallback = 'Não foi possível concluir a operaç�
   if (lower.includes('user not found')) {
     return 'Usuário não encontrado.';
   }
-  if (lower.includes('jwt') || lower.includes('api key') || lower.includes('unauthorized')) {
+  if (lower.includes('jwt') || lower.includes('invalid api key') || lower.includes('unauthorized')) {
     return 'Sessão expirada. Faça login novamente.';
   }
-  if (lower.includes('rate limit') || lower.includes('too many requests')) {
-    return 'Limite de envios do Supabase atingido. Aguarde cerca de 1 hora antes de convidar novamente.';
+  if (
+    lower.includes('rate limit') ||
+    lower.includes('too many requests') ||
+    lower.includes('email rate limit')
+  ) {
+    return 'Limite de envios atingido. Aguarde cerca de 1 hora antes de convidar novamente.';
   }
   if (lower.includes('duplicate key') || lower.includes('unique constraint')) {
     return 'Este convite já foi registrado.';
@@ -36,8 +48,13 @@ function userFacingError(raw, fallback = 'Não foi possível concluir a operaç�
     return 'Você não tem permissão para esta ação.';
   }
 
-  // Mensagens já amigáveis em português
-  if (/^[A-ZÁÉÍÓÚÃÕÇ]/.test(msg) && !lower.includes('error') && msg.length < 120) {
+  if (
+    msg.length <= 120 &&
+    !lower.includes('error') &&
+    !lower.includes('http') &&
+    !lower.includes('auth/v1') &&
+    !/[_]{2,}/.test(msg)
+  ) {
     return msg;
   }
 
