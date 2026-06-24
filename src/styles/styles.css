@@ -328,6 +328,19 @@
     }
   }
 
+  /* FAB investimentos — azul profundo (distinto do verde primary do painel) */
+  .app-fab-invest {
+    background: var(--color-blue-800);
+    color: #fff;
+    box-shadow:
+      0 10px 15px -3px color-mix(in oklab, var(--color-blue-900) 45%, transparent),
+      0 4px 6px -4px color-mix(in oklab, var(--color-blue-900) 35%, transparent);
+  }
+
+  .app-fab-invest:hover {
+    background: var(--color-blue-700);
+  }
+
   .dialog-panel {
     @apply flex w-full max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-black/40;
     max-height: min(72vh, 520px);
