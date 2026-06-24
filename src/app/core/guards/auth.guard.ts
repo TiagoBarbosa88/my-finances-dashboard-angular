@@ -10,6 +10,18 @@ import { environment } from 'src/environments/environment';
 /** Dashboard principal (após login). */
 export const APP_HOME = '/app/painel';
 
+function isTransientAuthError(message: string): boolean {
+  const lower = message.toLowerCase();
+  return (
+    lower.includes('rate limit') ||
+    lower.includes('too many requests') ||
+    lower.includes('fetch') ||
+    lower.includes('network') ||
+    lower.includes('timeout') ||
+    lower.includes('temporarily unavailable')
+  );
+}
+
 async function resolveValidSession(): Promise<Session | null> {
   const supabase = inject(SupabaseService);
   if (!supabase.isConfigured()) return null;
@@ -18,7 +30,16 @@ async function resolveValidSession(): Promise<Session | null> {
   if (!session) return null;
 
   const { data, error } = await supabase.client.auth.getUser();
-  if (error || !data.user) {
+  if (error) {
+    if (isTransientAuthError(error.message)) {
+      console.warn('[authGuard] getUser temporariamente indisponível — mantendo sessão.');
+      return session;
+    }
+    await supabase.signOut();
+    return null;
+  }
+
+  if (!data.user) {
     await supabase.signOut();
     return null;
   }

@@ -27,7 +27,7 @@ function userFacingError(raw, fallback = 'Não foi possível concluir a operaç�
     return 'Sessão expirada. Faça login novamente.';
   }
   if (lower.includes('rate limit') || lower.includes('too many requests')) {
-    return 'Muitas tentativas. Aguarde alguns minutos.';
+    return 'Limite de envios do Supabase atingido. Aguarde cerca de 1 hora antes de convidar novamente.';
   }
   if (lower.includes('duplicate key') || lower.includes('unique constraint')) {
     return 'Este convite já foi registrado.';

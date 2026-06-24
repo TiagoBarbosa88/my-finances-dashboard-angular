@@ -3,9 +3,14 @@
  * Envia convite real via Supabase Auth (service role — só no servidor Vercel).
  *
  * Headers: Authorization: Bearer <access_token do usuário admin>
- * Body: { email, role, convidado_por }
+ * Body: { email, role, convidado_por, nome }
  */
 const { createClient } = require('@supabase/supabase-js');
+const {
+  deleteAuthUserIfUnconfirmed,
+  findUserByEmail,
+  mapConviteRow,
+} = require('./_lib/invite-helpers');
 const { inviteRedirectUrl } = require('./_lib/site-url');
 const { userFacingError } = require('./_lib/user-message');
 
@@ -87,27 +92,86 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'E-mail inválido.' });
     }
 
-    const siteUrl = inviteRedirectUrl();
-
-    // Convite no banco ANTES do Auth — o trigger handle_new_user() precisa da linha pendente
-    const { data: convite, error: conviteError } = await admin
-      .from('convites')
-      .insert({
-        nome,
-        email,
-        role,
-        status: 'pendente',
-        convidado_por: convidadoPor,
-        invited_by: userData.user.id,
-      })
-      .select('*')
-      .single();
-
-    if (conviteError) {
-      return res.status(500).json({
-        error: userFacingError(conviteError.message, 'Não foi possível registrar o convite.'),
+    const existingUser = await findUserByEmail(admin, email);
+    if (existingUser?.email_confirmed_at) {
+      return res.status(400).json({
+        error: 'Este e-mail já possui acesso ao Smart Finances.',
       });
     }
+
+    const { data: profileByEmail } = await admin
+      .from('profiles')
+      .select('id')
+      .ilike('email', email)
+      .maybeSingle();
+
+    if (profileByEmail) {
+      return res.status(400).json({
+        error: 'Este e-mail já possui acesso ao Smart Finances.',
+      });
+    }
+
+    const { data: existingConvite } = await admin
+      .from('convites')
+      .select('*')
+      .ilike('email', email)
+      .order('criado_em', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (existingConvite?.status === 'aceito') {
+      return res.status(400).json({
+        error: 'Este e-mail já possui acesso ao Smart Finances.',
+      });
+    }
+
+    const siteUrl = inviteRedirectUrl();
+    let convite = existingConvite;
+
+    if (existingConvite?.status === 'pendente') {
+      const { data: updated, error: updateError } = await admin
+        .from('convites')
+        .update({
+          nome,
+          role,
+          convidado_por: convidadoPor,
+          invited_by: userData.user.id,
+        })
+        .eq('id', existingConvite.id)
+        .select('*')
+        .single();
+
+      if (updateError) {
+        return res.status(500).json({
+          error: userFacingError(updateError.message, 'Não foi possível atualizar o convite.'),
+        });
+      }
+
+      convite = updated;
+    } else {
+      const { data: inserted, error: conviteError } = await admin
+        .from('convites')
+        .insert({
+          nome,
+          email,
+          role,
+          status: 'pendente',
+          convidado_por: convidadoPor,
+          invited_by: userData.user.id,
+        })
+        .select('*')
+        .single();
+
+      if (conviteError) {
+        return res.status(500).json({
+          error: userFacingError(conviteError.message, 'Não foi possível registrar o convite.'),
+        });
+      }
+
+      convite = inserted;
+    }
+
+    await deleteAuthUserIfUnconfirmed(admin, email);
 
     const { error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
       redirectTo: siteUrl,
@@ -115,13 +179,14 @@ module.exports = async (req, res) => {
     });
 
     if (inviteError) {
-      await admin.from('convites').delete().eq('id', convite.id);
+      if (!existingConvite) {
+        await admin.from('convites').delete().eq('id', convite.id);
+      }
       return res.status(400).json({
         error: userFacingError(inviteError.message, 'Não foi possível enviar o convite.'),
       });
     }
 
-    // Usuário Auth criado — trigger marca aceito; reforço explícito para a UI
     const { data: conviteAtualizado } = await admin
       .from('convites')
       .update({ status: 'aceito' })
@@ -130,21 +195,12 @@ module.exports = async (req, res) => {
       .single();
 
     const finalConvite = conviteAtualizado ?? convite;
-    const criadoEm = finalConvite.criado_em?.includes('T')
-      ? finalConvite.criado_em.split('T')[0]
-      : finalConvite.criado_em;
 
     return res.status(200).json({
-      convite: {
-        id: finalConvite.id,
-        nome: finalConvite.nome || nome,
-        email: finalConvite.email,
-        role: finalConvite.role,
-        status: finalConvite.status,
-        criado_em: criadoEm,
-        convidado_por: finalConvite.convidado_por,
-      },
-      message: 'Convite enviado por e-mail.',
+      convite: mapConviteRow(finalConvite, nome),
+      message: existingConvite?.status === 'pendente'
+        ? 'Convite reenviado por e-mail.'
+        : 'Convite enviado por e-mail.',
     });
   } catch (err) {
     return res.status(500).json({

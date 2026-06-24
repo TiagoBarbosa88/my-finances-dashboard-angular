@@ -15,7 +15,7 @@ export function userFacingMessage(raw: string | undefined, fallback: string): st
     return 'Este e-mail já possui acesso ao Smart Finances.';
   }
   if (lower.includes('rate limit') || lower.includes('too many requests')) {
-    return 'Muitas tentativas. Aguarde alguns minutos.';
+    return 'Limite de envios do Supabase atingido. Aguarde cerca de 1 hora antes de convidar novamente.';
   }
   if (lower.includes('row-level security') || lower.includes('permission denied')) {
     return 'Você não tem permissão para esta ação.';
