@@ -76,6 +76,95 @@
         </button>
       </div>
     </form>
+
+    @if (canChangePassword()) {
+      <div class="mt-8 border-t border-border pt-6">
+        <h3 class="text-sm font-semibold">Alterar senha</h3>
+        <p class="mt-0.5 text-xs text-muted-foreground">
+          Use esta senha para entrar na próxima visita.
+        </p>
+
+        <form class="mt-4 grid gap-4 sm:max-w-md" (ngSubmit)="alterarSenha()">
+          <div class="grid gap-2">
+            <label for="new-password" class="text-sm font-medium">Nova senha</label>
+            <div class="relative">
+              <input
+                id="new-password"
+                [type]="showNewPassword() ? 'text' : 'password'"
+                name="newPassword"
+                autocomplete="new-password"
+                placeholder="Mínimo 6 caracteres"
+                [ngModel]="newPassword()"
+                (ngModelChange)="newPassword.set($event)"
+                class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5
+                       pr-11 text-sm text-foreground placeholder:text-muted-foreground
+                       outline-none ring-ring transition-colors focus:border-blue-500/60 focus:ring-1"
+              />
+              <button
+                type="button"
+                (click)="showNewPassword.set(!showNewPassword())"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground
+                       transition-colors hover:text-foreground"
+                [attr.aria-label]="showNewPassword() ? 'Ocultar senha' : 'Mostrar senha'"
+              >
+                @if (showNewPassword()) {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                       stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                       stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+
+          <div class="grid gap-2">
+            <label for="confirm-password" class="text-sm font-medium">Confirmar nova senha</label>
+            <input
+              id="confirm-password"
+              [type]="showNewPassword() ? 'text' : 'password'"
+              name="confirmPassword"
+              autocomplete="new-password"
+              placeholder="Repita a nova senha"
+              [ngModel]="confirmPassword()"
+              (ngModelChange)="confirmPassword.set($event)"
+              class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm
+                     text-foreground placeholder:text-muted-foreground outline-none ring-ring
+                     transition-colors focus:border-blue-500/60 focus:ring-1"
+            />
+          </div>
+
+          @if (passwordMessage()) {
+            <p
+              class="text-sm"
+              [class.text-green-400]="passwordMessage()!.includes('sucesso')"
+              [class.text-red-400]="!passwordMessage()!.includes('sucesso')"
+            >
+              {{ passwordMessage() }}
+            </p>
+          }
+
+          <div>
+            <button
+              type="submit"
+              [disabled]="passwordSaving()"
+              class="cursor-pointer rounded-xl border border-border bg-background px-5 py-2
+                     text-sm font-semibold text-foreground shadow-sm transition-all
+                     hover:border-blue-500/40 hover:bg-blue-500/10
+                     disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {{ passwordSaving() ? 'Salvando…' : 'Salvar nova senha' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    }
   </section>
 
   <!-- Equipe -->

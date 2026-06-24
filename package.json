@@ -5,6 +5,7 @@
     "ng": "ng",
     "env:sync": "node scripts/sync-environment.mjs",
     "seed:sql": "node scripts/generate-supabase-seed.mjs --email=tiagobarbosa.dev@gmail.com --uuid=50b94089-79f2-4a42-893d-be8fe26c26df",
+    "add:user": "node scripts/add-supabase-user.mjs",
     "postinstall": "node scripts/sync-environment.mjs",
     "prestart": "node scripts/sync-environment.mjs",
     "predev": "node scripts/sync-environment.mjs",

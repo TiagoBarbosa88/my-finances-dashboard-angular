@@ -2,6 +2,7 @@ import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular
 import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '@app/core/services/auth.service';
+import { SupabaseService } from '@app/core/services/supabase.service';
 import { TeamService } from '@app/core/services/team.service';
 import { HasRoleDirective } from '@app/shared/directives/has-role.directive';
 import {
@@ -27,6 +28,7 @@ type ConfirmTarget =
 })
 export class AjustesPageComponent implements OnInit, OnDestroy {
   readonly auth = inject(AuthService);
+  readonly supabase = inject(SupabaseService);
   readonly team = inject(TeamService);
 
   private cooldownTimer: ReturnType<typeof setInterval> | null = null;
@@ -36,14 +38,19 @@ export class AjustesPageComponent implements OnInit, OnDestroy {
 
   readonly nome = signal('');
   readonly email = signal('');
+  readonly newPassword = signal('');
+  readonly confirmPassword = signal('');
+  readonly showNewPassword = signal(false);
   readonly conviteNome = signal('');
   readonly conviteEmail = signal('');
   readonly conviteRole = signal<UserRole>('editor');
 
   readonly profileMessage = signal<string | null>(null);
+  readonly passwordMessage = signal<string | null>(null);
   readonly teamMessage = signal<string | null>(null);
   readonly conviteMessage = signal<string | null>(null);
   readonly profileSaving = signal(false);
+  readonly passwordSaving = signal(false);
   readonly conviteSending = signal(false);
   readonly conviteCooldownUntil = signal(0);
   readonly conviteCooldownTick = signal(0);
@@ -79,6 +86,8 @@ export class AjustesPageComponent implements OnInit, OnDestroy {
   });
 
   readonly totalMembros = computed(() => this.team.membros().length);
+
+  readonly canChangePassword = computed(() => this.supabase.isConfigured() && !environment.bypassAuth);
 
   readonly confirmTitle = computed(() => {
     const target = this.confirmTarget();
@@ -159,6 +168,56 @@ export class AjustesPageComponent implements OnInit, OnDestroy {
         this.profileSaving.set(false);
       },
     });
+  }
+
+  async alterarSenha(): Promise<void> {
+    const pwd = this.newPassword();
+    const confirm = this.confirmPassword();
+
+    if (pwd.length < 6) {
+      this.passwordMessage.set('Use pelo menos 6 caracteres na nova senha.');
+      return;
+    }
+
+    if (pwd !== confirm) {
+      this.passwordMessage.set('As senhas não coincidem.');
+      return;
+    }
+
+    if (!this.supabase.isConfigured()) {
+      this.passwordMessage.set('Alteração de senha indisponível no momento.');
+      return;
+    }
+
+    this.passwordSaving.set(true);
+    this.passwordMessage.set(null);
+
+    try {
+      const { error } = await this.supabase.setPassword(pwd);
+      if (error) {
+        this.passwordMessage.set(this.translatePasswordError(error.message));
+        return;
+      }
+
+      this.newPassword.set('');
+      this.confirmPassword.set('');
+      this.passwordMessage.set('Senha alterada com sucesso.');
+    } catch {
+      this.passwordMessage.set('Não foi possível alterar a senha. Tente novamente.');
+    } finally {
+      this.passwordSaving.set(false);
+    }
+  }
+
+  private translatePasswordError(msg: string): string {
+    const lower = msg.toLowerCase();
+    if (lower.includes('same password')) {
+      return 'Escolha uma senha diferente da atual.';
+    }
+    if (lower.includes('weak') || lower.includes('at least')) {
+      return 'Senha fraca. Use pelo menos 6 caracteres.';
+    }
+    return 'Não foi possível alterar a senha. Tente novamente.';
   }
 
   enviarConvite(): void {
