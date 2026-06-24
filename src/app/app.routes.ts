@@ -28,6 +28,15 @@ export const routes: Routes = [
     pathMatch: 'full',
     redirectTo: '',
   },
+  {
+    path: 'bem-vindo',
+    title: `Bem-vindo — ${APP_NAME}`,
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/auth/pages/welcome-page/welcome-page.component').then(
+        (m) => m.WelcomePageComponent,
+      ),
+  },
 
   // ── Shell protegido ───────────────────────────────────────────────────────
   {

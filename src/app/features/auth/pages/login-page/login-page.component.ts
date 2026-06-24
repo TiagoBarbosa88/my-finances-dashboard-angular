@@ -42,6 +42,7 @@ export class LoginPageComponent implements OnInit {
   readonly email = signal('');
   readonly password = signal('');
   readonly loading = signal(false);
+  readonly completingInvite = signal(false);
   readonly error = signal<string | null>(null);
   readonly showPassword = signal(false);
 
@@ -77,6 +78,7 @@ export class LoginPageComponent implements OnInit {
       }
 
     await this.auth.refreshProfileFromSupabase();
+    await this.supabase.markConviteAceitoForCurrentUser();
     this.finance.loadTransactions();
     this.finance.loadCarteiraAtivos();
     this.finance.loadInvestimentos();
@@ -96,27 +98,31 @@ export class LoginPageComponent implements OnInit {
     if (environment.bypassAuth || !this.supabase.isConfigured()) return;
 
     const hash = window.location.hash;
-    if (!hash.includes('access_token=')) return;
+    const search = window.location.search;
+    if (!hash.includes('access_token=') && !search.includes('code=')) return;
 
+    const isInvite = hash.includes('type=invite') || search.includes('type=invite');
+    this.completingInvite.set(isInvite);
     this.loading.set(true);
     this.error.set(null);
 
     try {
-      // detectSessionInUrl processa o hash na inicialização do cliente
-      await new Promise((resolve) => window.setTimeout(resolve, 0));
-      const session = await this.supabase.getSession();
+      const { session, type } = await this.supabase.processAuthRedirectFromUrl();
 
       if (!session) {
         this.error.set('Link de convite inválido ou expirado. Peça um novo convite.');
         return;
       }
 
-      window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
-
       await this.auth.refreshProfileFromSupabase();
       this.finance.loadTransactions();
       this.finance.loadCarteiraAtivos();
       this.finance.loadInvestimentos();
+
+      if (type === 'invite' || isInvite) {
+        await this.router.navigateByUrl('/bem-vindo');
+        return;
+      }
 
       const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? APP_HOME;
       await this.router.navigateByUrl(returnUrl);
@@ -125,6 +131,7 @@ export class LoginPageComponent implements OnInit {
       this.error.set('Não foi possível concluir o convite. Tente o link novamente ou peça reenvio.');
     } finally {
       this.loading.set(false);
+      this.completingInvite.set(false);
     }
   }
 

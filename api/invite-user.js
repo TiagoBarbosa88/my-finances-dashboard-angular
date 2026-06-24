@@ -89,17 +89,7 @@ module.exports = async (req, res) => {
 
     const siteUrl = inviteRedirectUrl();
 
-    const { error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
-      redirectTo: siteUrl,
-      data: { role, full_name: nome },
-    });
-
-    if (inviteError) {
-      return res.status(400).json({
-        error: userFacingError(inviteError.message, 'Não foi possível enviar o convite.'),
-      });
-    }
-
+    // Convite no banco ANTES do Auth — o trigger handle_new_user() precisa da linha pendente
     const { data: convite, error: conviteError } = await admin
       .from('convites')
       .insert({
@@ -115,23 +105,44 @@ module.exports = async (req, res) => {
 
     if (conviteError) {
       return res.status(500).json({
-        error: userFacingError(conviteError.message, 'Convite enviado, mas não foi possível registrá-lo.'),
+        error: userFacingError(conviteError.message, 'Não foi possível registrar o convite.'),
       });
     }
 
-    const criadoEm = convite.criado_em?.includes('T')
-      ? convite.criado_em.split('T')[0]
-      : convite.criado_em;
+    const { error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
+      redirectTo: siteUrl,
+      data: { role, full_name: nome },
+    });
+
+    if (inviteError) {
+      await admin.from('convites').delete().eq('id', convite.id);
+      return res.status(400).json({
+        error: userFacingError(inviteError.message, 'Não foi possível enviar o convite.'),
+      });
+    }
+
+    // Usuário Auth criado — trigger marca aceito; reforço explícito para a UI
+    const { data: conviteAtualizado } = await admin
+      .from('convites')
+      .update({ status: 'aceito' })
+      .eq('id', convite.id)
+      .select('*')
+      .single();
+
+    const finalConvite = conviteAtualizado ?? convite;
+    const criadoEm = finalConvite.criado_em?.includes('T')
+      ? finalConvite.criado_em.split('T')[0]
+      : finalConvite.criado_em;
 
     return res.status(200).json({
       convite: {
-        id: convite.id,
-        nome: convite.nome || nome,
-        email: convite.email,
-        role: convite.role,
-        status: convite.status,
+        id: finalConvite.id,
+        nome: finalConvite.nome || nome,
+        email: finalConvite.email,
+        role: finalConvite.role,
+        status: finalConvite.status,
         criado_em: criadoEm,
-        convidado_por: convite.convidado_por,
+        convidado_por: finalConvite.convidado_por,
       },
       message: 'Convite enviado por e-mail.',
     });

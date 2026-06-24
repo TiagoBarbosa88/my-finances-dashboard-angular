@@ -56,3 +56,24 @@ DROP POLICY IF EXISTS "profiles_delete_admin" ON public.profiles;
 CREATE POLICY "profiles_delete_admin"
   ON public.profiles FOR DELETE TO authenticated
   USING (public.is_admin());
+
+-- Fallback: convidado marca próprio convite como aceito ao entrar (ex.: trigger não rodou)
+CREATE OR REPLACE FUNCTION public.accept_my_invite()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  UPDATE public.convites
+  SET status = 'aceito'
+  WHERE lower(email) = lower((SELECT email FROM auth.users WHERE id = auth.uid()))
+    AND status = 'pendente';
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.accept_my_invite() TO authenticated;
+
+-- Corrigir convites já aceitos que ficaram pendentes (rode uma vez se necessário):
+-- UPDATE public.convites SET status = 'aceito'
+-- WHERE lower(email) = lower('bitmaster22222@gmail.com') AND status = 'pendente';

@@ -93,6 +93,83 @@ export class SupabaseService {
     return data.session;
   }
 
+  /** Resultado do processamento de redirect OAuth / convite na URL. */
+  async processAuthRedirectFromUrl(): Promise<{ session: Session | null; type: string | null }> {
+    if (typeof window === 'undefined') {
+      return { session: null, type: null };
+    }
+
+    const hash = window.location.hash.replace(/^#/, '');
+    const search = window.location.search.replace(/^\?/, '');
+    const hashParams = new URLSearchParams(hash);
+    const searchParams = new URLSearchParams(search);
+    const type = hashParams.get('type') ?? searchParams.get('type');
+    const hasHashTokens = hash.includes('access_token=');
+    const authCode = searchParams.get('code');
+
+    if (!hasHashTokens && !authCode) {
+      return { session: await this.getSession(), type: null };
+    }
+
+    if (authCode) {
+      const { data, error } = await this.client.auth.exchangeCodeForSession(authCode);
+      if (error) {
+        console.error('[SupabaseService] exchangeCodeForSession:', error.message);
+        return { session: null, type };
+      }
+      this.session.set(data.session);
+    } else {
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
+
+      if (accessToken && refreshToken) {
+        const { data, error } = await this.client.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        if (error) {
+          console.error('[SupabaseService] setSession from hash:', error.message);
+          return { session: null, type };
+        }
+        this.session.set(data.session);
+      } else {
+        for (let attempt = 0; attempt < 20; attempt++) {
+          await new Promise((resolve) => window.setTimeout(resolve, 50));
+          const session = await this.getSession();
+          if (session) break;
+        }
+      }
+    }
+
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+
+    const session = await this.getSession();
+    if (session) {
+      await this.markConviteAceitoForCurrentUser();
+    }
+
+    return { session, type };
+  }
+
+  /** Marca convites pendentes do e-mail logado como aceitos (fallback ao trigger SQL). */
+  async markConviteAceitoForCurrentUser(): Promise<void> {
+    const { error } = await this.client.rpc('accept_my_invite');
+    if (error) {
+      const user = await this.getUser();
+      if (!user?.email) return;
+
+      const { error: updateError } = await this.client
+        .from('convites')
+        .update({ status: 'aceito' })
+        .eq('email', user.email.toLowerCase())
+        .eq('status', 'pendente');
+
+      if (updateError) {
+        console.warn('[SupabaseService] markConviteAceito:', updateError.message);
+      }
+    }
+  }
+
   // ─── Perfil — tabela `profiles` ───────────────────────────────────────────
 
   async fetchProfile(userId: string): Promise<Usuario | null> {

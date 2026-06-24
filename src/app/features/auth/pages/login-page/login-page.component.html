@@ -1,5 +1,18 @@
 <app-auth-layout>
 
+  @if (completingInvite()) {
+    <div class="flex flex-col items-center gap-4 py-8 text-center">
+      <svg class="h-10 w-10 animate-spin text-primary" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+      </svg>
+      <div class="space-y-1">
+        <p class="text-display text-lg font-semibold">Ativando sua conta…</p>
+        <p class="text-sm text-muted-foreground">Aguarde enquanto preparamos seu acesso.</p>
+      </div>
+    </div>
+  } @else {
+
   <!-- ── Cabeçalho do formulário ──────────────────────────────────────────── -->
   <!--
     Logo compacta — visível apenas no mobile (md:hidden) porque no desktop
@@ -135,5 +148,7 @@
   <p class="mt-6 text-center text-xs text-muted-foreground">
     Acesso restrito. Para criar uma conta, peça um convite ao administrador.
   </p>
+
+  }
 
 </app-auth-layout>
