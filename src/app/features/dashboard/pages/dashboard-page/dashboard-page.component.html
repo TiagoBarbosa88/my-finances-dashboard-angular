@@ -3,15 +3,31 @@
   <!-- ═══════════════ TOPBAR ═══════════════ -->
   <header class="flex flex-col gap-4">
 
-    <!-- Linha 1: título + saudação e notificações -->
-    <div class="grid grid-cols-2 items-center gap-4">
-      <h1 class="text-display min-w-0 truncate text-2xl font-semibold sm:text-3xl">
-        Controle de Gastos
-      </h1>
-      <div class="flex items-center justify-end gap-4">
-        <p class="text-sm text-muted-foreground">
-          {{ auth.saudacao() }}
-        </p>
+    <!-- Mobile: saudação em destaque -->
+    <div class="flex items-start justify-between gap-3 md:hidden">
+      <div class="min-w-0">
+        <p class="text-display truncate text-xl font-semibold">{{ auth.saudacao() }}</p>
+        <p class="mt-0.5 text-xs text-muted-foreground">Controle de Gastos</p>
+      </div>
+      <button
+        type="button"
+        aria-label="Notificações"
+        class="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-border
+               bg-card transition-colors hover:bg-accent"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Desktop: título + saudação e notificações -->
+    <div class="hidden items-center justify-between gap-4 md:flex">
+      <h1 class="text-display text-3xl font-semibold">Controle de Gastos</h1>
+      <div class="flex items-center gap-4">
+        <p class="text-sm text-muted-foreground">{{ auth.saudacao() }}</p>
         <button
           type="button"
           aria-label="Notificações"
@@ -27,43 +43,43 @@
       </div>
     </div>
 
-    <!-- Linha 2: mês + busca -->
-    <div class="grid grid-cols-2 items-center gap-4">
+    <!-- Navegador de mês -->
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex w-full items-center justify-center sm:w-fit">
+        <div class="flex w-full max-w-xs items-center justify-between gap-2 rounded-xl border border-border bg-card p-1 sm:w-fit sm:max-w-none">
+          <button
+            type="button"
+            (click)="finance.prevMonth()"
+            aria-label="Mês anterior"
+            class="grid h-9 w-9 shrink-0 place-items-center rounded-lg transition-colors hover:bg-accent"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
 
-      <!-- Navegador de mês -->
-      <div class="flex w-fit items-center gap-2 rounded-xl border border-border bg-card p-1">
-        <button
-          type="button"
-          (click)="finance.prevMonth()"
-          aria-label="Mês anterior"
-          class="grid h-8 w-8 place-items-center rounded-lg transition-colors hover:bg-accent"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
-            <polyline points="15 18 9 12 15 6"/>
-          </svg>
-        </button>
+          <span class="min-w-[8.5rem] flex-1 text-center text-sm font-medium sm:min-w-[130px] sm:flex-none">
+            {{ finance.monthLabel() }} {{ finance.yearLabel() }}
+          </span>
 
-        <span class="min-w-[130px] text-center text-sm font-medium">
-          {{ finance.monthLabel() }} {{ finance.yearLabel() }}
-        </span>
-
-        <button
-          type="button"
-          (click)="finance.nextMonth()"
-          aria-label="Próximo mês"
-          class="grid h-8 w-8 place-items-center rounded-lg transition-colors hover:bg-accent"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
-        </button>
+          <button
+            type="button"
+            (click)="finance.nextMonth()"
+            aria-label="Próximo mês"
+            class="grid h-9 w-9 shrink-0 place-items-center rounded-lg transition-colors hover:bg-accent"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
-      <!-- Busca -->
-      <div class="flex justify-end">
-        <div class="relative hidden w-full min-w-0 sm:block sm:max-w-xs md:max-w-none md:w-64">
+      <!-- Busca — desktop/tablet -->
+      <div class="hidden sm:block sm:flex-1 sm:max-w-xs md:max-w-none md:flex md:justify-end">
+        <div class="relative w-full md:w-64">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                stroke-linecap="round" stroke-linejoin="round"
                class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground">
@@ -79,7 +95,6 @@
           />
         </div>
       </div>
-
     </div>
   </header>
 
@@ -145,11 +160,9 @@
   type="button"
   (click)="openNewTransaction()"
   aria-label="Novo lançamento"
-  class="fixed bottom-20 right-5 z-40 inline-flex h-14 items-center gap-2
-         rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground
-         glow-primary shadow-lg shadow-primary/30
-         transition-transform hover:scale-105 active:scale-95
-         md:bottom-8 md:right-8 md:px-6"
+  class="app-fab inline-flex h-14 items-center gap-2 rounded-full bg-primary px-5
+         text-sm font-semibold text-primary-foreground glow-primary shadow-lg shadow-primary/30
+         transition-transform hover:scale-105 active:scale-95 md:px-6"
 >
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
        stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 shrink-0">

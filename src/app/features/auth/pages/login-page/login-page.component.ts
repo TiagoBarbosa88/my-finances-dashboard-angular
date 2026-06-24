@@ -7,7 +7,10 @@ import { APP_HOME } from '@app/core/guards/auth.guard';
 import { AuthService } from '@app/core/services/auth.service';
 import { FinanceService } from '@app/core/services/finance.service';
 import { SupabaseService } from '@app/core/services/supabase.service';
-import { AuthLayoutComponent } from '@app/layout/auth-layout/auth-layout.component';
+import {
+  AuthLayoutComponent,
+  type AuthMobileView,
+} from '@app/layout/auth-layout/auth-layout.component';
 import { PwaInstallBannerComponent } from '@app/shared/ui/pwa-install-banner/pwa-install-banner.component';
 import { environment } from 'src/environments/environment';
 
@@ -46,6 +49,27 @@ export class LoginPageComponent implements OnInit {
   readonly completingInvite = signal(false);
   readonly error = signal<string | null>(null);
   readonly showPassword = signal(false);
+  readonly showMobileLogin = signal(false);
+
+  mobileView(): AuthMobileView {
+    return this.showMobileLogin() ? 'login' : 'landing';
+  }
+
+  openMobileLogin(): void {
+    this.showMobileLogin.set(true);
+    this.error.set(null);
+  }
+
+  backToMobileLanding(): void {
+    this.showMobileLogin.set(false);
+    this.error.set(null);
+  }
+
+  /** Evita gatilho de gerenciador de senhas do Android/Chrome até o usuário focar. */
+  enableFieldEdit(event: Event): void {
+    const el = event.target as HTMLInputElement;
+    el.removeAttribute('readonly');
+  }
 
   async signIn(): Promise<void> {
     if (!this.email().trim() || !this.password()) {
@@ -78,11 +102,11 @@ export class LoginPageComponent implements OnInit {
         return;
       }
 
-    await this.auth.refreshProfileFromSupabase();
-    await this.supabase.markConviteAceitoForCurrentUser();
-    this.finance.loadTransactions();
-    this.finance.loadCarteiraAtivos();
-    this.finance.loadInvestimentos();
+      await this.auth.refreshProfileFromSupabase();
+      await this.supabase.markConviteAceitoForCurrentUser();
+      this.finance.loadTransactions();
+      this.finance.loadCarteiraAtivos();
+      this.finance.loadInvestimentos();
 
       const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? APP_HOME;
       await this.router.navigateByUrl(returnUrl);
@@ -101,6 +125,8 @@ export class LoginPageComponent implements OnInit {
     const hash = window.location.hash;
     const search = window.location.search;
     if (!hash.includes('access_token=') && !search.includes('code=')) return;
+
+    this.showMobileLogin.set(true);
 
     const isInvite = hash.includes('type=invite') || search.includes('type=invite');
     this.completingInvite.set(isInvite);

@@ -313,6 +313,21 @@
     bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px));
   }
 
+  /* FAB flutuante — acima da bottom nav mobile + safe area (iPhone) */
+  .app-fab {
+    position: fixed;
+    z-index: 40;
+    right: 1.25rem;
+    bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  @media (min-width: 768px) {
+    .app-fab {
+      right: 2rem;
+      bottom: 2rem;
+    }
+  }
+
   .dialog-panel {
     @apply flex w-full max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-black/40;
     max-height: min(72vh, 520px);

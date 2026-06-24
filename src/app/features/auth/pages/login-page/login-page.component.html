@@ -1,4 +1,7 @@
-<app-auth-layout>
+<app-auth-layout
+  [mobileView]="mobileView()"
+  (mobileEnter)="openMobileLogin()"
+>
 
   @if (completingInvite()) {
     <div class="flex flex-col items-center gap-4 py-8 text-center">
@@ -13,29 +16,22 @@
     </div>
   } @else {
 
-  <!-- ── Cabeçalho do formulário ──────────────────────────────────────────── -->
-  <!--
-    Logo compacta — visível apenas no mobile (md:hidden) porque no desktop
-    o painel esquerdo já exibe a marca.
-  -->
-  <div class="mb-8 flex flex-col items-center gap-3 text-center md:hidden">
-    <div class="grid h-12 w-12 place-items-center rounded-2xl
-                bg-primary text-primary-foreground glow-primary">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
-        <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
-        <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
-        <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
-      </svg>
-    </div>
-    <div>
-      <p class="text-display text-xl font-bold">{{ appName }}</p>
-      <p class="mt-0.5 text-sm text-muted-foreground">Entre na sua conta</p>
-    </div>
-  </div>
+  <!-- Voltar (mobile) -->
+  <button
+    type="button"
+    (click)="backToMobileLanding()"
+    class="mb-6 flex cursor-pointer items-center gap-1.5 text-sm font-medium text-muted-foreground
+           transition-colors hover:text-foreground md:hidden"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+    Voltar
+  </button>
 
-  <!-- Cabeçalho textual (visível somente em desktop, painel esquerdo está oculto) -->
-  <div class="mb-8 hidden md:block">
+  <!-- Cabeçalho do formulário (desktop + mobile login) -->
+  <div class="mb-8">
     <h1 class="text-display text-2xl font-bold">Bem-vindo de volta</h1>
     <p class="mt-1 text-sm text-muted-foreground">
       Entre com suas credenciais para acessar o painel.
@@ -43,9 +39,30 @@
   </div>
 
   <!-- ── Formulário ────────────────────────────────────────────────────────── -->
-  <form class="space-y-4" autocomplete="off" (ngSubmit)="signIn()">
+  <form
+    class="relative space-y-4"
+    autocomplete="off"
+    data-form-type="other"
+    (ngSubmit)="signIn()"
+  >
+    <!-- Decoys — reduzem detecção de login pelo gerenciador de senhas -->
+    <input
+      type="text"
+      name="decoy-user"
+      tabindex="-1"
+      autocomplete="off"
+      aria-hidden="true"
+      class="pointer-events-none absolute h-0 w-0 opacity-0"
+    />
+    <input
+      type="password"
+      name="decoy-pass"
+      tabindex="-1"
+      autocomplete="off"
+      aria-hidden="true"
+      class="pointer-events-none absolute h-0 w-0 opacity-0"
+    />
 
-    <!-- Alerta de erro -->
     @if (error()) {
       <div
         class="flex items-center gap-2.5 rounded-xl border border-destructive/30
@@ -62,20 +79,25 @@
       </div>
     }
 
-    <!-- E-mail -->
     <div class="space-y-1.5">
-      <label for="email" class="text-sm font-medium">E-mail</label>
+      <label for="login-email" class="text-sm font-medium">E-mail</label>
       <input
-        id="email"
-        type="email"
-        name="login-email"
+        id="login-email"
+        type="text"
+        inputmode="email"
+        name="sf-login-email"
         placeholder="seu@email.com"
         autocomplete="off"
         autocapitalize="off"
         autocorrect="off"
         spellcheck="false"
+        readonly
+        data-lpignore="true"
+        data-1p-ignore
+        data-bwignore
         [ngModel]="email()"
         (ngModelChange)="email.set($event)"
+        (focus)="enableFieldEdit($event)"
         class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5
                text-sm text-foreground placeholder:text-muted-foreground
                outline-none ring-ring transition-colors
@@ -83,18 +105,22 @@
       />
     </div>
 
-    <!-- Senha -->
     <div class="space-y-1.5">
-      <label for="password" class="text-sm font-medium">Senha</label>
+      <label for="login-password" class="text-sm font-medium">Senha</label>
       <div class="relative">
         <input
-          id="password"
+          id="login-password"
           [type]="showPassword() ? 'text' : 'password'"
-          name="login-password"
+          name="sf-login-password"
           placeholder="••••••••"
           autocomplete="off"
+          readonly
+          data-lpignore="true"
+          data-1p-ignore
+          data-bwignore
           [ngModel]="password()"
           (ngModelChange)="password.set($event)"
+          (focus)="enableFieldEdit($event)"
           class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5
                  pr-11 text-sm text-foreground placeholder:text-muted-foreground
                  outline-none ring-ring transition-colors
@@ -124,7 +150,6 @@
       </div>
     </div>
 
-    <!-- Botão entrar -->
     <button
       type="submit"
       [disabled]="loading()"
@@ -145,13 +170,11 @@
       }
     </button>
 
-    <p class="text-center text-xs text-muted-foreground">
+    <p class="text-center text-xs leading-relaxed text-muted-foreground">
       Login seguro com e-mail e senha. Não pedimos acesso a outros apps do seu celular.
     </p>
-
   </form>
 
-  <!-- ── Rodapé ─────────────────────────────────────────────────────────── -->
   <p class="mt-6 text-center text-xs text-muted-foreground">
     Acesso restrito. Para criar uma conta, peça um convite ao administrador.
   </p>

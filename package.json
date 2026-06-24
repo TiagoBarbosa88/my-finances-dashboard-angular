@@ -6,6 +6,7 @@
     "env:sync": "node scripts/sync-environment.mjs",
     "seed:sql": "node scripts/generate-supabase-seed.mjs --email=tiagobarbosa.dev@gmail.com --uuid=50b94089-79f2-4a42-893d-be8fe26c26df",
     "add:user": "node scripts/add-supabase-user.mjs",
+    "icons:generate": "node scripts/generate-pwa-icons.mjs",
     "postinstall": "node scripts/sync-environment.mjs",
     "prestart": "node scripts/sync-environment.mjs",
     "predev": "node scripts/sync-environment.mjs",
@@ -54,6 +55,7 @@
     "postcss": "^8.5.15",
     "prettier": "^3.8.4",
     "prettier-plugin-tailwindcss": "^0.8.0",
+    "sharp": "^0.35.2",
     "tailwindcss": "^4.3.1",
     "typescript": "~5.7.2"
   }
