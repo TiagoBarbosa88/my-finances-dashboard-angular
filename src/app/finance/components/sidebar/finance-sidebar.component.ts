@@ -3,25 +3,10 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 import { APP_NAME } from '@app/core/constants/app-brand';
+import { SIDEBAR_NAV_ITEMS, type SidebarIcon } from '@app/core/constants/app-routes';
 import { SupabaseService } from '@app/core/services/supabase.service';
 
-interface NavItem {
-  title: string;
-  url: string;
-  exact: boolean;
-  icon: SidebarIcon;
-  /** Itens ocultos temporariamente (Lançamentos → Relatórios). */
-  visible?: boolean;
-}
-
-export type SidebarIcon =
-  | 'dashboard'
-  | 'chart'
-  | 'wallet'
-  | 'pie'
-  | 'target'
-  | 'trending'
-  | 'settings';
+export type { SidebarIcon };
 
 /**
  * Sidebar desktop (collapsible ao hover, 72 → 240 px)
@@ -47,16 +32,9 @@ export class FinanceSidebarComponent {
     await this.supabase.signOut();
     this.router.navigate(['/']);
   }
-  /** Rotas sincronizadas com app.routes.ts */
-  readonly navItems: NavItem[] = [
-    { title: 'Painel',        url: '/app/painel',        exact: true,  icon: 'dashboard', visible: true  },
-    { title: 'Investimentos', url: '/app/investimentos', exact: true,  icon: 'chart',     visible: true  },
-    // { title: 'Lançamentos',   url: '/lancamentos',    exact: true,  icon: 'wallet'    },
-    // { title: 'Categorias',    url: '/categorias',     exact: true,  icon: 'pie'       },
-    // { title: 'Metas',         url: '/metas',          exact: true,  icon: 'target'    },
-    // { title: 'Relatórios',    url: '/relatorios',     exact: true,  icon: 'trending'  },
-    { title: 'Configurações', url: '/app/configuracoes', exact: true, icon: 'settings', visible: true },
-  ];
+
+  /** Rotas sincronizadas com app.routes.ts via app-routes.ts */
+  readonly navItems = SIDEBAR_NAV_ITEMS;
 
   readonly visibleNavItems = this.navItems.filter((item) => item.visible !== false);
 

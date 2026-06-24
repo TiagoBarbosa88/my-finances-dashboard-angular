@@ -1,7 +1,14 @@
 import { Routes } from '@angular/router';
 
 import { APP_NAME } from '@app/core/constants/app-brand';
-import { APP_HOME, authGuard, landingGuard, noAuthGuard } from '@app/core/guards/auth.guard';
+import {
+  APP_HOME,
+  APP_ROUTE_PATHS,
+  APP_SHELL_ALIASES,
+  APP_SHELL_FALLBACK_PATH,
+  LEGACY_REDIRECTS,
+} from '@app/core/constants/app-routes';
+import { authGuard, landingGuard, noAuthGuard } from '@app/core/guards/auth.guard';
 
 /**
  * Rotas lazy-loaded da aplicação.
@@ -48,10 +55,10 @@ export const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'painel',
+        redirectTo: APP_ROUTE_PATHS.painel,
       },
       {
-        path: 'painel',
+        path: APP_ROUTE_PATHS.painel,
         title: `${APP_NAME} — Dashboard de Finanças Pessoais`,
         loadComponent: () =>
           import('./features/dashboard/pages/dashboard-page/dashboard-page.component').then(
@@ -59,7 +66,7 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'investimentos',
+        path: APP_ROUTE_PATHS.investimentos,
         title: `Investimentos — ${APP_NAME}`,
         loadComponent: () =>
           import(
@@ -67,7 +74,7 @@ export const routes: Routes = [
           ).then((m) => m.InvestimentosPageComponent),
       },
       {
-        path: 'lancamentos',
+        path: APP_ROUTE_PATHS.lancamentos,
         title: `Lançamentos — ${APP_NAME}`,
         loadComponent: () =>
           import('./features/lancamentos/pages/lancamentos-page/lancamentos-page.component').then(
@@ -75,7 +82,7 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'categorias',
+        path: APP_ROUTE_PATHS.categorias,
         title: `Categorias — ${APP_NAME}`,
         loadComponent: () =>
           import('./features/categorias/pages/categorias-page/categorias-page.component').then(
@@ -83,7 +90,7 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'metas',
+        path: APP_ROUTE_PATHS.metas,
         title: `Metas — ${APP_NAME}`,
         loadComponent: () =>
           import('./features/metas/pages/metas-page/metas-page.component').then(
@@ -91,43 +98,55 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'relatorios',
+        path: APP_ROUTE_PATHS.relatorios,
         title: `Relatórios — ${APP_NAME}`,
         loadComponent: () =>
           import('./features/relatorios/pages/relatorios-page/relatorios-page.component').then(
             (m) => m.RelatoriosPageComponent,
           ),
       },
+      ...APP_SHELL_ALIASES.map(({ from, to }) => ({
+        path: from,
+        pathMatch: 'full' as const,
+        redirectTo: to,
+      })),
       {
-        path: 'ajustes',
-        pathMatch: 'full',
-        redirectTo: 'configuracoes',
-      },
-      {
-        path: 'configuracoes',
+        path: APP_ROUTE_PATHS.configuracoes,
         title: `Configurações — ${APP_NAME}`,
         loadComponent: () =>
           import('./features/ajustes/pages/ajustes-page/ajustes-page.component').then(
             (m) => m.AjustesPageComponent,
           ),
       },
+      {
+        path: '**',
+        redirectTo: APP_SHELL_FALLBACK_PATH,
+      },
     ],
   },
 
   // ── Atalhos legados (bookmarks antigos) ───────────────────────────────────
-  { path: 'investimentos', redirectTo: 'app/investimentos', pathMatch: 'full' },
-  { path: 'lancamentos', redirectTo: 'app/lancamentos', pathMatch: 'full' },
-  { path: 'categorias', redirectTo: 'app/categorias', pathMatch: 'full' },
-  { path: 'metas', redirectTo: 'app/metas', pathMatch: 'full' },
-  { path: 'relatorios', redirectTo: 'app/relatorios', pathMatch: 'full' },
-  { path: 'ajustes', redirectTo: 'app/configuracoes', pathMatch: 'full' },
+  ...LEGACY_REDIRECTS.map(({ path, redirectTo }) => ({
+    path,
+    redirectTo,
+    pathMatch: 'full' as const,
+  })),
+
+  {
+    path: 'erro-navegacao',
+    title: `Erro — ${APP_NAME}`,
+    loadComponent: () =>
+      import('./layout/error-page/error-page.component').then((m) => m.ErrorPageComponent),
+  },
 
   // ── Fallback ──────────────────────────────────────────────────────────────
   {
     path: '**',
-    redirectTo: '',
+    loadComponent: () =>
+      import('./layout/not-found-page/not-found-page.component').then(
+        (m) => m.NotFoundPageComponent,
+      ),
   },
 ];
 
 export { APP_HOME };
-

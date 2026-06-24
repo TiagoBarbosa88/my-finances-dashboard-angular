@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import { APP_NAME } from '@app/core/constants/app-brand';
@@ -10,6 +10,12 @@ import { APP_NAME } from '@app/core/constants/app-brand';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = APP_NAME;
+
+  ngOnInit(): void {
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem('smart-finances:chunk-reload');
+    }
+  }
 }

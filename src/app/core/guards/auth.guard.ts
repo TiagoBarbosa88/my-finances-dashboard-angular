@@ -2,13 +2,13 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import type { Session } from '@supabase/supabase-js';
 
+import { APP_HOME } from '@app/core/constants/app-routes';
 import { AuthService } from '@app/core/services/auth.service';
 import { FinanceService } from '@app/core/services/finance.service';
 import { SupabaseService } from '@app/core/services/supabase.service';
 import { environment } from 'src/environments/environment';
 
-/** Dashboard principal (após login). */
-export const APP_HOME = '/app/painel';
+export { APP_HOME };
 
 function isTransientAuthError(message: string): boolean {
   const lower = message.toLowerCase();
