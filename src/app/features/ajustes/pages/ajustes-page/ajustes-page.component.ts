@@ -41,6 +41,7 @@ export class AjustesPageComponent implements OnInit, OnDestroy {
   readonly newPassword = signal('');
   readonly confirmPassword = signal('');
   readonly showNewPassword = signal(false);
+  readonly passwordFormOpen = signal(false);
   readonly conviteNome = signal('');
   readonly conviteEmail = signal('');
   readonly conviteRole = signal<UserRole>('editor');
@@ -170,6 +171,19 @@ export class AjustesPageComponent implements OnInit, OnDestroy {
     });
   }
 
+  abrirFormularioSenha(): void {
+    this.passwordFormOpen.set(true);
+    this.passwordMessage.set(null);
+  }
+
+  fecharFormularioSenha(): void {
+    this.passwordFormOpen.set(false);
+    this.newPassword.set('');
+    this.confirmPassword.set('');
+    this.showNewPassword.set(false);
+    this.passwordMessage.set(null);
+  }
+
   async alterarSenha(): Promise<void> {
     const pwd = this.newPassword();
     const confirm = this.confirmPassword();
@@ -202,6 +216,8 @@ export class AjustesPageComponent implements OnInit, OnDestroy {
       this.newPassword.set('');
       this.confirmPassword.set('');
       this.passwordMessage.set('Senha alterada com sucesso.');
+      this.passwordFormOpen.set(false);
+      this.showNewPassword.set(false);
     } catch {
       this.passwordMessage.set('Não foi possível alterar a senha. Tente novamente.');
     } finally {
