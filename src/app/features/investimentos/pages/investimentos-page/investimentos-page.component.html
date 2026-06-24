@@ -69,14 +69,14 @@
   </section>
 
   <!-- ═══════════════ GRÁFICOS (lado a lado) ═══════════════ -->
-  <section class="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2">
+  <section class="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-stretch">
     <app-distribuicao-ativos-barras
-      class="h-full"
+      class="h-full min-h-0"
       [grupos]="finance.ativosPorTipo()"
     />
 
     <app-distribuicao-classe-chart
-      class="h-full"
+      class="h-full min-h-0"
       [data]="finance.distribuicaoPorClasse()"
       [patrimonio]="finance.distribuicaoPatrimonio()"
       centerSub="Patrimônio"

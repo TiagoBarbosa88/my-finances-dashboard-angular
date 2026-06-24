@@ -61,7 +61,7 @@ export class InvestimentosPageComponent {
         change:    formatPercentBR(r.variacaoPct),
         positive:  r.variacaoPct >= 0,
         variant:   'neutral',
-        valueTone: r.variacaoPct >= 0 ? 'green' : 'red',
+        valueTone: 'green',
         icon:      'wallet',
       },
       {

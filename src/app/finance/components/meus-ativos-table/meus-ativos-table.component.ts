@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { Component, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '@app/core/services/auth.service';
@@ -7,6 +7,7 @@ import { CLASSE_ATIVO_CORES } from '@app/core/services/investimentos.data';
 import { FinanceService } from '@app/core/services/finance.service';
 import { AtivoEnriquecido, GrupoAtivos, SugestaoInvestimento, TipoAtivo } from '@app/shared/models/investimentos.model';
 import { CurrencyBrlPipe } from '@app/shared/pipes/currency-brl.pipe';
+import { formatCurrencyBRL } from '@app/shared/pipes/format.utils';
 import { PercentBrPipe } from '@app/shared/pipes/percent-br.pipe';
 
 /**
@@ -31,20 +32,6 @@ export class MeusAtivosTableComponent {
 
   /** Estado aberto/fechado de cada tipo de ativo. */
   private readonly expanded = signal<Record<string, boolean>>({});
-
-  constructor() {
-    effect(() => {
-      const grupos = this.grupos();
-      const current = this.expanded();
-
-      if (Object.keys(current).length > 0) return;
-
-      const first = grupos.find((g) => g.ativos.length > 0) ?? grupos[0];
-      if (first) {
-        this.expanded.set({ [first.tipo]: true });
-      }
-    });
-  }
 
   canEditScore(): boolean {
     return this.auth.canManageInvestments();
@@ -111,6 +98,15 @@ export class MeusAtivosTableComponent {
     return total > 0 ? (grupo.valorTotal / total) * 100 : 0;
   }
 
+  metaGrupo(grupo: GrupoAtivos): number {
+    const fromAtivo = grupo.ativos[0]?.metaCategoria;
+    if (fromAtivo != null) return fromAtivo;
+
+    return (
+      this.finance.targetMetas().find((meta) => meta.tipo === grupo.tipo)?.targetPercent ?? 0
+    );
+  }
+
   variacaoGrupo(grupo: GrupoAtivos): number {
     if (grupo.valorTotal <= 0 || grupo.ativos.length === 0) return 0;
 
@@ -136,6 +132,25 @@ export class MeusAtivosTableComponent {
   pctClass(value: number): string {
     if (value > 0) return 'text-green-400';
     if (value < 0) return 'text-red-400';
-    return 'text-muted-foreground';
+    return 'text-warning';
+  }
+
+  /** Valor compacto para o resumo mobile (ex.: R$ 1,6K). */
+  valorResumoMobile(value: number): string {
+    if (value === 0) return 'R$ 0,00';
+
+    const abs = Math.abs(value);
+
+    if (abs >= 1_000_000) {
+      const compact = value / 1_000_000;
+      return `R$ ${compact.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}M`;
+    }
+
+    if (abs >= 1_000) {
+      const compact = value / 1_000;
+      return `R$ ${compact.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}K`;
+    }
+
+    return formatCurrencyBRL(value);
   }
 }
