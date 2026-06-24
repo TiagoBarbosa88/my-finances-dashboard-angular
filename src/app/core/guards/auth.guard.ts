@@ -1,5 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
+import type { Session } from '@supabase/supabase-js';
 
 import { AuthService } from '@app/core/services/auth.service';
 import { FinanceService } from '@app/core/services/finance.service';
@@ -9,11 +10,20 @@ import { environment } from 'src/environments/environment';
 /** Dashboard principal (após login). */
 export const APP_HOME = '/app/painel';
 
-async function hasAuthSession(): Promise<boolean> {
+async function resolveValidSession(): Promise<Session | null> {
   const supabase = inject(SupabaseService);
-  if (!supabase.isConfigured()) return false;
+  if (!supabase.isConfigured()) return null;
+
   const session = await supabase.getSession();
-  return session != null;
+  if (!session) return null;
+
+  const { data, error } = await supabase.client.auth.getUser();
+  if (error || !data.user) {
+    await supabase.signOut();
+    return null;
+  }
+
+  return session;
 }
 
 function urlHasAuthCallback(): boolean {
@@ -62,7 +72,7 @@ export const landingGuard: CanActivateFn = async () => {
     return true;
   }
 
-  if (await hasAuthSession()) {
+  if (await resolveValidSession()) {
     return router.createUrlTree([APP_HOME]);
   }
 
@@ -80,7 +90,7 @@ export const authGuard: CanActivateFn = async (_route, state) => {
 
   if (!supabase.isConfigured()) return true;
 
-  const session = await supabase.getSession();
+  const session = await resolveValidSession();
 
   if (session) {
     return true;

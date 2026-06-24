@@ -3,7 +3,7 @@
   <header>
     <h1 class="text-display text-2xl font-semibold sm:text-3xl">Configurações</h1>
     <p class="mt-1 text-sm text-muted-foreground">
-      Sua conta, equipe e convites em um só lugar.
+      Sua conta e equipe em um só lugar.
     </p>
   </header>
 
@@ -192,14 +192,14 @@
 
   </div>
 
-  <!-- Convidar -->
-  <section class="surface-card">
+  <!-- Convidar — somente admin -->
+  <section *appHasRole="['admin']" class="surface-card">
     <h2 class="text-display text-lg font-semibold">Convidar alguém</h2>
     <p class="mt-0.5 text-xs text-muted-foreground">
       Informe nome e e-mail. A pessoa receberá um link para entrar no Smart Finances.
     </p>
 
-    <div *appHasRole="['admin']" class="mt-5 grid gap-4 sm:max-w-2xl">
+    <div class="mt-5 grid gap-4 sm:max-w-2xl">
       <div class="grid gap-3">
         <div class="grid gap-3 sm:grid-cols-2">
           <div class="grid gap-1.5">
@@ -343,10 +343,6 @@
         </div>
       }
     </div>
-
-    <p *appHasRole="['editor', 'leitor']" class="mt-5 text-sm text-muted-foreground">
-      Apenas administradores podem convidar novas pessoas.
-    </p>
   </section>
 
 </div>

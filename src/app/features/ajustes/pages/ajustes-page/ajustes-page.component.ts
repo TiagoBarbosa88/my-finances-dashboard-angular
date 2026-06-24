@@ -110,6 +110,10 @@ export class AjustesPageComponent implements OnInit {
 
     this.auth.updateProfile(nome, email).subscribe({
       next: () => {
+        const updated = this.auth.usuarioLogado();
+        if (updated) {
+          this.team.syncMembroProfile(updated);
+        }
         this.profileMessage.set('Perfil atualizado com sucesso.');
         this.profileSaving.set(false);
       },

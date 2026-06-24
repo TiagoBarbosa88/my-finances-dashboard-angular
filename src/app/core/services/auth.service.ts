@@ -64,6 +64,9 @@ export class AuthService {
 
   readonly isLeitor = computed(() => this.usuarioLogado()?.role === 'leitor');
 
+  /** Saudação reativa — atualiza ao mudar o nome no perfil. */
+  readonly saudacao = computed(() => buildSaudacao(this.usuarioLogado()?.nome));
+
 
 
   constructor() {

@@ -81,6 +81,12 @@ export class SupabaseService {
     return this.client.auth.signOut();
   }
 
+  /** Define senha do usuário logado (ex.: após aceitar convite). */
+  async setPassword(password: string): Promise<{ error: Error | null }> {
+    const { error } = await this.client.auth.updateUser({ password });
+    return { error: error ?? null };
+  }
+
   /** Retorna o usuário logado ou `null`. */
   async getUser(): Promise<User | null> {
     const { data } = await this.client.auth.getUser();

@@ -52,6 +52,17 @@ export class TeamService {
     });
   }
 
+  /** Atualiza nome/e-mail na lista da equipe após salvar perfil. */
+  syncMembroProfile(profile: Usuario): void {
+    this.membros.update((list) =>
+      list.map((m) =>
+        m.id === profile.id
+          ? { ...m, nome: profile.nome, email: profile.email, role: profile.role }
+          : m,
+      ),
+    );
+  }
+
   enviarConvite(nome: string, email: string, role: ConviteDraft['role']): Observable<Convite> {
     const convidadoPor = this.auth.usuarioLogado()?.nome ?? 'Admin';
     const draft: ConviteDraft = {
