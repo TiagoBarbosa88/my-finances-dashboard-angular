@@ -120,15 +120,15 @@
             </button>
           </div>
 
-          <form class="mt-4 grid gap-4 sm:max-w-md" (ngSubmit)="alterarSenha()">
+          <form class="mt-4 grid gap-4 sm:max-w-md" autocomplete="off" (ngSubmit)="alterarSenha()">
           <div class="grid gap-2">
             <label for="new-password" class="text-sm font-medium">Nova senha</label>
             <div class="relative">
               <input
                 id="new-password"
                 [type]="showNewPassword() ? 'text' : 'password'"
-                name="newPassword"
-                autocomplete="new-password"
+                name="settings-new-password"
+                autocomplete="off"
                 placeholder="Mínimo 6 caracteres"
                 [ngModel]="newPassword()"
                 (ngModelChange)="newPassword.set($event)"
@@ -165,8 +165,8 @@
             <input
               id="confirm-password"
               [type]="showNewPassword() ? 'text' : 'password'"
-              name="confirmPassword"
-              autocomplete="new-password"
+              name="settings-confirm-password"
+              autocomplete="off"
               placeholder="Repita a nova senha"
               [ngModel]="confirmPassword()"
               (ngModelChange)="confirmPassword.set($event)"

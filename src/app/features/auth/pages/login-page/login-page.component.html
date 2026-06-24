@@ -43,7 +43,7 @@
   </div>
 
   <!-- ── Formulário ────────────────────────────────────────────────────────── -->
-  <form class="space-y-4" (ngSubmit)="signIn()">
+  <form class="space-y-4" autocomplete="off" (ngSubmit)="signIn()">
 
     <!-- Alerta de erro -->
     @if (error()) {
@@ -68,9 +68,12 @@
       <input
         id="email"
         type="email"
-        name="email"
+        name="login-email"
         placeholder="seu@email.com"
-        autocomplete="email"
+        autocomplete="off"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
         [ngModel]="email()"
         (ngModelChange)="email.set($event)"
         class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5
@@ -87,9 +90,9 @@
         <input
           id="password"
           [type]="showPassword() ? 'text' : 'password'"
-          name="password"
+          name="login-password"
           placeholder="••••••••"
-          autocomplete="current-password"
+          autocomplete="off"
           [ngModel]="password()"
           (ngModelChange)="password.set($event)"
           class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5
@@ -142,6 +145,10 @@
       }
     </button>
 
+    <p class="text-center text-xs text-muted-foreground">
+      Login seguro com e-mail e senha. Não pedimos acesso a outros apps do seu celular.
+    </p>
+
   </form>
 
   <!-- ── Rodapé ─────────────────────────────────────────────────────────── -->
@@ -152,3 +159,5 @@
   }
 
 </app-auth-layout>
+
+<app-pwa-install-banner />

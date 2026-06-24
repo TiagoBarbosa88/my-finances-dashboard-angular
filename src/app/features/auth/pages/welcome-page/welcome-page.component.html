@@ -18,7 +18,7 @@
       </p>
     </div>
 
-    <form class="space-y-4" (ngSubmit)="savePasswordAndContinue()">
+    <form class="space-y-4" autocomplete="off" (ngSubmit)="savePasswordAndContinue()">
       @if (error()) {
         <div
           class="flex items-center gap-2.5 rounded-xl border border-destructive/30
@@ -44,8 +44,8 @@
           <input
             id="password"
             [type]="showPassword() ? 'text' : 'password'"
-            name="password"
-            autocomplete="new-password"
+            name="welcome-password"
+            autocomplete="off"
             placeholder="Mínimo 6 caracteres"
             [ngModel]="password()"
             (ngModelChange)="password.set($event)"
@@ -82,8 +82,8 @@
         <input
           id="confirm-password"
           [type]="showPassword() ? 'text' : 'password'"
-          name="confirmPassword"
-          autocomplete="new-password"
+          name="welcome-confirm-password"
+          autocomplete="off"
           placeholder="Repita a senha"
           [ngModel]="confirmPassword()"
           (ngModelChange)="confirmPassword.set($event)"

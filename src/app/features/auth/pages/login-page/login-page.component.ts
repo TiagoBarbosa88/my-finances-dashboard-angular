@@ -8,6 +8,7 @@ import { AuthService } from '@app/core/services/auth.service';
 import { FinanceService } from '@app/core/services/finance.service';
 import { SupabaseService } from '@app/core/services/supabase.service';
 import { AuthLayoutComponent } from '@app/layout/auth-layout/auth-layout.component';
+import { PwaInstallBannerComponent } from '@app/shared/ui/pwa-install-banner/pwa-install-banner.component';
 import { environment } from 'src/environments/environment';
 
 /**
@@ -16,7 +17,7 @@ import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [FormsModule, AuthLayoutComponent],
+  imports: [FormsModule, AuthLayoutComponent, PwaInstallBannerComponent],
   templateUrl: './login-page.component.html',
 })
 export class LoginPageComponent implements OnInit {

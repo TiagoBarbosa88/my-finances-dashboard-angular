@@ -299,6 +299,20 @@
     color: var(--primary);
   }
 
+  .finance-mobile-nav {
+    bottom: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .pwa-install-banner {
+    bottom: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .pwa-install-banner--above-nav {
+    bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px));
+  }
+
   .dialog-panel {
     @apply flex w-full max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-black/40;
     max-height: min(72vh, 520px);

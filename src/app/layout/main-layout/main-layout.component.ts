@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FinanceSidebarComponent } from '../../finance/components/sidebar/finance-sidebar.component';
+import { PwaInstallBannerComponent } from '@app/shared/ui/pwa-install-banner/pwa-install-banner.component';
 
 /**
  * Shell raiz da aplicação.
@@ -10,7 +11,7 @@ import { FinanceSidebarComponent } from '../../finance/components/sidebar/financ
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [RouterOutlet, FinanceSidebarComponent],
+  imports: [RouterOutlet, FinanceSidebarComponent, PwaInstallBannerComponent],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.css',
 })

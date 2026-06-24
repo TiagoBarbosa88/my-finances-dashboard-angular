@@ -1,5 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { isDevMode } from '@angular/core';
+import { ApplicationConfig, inject, provideZoneChangeDetection } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import {
   provideRouter,
@@ -7,6 +7,7 @@ import {
   withComponentInputBinding,
   withNavigationErrorHandler,
 } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
 
 import { routes } from './app.routes';
 import { handleNavigationError } from '@app/core/utils/navigation-error.util';
@@ -22,5 +23,9 @@ export const appConfig: ApplicationConfig = {
         handleNavigationError(error, inject(Router));
       }),
     ),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
   ],
 };
