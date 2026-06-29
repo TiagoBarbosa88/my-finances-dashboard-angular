@@ -1,0 +1,276 @@
+<section class="surface-card" [class.mb-4]="scrollableList()">
+
+  <!-- Cabeçalho -->
+  <div class="flex items-center justify-between gap-4">
+    <h2 class="text-display text-lg font-semibold">{{ title() }}</h2>
+    @if (showViewAll() && !scrollableList()) {
+      <button
+        type="button"
+        (click)="viewAll.emit()"
+        class="text-xs font-medium text-primary transition-colors hover:underline"
+      >
+        Ver todos
+      </button>
+    }
+  </div>
+
+  <!-- Mobile — cards (referência app financeiro moderno) -->
+  <div [class]="mobileListClass()">
+    @if (transactionsFiltradas().length === 0) {
+      <p class="py-10 text-center text-sm italic text-muted-foreground">
+        @if (termoBusca().trim()) {
+          Nenhum lançamento encontrado para "{{ termoBusca() }}".
+        } @else {
+          Nenhum lançamento encontrado para este mês.
+        }
+      </p>
+    } @else {
+      @for (t of transactionsFiltradas(); track t.id) {
+        <div
+          class="group flex items-center gap-3 rounded-2xl border border-border/70
+                 bg-muted/15 p-3.5 transition-colors hover:bg-accent/30"
+          [class.cursor-pointer]="canModify(t)"
+          (click)="onMobileCardClick(t)"
+          [attr.role]="canModify(t) ? 'button' : null"
+          [attr.tabindex]="canModify(t) ? 0 : null"
+          (keydown.enter)="canModify(t) && onMobileCardClick(t)"
+        >
+          <!-- Ícone da categoria -->
+          <div
+            class="grid h-11 w-11 shrink-0 place-items-center rounded-full
+                   text-sm font-bold shadow-sm"
+            [style]="categoryIconStyle(t.categoria)"
+          >
+            {{ t.categoria.charAt(0) }}
+          </div>
+
+          <!-- Título + meta -->
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-semibold text-foreground">{{ t.descricao }}</p>
+            <div class="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-muted-foreground">
+              <span>{{ t.categoria }}</span>
+              <span aria-hidden="true">·</span>
+              @if (canModify(t)) {
+                <button
+                  type="button"
+                  (click)="finance.toggleStatus(t.id); $event.stopPropagation()"
+                  class="rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors"
+                  [class]="t.status === 'pago'
+                    ? 'bg-green-900/30 text-green-400'
+                    : 'bg-yellow-900/30 text-yellow-400'"
+                >
+                  {{ finance.statusLabel(t.status) }}
+                </button>
+              } @else {
+                <span
+                  class="rounded-full px-2 py-0.5 text-[10px] font-medium"
+                  [class]="t.status === 'pago'
+                    ? 'bg-green-900/30 text-green-400'
+                    : 'bg-yellow-900/30 text-yellow-400'"
+                >
+                  {{ finance.statusLabel(t.status) }}
+                </span>
+              }
+            </div>
+          </div>
+
+          <!-- Valor + data -->
+          <div class="flex shrink-0 flex-col items-end gap-1 pr-1">
+            <span class="text-mono text-sm font-semibold" [class]="amountClass(t)">
+              {{ amountPrefix(t) }}{{ finance.formatCurrency(t.valor) }}
+            </span>
+            <span class="text-[11px] text-muted-foreground">
+              {{ finance.formatShortDate(t.data) }}
+            </span>
+          </div>
+
+          <!-- Indicador lateral (verde receita / vermelho despesa) -->
+          <span
+            class="h-9 w-1 shrink-0 rounded-full opacity-90"
+            [class]="indicatorClass(t)"
+            aria-hidden="true"
+          ></span>
+
+          @if (canModify(t)) {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round"
+                 class="h-4 w-4 shrink-0 text-muted-foreground/70" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          }
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Desktop — tabela -->
+  <div [class]="listContainerClass()">
+    <table class="w-full min-w-[640px] text-sm">
+
+      <thead [class]="theadClass()">
+        <tr class="text-left text-xs uppercase tracking-wider text-muted-foreground">
+          <th class="pb-3 font-medium">Data</th>
+          <th class="pb-3 font-medium">Descrição</th>
+          <th class="pb-3 font-medium">Categoria</th>
+          <th class="pb-3 font-medium">Status</th>
+          <th class="pb-3 font-medium">Quem lançou</th>
+          <th class="pb-3 text-right font-medium">Valor</th>
+          @if (showActionsColumn()) {
+            <th class="pb-3 text-right font-medium">Ações</th>
+          }
+        </tr>
+      </thead>
+
+      <tbody class="divide-y divide-border">
+
+        @if (transactionsFiltradas().length === 0) {
+          <tr>
+            <td [attr.colspan]="showActionsColumn() ? 7 : 6" class="py-8 text-center italic text-muted-foreground">
+              @if (termoBusca().trim()) {
+                Nenhum lançamento encontrado para "{{ termoBusca() }}".
+              } @else {
+                Nenhum lançamento encontrado para este mês.
+              }
+            </td>
+          </tr>
+        } @else {
+          @for (t of transactionsFiltradas(); track t.id) {
+            <tr class="group transition-colors hover:bg-accent/40">
+
+              <!-- Data -->
+              <td class="py-3 text-mono text-muted-foreground">
+                {{ finance.formatShortDate(t.data) }}
+              </td>
+
+              <!-- Descrição -->
+              <td class="py-3 font-medium">{{ t.descricao }}</td>
+
+              <!-- Categoria badge colorido -->
+              <td class="py-3">
+                <span
+                  class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs"
+                  [style]="categoryBadgeStyle(t.categoria)"
+                >
+                  <span class="h-1.5 w-1.5 rounded-full" [style]="categoryDotStyle(t.categoria)"></span>
+                  {{ t.categoria }}
+                </span>
+              </td>
+
+              <!-- Status badge — clicável se o usuário puder alterar -->
+              <td class="py-3">
+                @if (canModify(t)) {
+                  <button
+                    type="button"
+                    (click)="finance.toggleStatus(t.id)"
+                    class="inline-flex cursor-pointer items-center rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors"
+                    [class]="t.status === 'pago'
+                      ? 'bg-green-900/30 text-green-400 hover:bg-green-900/50'
+                      : 'bg-yellow-900/30 text-yellow-400 hover:bg-yellow-900/50'"
+                    [attr.aria-label]="'Alternar status de ' + t.descricao"
+                  >
+                    {{ finance.statusLabel(t.status) }}
+                  </button>
+                } @else {
+                  <span
+                    class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+                    [class]="t.status === 'pago'
+                      ? 'bg-green-900/30 text-green-400'
+                      : 'bg-yellow-900/30 text-yellow-400'"
+                  >
+                    {{ finance.statusLabel(t.status) }}
+                  </span>
+                }
+              </td>
+
+              <!-- Quem lançou -->
+              <td class="py-3 text-muted-foreground">
+                <div class="flex items-center gap-2">
+                  <span
+                    class="grid h-6 w-6 shrink-0 place-items-center rounded-full
+                           bg-gradient-to-br from-primary to-chart-2
+                           text-[10px] font-semibold text-primary-foreground"
+                  >
+                    {{ t.criado_por.charAt(0) }}
+                  </span>
+                  {{ t.criado_por }}
+                </div>
+              </td>
+
+              <!-- Valor -->
+              <td class="py-3 text-right text-mono font-semibold text-foreground">
+                {{ finance.formatCurrency(t.valor) }}
+              </td>
+
+              @if (showActionsColumn()) {
+                <!-- Ações -->
+                <td class="py-3">
+                  @if (canModify(t)) {
+                    <div class="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        (click)="edit.emit(t)"
+                        [attr.aria-label]="'Editar ' + t.descricao"
+                        class="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground
+                               transition-colors hover:bg-accent hover:text-primary"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                          <path d="M12 20h9"/>
+                          <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        (click)="openDeleteDialog(t)"
+                        [attr.aria-label]="'Excluir ' + t.descricao"
+                        class="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground
+                               transition-colors hover:bg-destructive/15 hover:text-destructive"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                          <polyline points="3 6 5 6 21 6"/>
+                          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                          <path d="M10 11v6"/><path d="M14 11v6"/>
+                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                        </svg>
+                      </button>
+                    </div>
+                  } @else {
+                    <span class="block text-right text-xs text-muted-foreground">—</span>
+                  }
+                </td>
+              }
+
+            </tr>
+          }
+        }
+
+      </tbody>
+    </table>
+  </div>
+
+  @if (showViewAll() && scrollableList()) {
+    <div class="mt-4 flex justify-end border-t border-border/50 pt-4">
+      <button
+        type="button"
+        (click)="viewAll.emit()"
+        class="text-xs font-medium text-primary transition-colors hover:underline"
+      >
+        Ver todos
+      </button>
+    </div>
+  }
+
+  @if (pendingDelete(); as transaction) {
+    <app-confirm-dialog
+      title="Excluir lançamento?"
+      [message]="transaction.descricao"
+      confirmLabel="Excluir"
+      cancelLabel="Cancelar"
+      [destructive]="true"
+      (confirm)="confirmDelete()"
+      (cancel)="cancelDelete()"
+    />
+  }
+
+</section>

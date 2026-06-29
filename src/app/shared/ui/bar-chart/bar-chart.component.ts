@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 
-import { BarChartItem, BarSlice } from '@app/shared/models/transaction.model';
+import { BarChartItem, BarSlice } from '@shared/models/transaction.model';
 
 interface YTick {
   value: number;

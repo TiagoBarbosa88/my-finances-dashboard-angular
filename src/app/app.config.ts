@@ -10,7 +10,7 @@ import {
 import { provideServiceWorker } from '@angular/service-worker';
 
 import { routes } from './app.routes';
-import { handleNavigationError } from '@app/core/utils/navigation-error.util';
+import { handleNavigationError } from '@core/utils/navigation-error.util';
 
 export const appConfig: ApplicationConfig = {
   providers: [

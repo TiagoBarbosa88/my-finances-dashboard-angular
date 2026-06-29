@@ -1,18 +1,18 @@
 import { Component, computed, inject, signal } from '@angular/core';
 
-import { AuthService } from '@app/core/services/auth.service';
-import { FinanceService } from '@app/core/services/finance.service';
-import { Transaction } from '@app/shared/models/transaction.model';
-import { HasRoleDirective } from '@app/shared/directives/has-role.directive';
-import { AllTransactionsModalComponent } from '@app/finance/components/all-transactions-modal/all-transactions-modal.component';
-import { CategoryChartComponent } from '@app/finance/components/category-chart/category-chart.component';
-import { NewTransactionDialogComponent } from '@app/finance/components/new-transaction-dialog/new-transaction-dialog.component';
+import { AuthService } from '@core/auth/services/auth.service';
+import { FinanceService } from '@core/api/finance.service';
+import { Transaction } from '@shared/models/transaction.model';
+import { HasRoleDirective } from '@shared/directives/has-role.directive';
+import { AllTransactionsModalComponent } from '@features/dashboard/components/all-transactions-modal/all-transactions-modal.component';
+import { CategoryChartComponent } from '@features/dashboard/components/category-chart/category-chart.component';
+import { NewTransactionDialogComponent } from '@features/dashboard/components/new-transaction-dialog/new-transaction-dialog.component';
 import {
   SummaryCardComponent,
   SummaryCardIcon,
   SummaryCardVariant,
-} from '@app/finance/components/summary-card/summary-card.component';
-import { TransactionsTableComponent } from '@app/finance/components/transactions-table/transactions-table.component';
+} from '@features/dashboard/components/summary-card/summary-card.component';
+import { TransactionsTableComponent } from '@features/dashboard/components/transactions-table/transactions-table.component';
 
 interface SummaryCardData {
   label:     string;

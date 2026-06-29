@@ -1,14 +1,14 @@
 import { Routes } from '@angular/router';
 
-import { APP_NAME } from '@app/core/constants/app-brand';
+import { APP_NAME } from '@core/config/app-brand';
 import {
   APP_HOME,
   APP_ROUTE_PATHS,
   APP_SHELL_ALIASES,
   APP_SHELL_FALLBACK_PATH,
   LEGACY_REDIRECTS,
-} from '@app/core/constants/app-routes';
-import { authGuard, landingGuard, noAuthGuard } from '@app/core/guards/auth.guard';
+} from '@core/config/app-routes';
+import { authGuard, landingGuard, noAuthGuard } from '@core/auth/guards/auth.guard';
 
 /**
  * Rotas lazy-loaded da aplicação.
@@ -70,14 +70,14 @@ export const routes: Routes = [
         title: `Investimentos — ${APP_NAME}`,
         loadComponent: () =>
           import(
-            './features/investimentos/pages/investimentos-page/investimentos-page.component'
+            './features/investments/pages/investimentos-page/investimentos-page.component'
           ).then((m) => m.InvestimentosPageComponent),
       },
       {
         path: APP_ROUTE_PATHS.lancamentos,
         title: `Lançamentos — ${APP_NAME}`,
         loadComponent: () =>
-          import('./features/lancamentos/pages/lancamentos-page/lancamentos-page.component').then(
+          import('./features/transactions/pages/lancamentos-page/lancamentos-page.component').then(
             (m) => m.LancamentosPageComponent,
           ),
       },
@@ -85,7 +85,7 @@ export const routes: Routes = [
         path: APP_ROUTE_PATHS.categorias,
         title: `Categorias — ${APP_NAME}`,
         loadComponent: () =>
-          import('./features/categorias/pages/categorias-page/categorias-page.component').then(
+          import('./features/categories/pages/categorias-page/categorias-page.component').then(
             (m) => m.CategoriasPageComponent,
           ),
       },
@@ -93,7 +93,7 @@ export const routes: Routes = [
         path: APP_ROUTE_PATHS.metas,
         title: `Metas — ${APP_NAME}`,
         loadComponent: () =>
-          import('./features/metas/pages/metas-page/metas-page.component').then(
+          import('./features/goals/pages/metas-page/metas-page.component').then(
             (m) => m.MetasPageComponent,
           ),
       },
@@ -101,7 +101,7 @@ export const routes: Routes = [
         path: APP_ROUTE_PATHS.relatorios,
         title: `Relatórios — ${APP_NAME}`,
         loadComponent: () =>
-          import('./features/relatorios/pages/relatorios-page/relatorios-page.component').then(
+          import('./features/reports/pages/relatorios-page/relatorios-page.component').then(
             (m) => m.RelatoriosPageComponent,
           ),
       },
@@ -114,8 +114,8 @@ export const routes: Routes = [
         path: APP_ROUTE_PATHS.configuracoes,
         title: `Configurações — ${APP_NAME}`,
         loadComponent: () =>
-          import('./features/ajustes/pages/ajustes-page/ajustes-page.component').then(
-            (m) => m.AjustesPageComponent,
+          import('./features/settings/pages/settings-page/settings-page.component').then(
+            (m) => m.SettingsPageComponent,
           ),
       },
       {

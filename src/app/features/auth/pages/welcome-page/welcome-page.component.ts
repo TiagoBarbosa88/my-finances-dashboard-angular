@@ -2,11 +2,11 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { APP_NAME } from '@app/core/constants/app-brand';
-import { APP_HOME } from '@app/core/guards/auth.guard';
-import { AuthService } from '@app/core/services/auth.service';
-import { SupabaseService } from '@app/core/services/supabase.service';
-import { AuthLayoutComponent } from '@app/layout/auth-layout/auth-layout.component';
+import { APP_NAME } from '@core/config/app-brand';
+import { APP_HOME } from '@core/auth/guards/auth.guard';
+import { AuthService } from '@core/auth/services/auth.service';
+import { SupabaseService } from '@core/api/supabase.service';
+import { AuthLayoutComponent } from '@layout/auth-layout/auth-layout.component';
 
 @Component({
   selector: 'app-welcome-page',

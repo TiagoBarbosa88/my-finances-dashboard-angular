@@ -1,6 +1,6 @@
 import { Component, input, OnDestroy, OnInit, signal } from '@angular/core';
 
-import { APP_NAME } from '@app/core/constants/app-brand';
+import { APP_NAME } from '@core/config/app-brand';
 
 const DISMISS_KEY = 'smart-finances:pwa-install-dismissed';
 

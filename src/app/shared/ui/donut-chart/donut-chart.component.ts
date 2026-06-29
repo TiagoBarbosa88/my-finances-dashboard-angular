@@ -1,6 +1,6 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 
-import { ArcSlice, PieChartItem } from '@app/shared/models/transaction.model';
+import { ArcSlice, PieChartItem } from '@shared/models/transaction.model';
 
 /**
  * Donut chart em SVG puro — sem dependências externas.

@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ErrorReportingService } from '@app/core/services/error-reporting.service';
+import { ErrorReportingService } from '@core/api/error-reporting.service';
 
 /** Equivalente ao `ErrorComponent` em `src/routes/__root.tsx`. */
 @Component({

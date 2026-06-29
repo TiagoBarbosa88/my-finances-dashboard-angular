@@ -4,7 +4,7 @@ import {
   InvestimentoDraft,
   OperacaoInvestimento,
   TipoAtivo,
-} from '@app/shared/models/investimentos.model';
+} from '@shared/models/investimentos.model';
 
 export interface ImportInvestimentosResult {
   drafts: InvestimentoDraft[];

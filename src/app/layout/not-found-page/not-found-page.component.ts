@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { APP_HOME } from '@app/core/constants/app-routes';
+import { APP_HOME } from '@core/config/app-routes';
 
 /** Equivalente ao `NotFoundComponent` em `src/routes/__root.tsx`. */
 @Component({

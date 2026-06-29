@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-import { formatPercentBR } from '@app/shared/pipes/format.utils';
+import { formatPercentBR } from '@shared/pipes/format.utils';
 
 /** Formata percentuais no padrão pt-BR. */
 @Pipe({

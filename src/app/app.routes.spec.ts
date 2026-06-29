@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router, UrlTree } from '@angular/router';
 
 import { routes } from './app.routes';
-import { SIDEBAR_NAV_ITEMS } from '@app/core/constants/app-routes';
+import { SIDEBAR_NAV_ITEMS } from '@core/config/app-routes';
 
 describe('app routes contract', () => {
   let router: Router;

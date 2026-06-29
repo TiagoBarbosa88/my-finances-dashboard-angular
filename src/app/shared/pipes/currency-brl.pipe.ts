@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-import { formatCurrencyBRL } from '@app/shared/pipes/format.utils';
+import { formatCurrencyBRL } from '@shared/pipes/format.utils';
 
 /** Formata números como moeda BRL (pt-BR). */
 @Pipe({

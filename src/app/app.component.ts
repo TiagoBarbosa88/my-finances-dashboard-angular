@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { APP_NAME } from '@app/core/constants/app-brand';
+import { APP_NAME } from '@core/config/app-brand';
 
 @Component({
   selector: 'app-root',
