@@ -95,11 +95,19 @@ function esc(value) {
 }
 
 const v = loadVars();
+const fileEnv = loadFileVars();
+const bypassAuthEnv = process.env.BYPASS_AUTH ?? fileEnv.BYPASS_AUTH ?? '';
+
+if (v.production && bypassAuthEnv === 'true') {
+  console.warn('[env] AVISO: BYPASS_AUTH=true em produção — forçando bypassAuth=false.');
+}
+
+const bypassAuth = v.production ? false : bypassAuthEnv !== 'false';
 
 const content = `/** Gerado por scripts/sync-environment.mjs — não edite manualmente. */
 export const environment = {
   production: ${v.production},
-  bypassAuth: ${v.bypassAuth},
+  bypassAuth: ${bypassAuth},
   supabase: {
     url:            '${esc(v.supabaseUrl)}',
     publishableKey: '${esc(v.publishableKey)}',
