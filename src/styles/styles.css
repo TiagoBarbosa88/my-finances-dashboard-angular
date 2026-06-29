@@ -30,6 +30,8 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
+  --color-action: var(--action);
+  --color-action-foreground: var(--action-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
   --color-border: var(--border);
@@ -69,6 +71,9 @@
   --destructive-foreground: oklch(0.98 0.01 20);
   --success: oklch(0.78 0.17 160);
   --success-foreground: oklch(0.18 0.04 165);
+  --action: oklch(0.48 0.14 160);
+  --action-hover: oklch(0.55 0.15 160);
+  --action-foreground: oklch(0.98 0.01 160);
   --warning: oklch(0.82 0.14 85);
   --warning-foreground: oklch(0.22 0.04 85);
   --border: oklch(0.32 0.02 260);
@@ -328,17 +333,52 @@
     }
   }
 
-  /* FAB investimentos — azul profundo (distinto do verde primary do painel) */
+  /* FAB investimentos — verde escuro (CTA de adicionar) */
   .app-fab-invest {
-    background: var(--color-blue-800);
-    color: #fff;
+    background: var(--action);
+    color: var(--action-foreground);
     box-shadow:
-      0 10px 15px -3px color-mix(in oklab, var(--color-blue-900) 45%, transparent),
-      0 4px 6px -4px color-mix(in oklab, var(--color-blue-900) 35%, transparent);
+      0 10px 15px -3px color-mix(in oklab, var(--action) 45%, transparent),
+      0 4px 6px -4px color-mix(in oklab, var(--action) 35%, transparent);
   }
 
   .app-fab-invest:hover {
-    background: var(--color-blue-700);
+    background: var(--action-hover);
+  }
+
+  /* Botão principal de ação — Salvar, Adicionar, Convidar */
+  .btn-action {
+    border-radius: 0.75rem;
+    background: var(--action);
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.25rem;
+    color: var(--action-foreground);
+    box-shadow: 0 1px 4px color-mix(in oklab, var(--action) 35%, transparent);
+    transition:
+      background-color 0.15s ease,
+      box-shadow 0.15s ease,
+      transform 0.1s ease;
+  }
+
+  .btn-action:hover:not(:disabled) {
+    background: var(--action-hover);
+  }
+
+  .btn-action:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  .btn-action:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  /* Focus padrão de inputs em modais e formulários */
+  .input-field {
+    @apply rounded-lg border border-input bg-background outline-none transition-colors
+           focus:border-ring focus:ring-1 focus:ring-ring;
   }
 
   .dialog-panel {

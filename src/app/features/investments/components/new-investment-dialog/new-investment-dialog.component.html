@@ -1,0 +1,368 @@
+<!-- Backdrop -->
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6
+         bg-black/60 backdrop-blur-sm"
+  (click)="close.emit()"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="investment-dialog-title"
+>
+  <div
+    class="dialog-panel"
+    (click)="$event.stopPropagation()"
+  >
+
+    <!-- Header -->
+    <div class="dialog-panel-header">
+      <div>
+        <h2 id="investment-dialog-title" class="text-display text-lg font-semibold">
+          @if (isEditLancamento()) {
+            Editar investimento
+          } @else if (isEditAtivo()) {
+            Editar posição
+          } @else {
+            Novo investimento
+          }
+        </h2>
+        <p class="mt-0.5 text-sm text-muted-foreground">
+          @if (isEditMode()) {
+            Atualize os dados do investimento selecionado.
+          } @else {
+            Registre uma compra ou venda na carteira.
+          }
+        </p>
+      </div>
+
+      <button
+        type="button"
+        (click)="close.emit()"
+        aria-label="Fechar"
+        class="dialog-close-btn"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <form class="flex min-h-0 flex-1 flex-col" (ngSubmit)="salvar()">
+
+      <div class="dialog-panel-body">
+      <div [class.hidden]="modoImportacao()" class="dialog-form">
+
+      <!-- Tabs Compra / Venda -->
+      @if (!isEditAtivo()) {
+        <div class="grid grid-cols-2 gap-2 rounded-xl bg-muted p-1">
+          @for (op of operacaoOptions; track op) {
+            <button
+              type="button"
+              (click)="setOperacao(op)"
+              [class]="operacao() === op
+                ? op === 'compra'
+                  ? 'rounded-lg py-2 text-sm font-medium capitalize transition-all bg-action/20 text-action'
+                  : 'rounded-lg py-2 text-sm font-medium capitalize transition-all bg-destructive/20 text-destructive'
+                : 'rounded-lg py-2 text-sm font-medium capitalize transition-all text-muted-foreground hover:text-foreground'"
+            >
+              {{ operacaoLabel(op) }}
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Tipo de ativo -->
+      <div class="grid gap-2">
+        <label for="tipo-ativo" class="text-sm font-medium">Tipo de ativo</label>
+        <select
+          id="tipo-ativo"
+          name="tipoAtivo"
+          [ngModel]="tipoAtivo()"
+          (ngModelChange)="setTipoAtivo($event)"
+          class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm
+                 text-foreground outline-none ring-ring transition-colors
+                 focus:border-ring focus:ring-1"
+        >
+          @for (tipo of tipoOptions; track tipo) {
+            <option [value]="tipo">{{ tipo }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Ativo -->
+      <div class="relative grid gap-2">
+        <label for="ativo-busca" class="text-sm font-medium">Ativo</label>
+
+        @if (isEditMode()) {
+          <input
+            id="ativo-busca"
+            type="text"
+            [value]="ticker()"
+            readonly
+            class="w-full rounded-xl border border-border bg-muted/40 px-3.5 py-2.5 text-sm
+                   text-foreground outline-none"
+          />
+        } @else {
+          <input
+            id="ativo-busca"
+            type="text"
+            name="ativoBusca"
+            autocomplete="off"
+            placeholder="Busque por ticker ou empresa (mín. 3 letras)"
+            [ngModel]="searchQuery()"
+            (ngModelChange)="onSearchInput($event)"
+            (focus)="showDropdown.set(searchQuery().trim().length >= 3)"
+            (blur)="onSearchBlur()"
+            class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm
+                   text-foreground placeholder:text-muted-foreground outline-none ring-ring
+                   transition-colors focus:border-ring focus:ring-1"
+          />
+
+          @if (searchLoading()) {
+            <p class="text-xs text-muted-foreground">Buscando ativos...</p>
+          }
+
+          @if (empresaNome()) {
+            <p class="text-xs text-muted-foreground">{{ empresaNome() }}</p>
+          }
+
+          @if (jaPossuiAtivo()) {
+            <p class="text-xs text-amber-400">Você já possui este ativo</p>
+          }
+
+          @if (showDropdown() && (searchResults().length > 0 || searchLoading())) {
+            <ul
+              class="absolute top-[3.25rem] z-20 max-h-40 w-full overflow-y-auto rounded-lg
+                     border border-border bg-card py-1 shadow-lg shadow-black/30"
+            >
+              @if (searchLoading()) {
+                <li class="px-3.5 py-2 text-sm text-muted-foreground">Carregando...</li>
+              } @else {
+                @for (item of searchResults(); track item.symbol) {
+                  <li>
+                    <button
+                      type="button"
+                      (mousedown)="selectStock(item)"
+                      class="flex w-full flex-col items-start gap-0.5 px-3.5 py-2 text-left text-sm
+                             transition-colors hover:bg-accent"
+                    >
+                      <span class="font-medium">{{ item.symbol }} — {{ item.name }}</span>
+                      @if (item.sector) {
+                        <span class="text-xs text-muted-foreground">{{ item.sector }}</span>
+                      }
+                    </button>
+                  </li>
+                }
+              }
+            </ul>
+          }
+        }
+      </div>
+
+      <!-- Data -->
+      <div class="grid gap-2">
+        <label for="data-transacao" class="text-sm font-medium">Data da transação</label>
+        <input
+          id="data-transacao"
+          type="date"
+          name="dataTransacao"
+          [ngModel]="dataTransacao()"
+          (ngModelChange)="dataTransacao.set($event)"
+          class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm
+                 text-foreground outline-none ring-ring transition-colors
+                 focus:border-ring focus:ring-1"
+        />
+      </div>
+
+      <!-- Quantidade + Preço -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="grid gap-2">
+          <label for="quantidade" class="text-sm font-medium">Quantidade</label>
+          <input
+            id="quantidade"
+            type="number"
+            name="quantidade"
+            min="0"
+            step="any"
+            placeholder="0"
+            [ngModel]="quantidade()"
+            (ngModelChange)="quantidade.set($event === '' || $event === null ? null : +$event)"
+            class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm
+                   text-foreground placeholder:text-muted-foreground outline-none ring-ring
+                   transition-colors focus:border-ring focus:ring-1"
+          />
+        </div>
+
+        <div class="grid gap-2">
+          <label for="preco" class="text-sm font-medium">
+            Preço em R$
+            @if (fetchingPreco()) {
+              <span class="ml-1 text-xs font-normal text-muted-foreground">(atualizando cotação...)</span>
+            }
+          </label>
+          <input
+            id="preco"
+            type="number"
+            name="preco"
+            min="0"
+            step="0.01"
+            placeholder="0,00"
+            [ngModel]="preco()"
+            (ngModelChange)="preco.set($event === '' || $event === null ? null : +$event)"
+            class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm
+                   text-foreground placeholder:text-muted-foreground outline-none ring-ring
+                   transition-colors focus:border-ring focus:ring-1"
+          />
+        </div>
+      </div>
+
+      <!-- Outros custos -->
+      <div class="grid gap-2">
+        <label for="outros-custos" class="text-sm font-medium">Outros custos</label>
+        <input
+          id="outros-custos"
+          type="number"
+          name="outrosCustos"
+          min="0"
+          step="0.01"
+          placeholder="0,00"
+          [ngModel]="outrosCustos()"
+          (ngModelChange)="outrosCustos.set($event === '' || $event === null ? null : +$event)"
+          class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm
+                 text-foreground placeholder:text-muted-foreground outline-none ring-ring
+                 transition-colors focus:border-ring focus:ring-1"
+        />
+      </div>
+
+      <!-- Valor total calculado -->
+      <div class="rounded-lg border border-border bg-muted/30 px-3 py-2">
+        <div class="flex items-center justify-between gap-3">
+          <span class="text-xs font-medium text-muted-foreground">Valor total</span>
+          <span class="text-display text-mono text-base font-semibold text-action">
+            {{ valorTotal() | currencyBRL }}
+          </span>
+        </div>
+      </div>
+
+      </div>
+
+      <!-- Importação de planilha (somente criação) -->
+      @if (!isEditMode()) {
+        <div class="dialog-field grid gap-1">
+          <span class="dialog-label text-xs font-medium">Importar planilha</span>
+
+          <div
+            class="dialog-dropzone"
+            [class.is-dragover]="isDragOver()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onDrop($event)"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+
+            @if (importando()) {
+              <span class="dialog-dropzone-label">Processando…</span>
+            } @else {
+              <label for="investimentos-import" class="dialog-dropzone-label cursor-pointer">
+                <strong>Selecionar</strong> ou arrastar .csv / .xlsx
+              </label>
+            }
+
+            <input
+              id="investimentos-import"
+              type="file"
+              class="sr-only"
+              [accept]="acceptedFileTypes"
+              (change)="onFileSelected($event)"
+            />
+          </div>
+
+          @if (importError()) {
+            <p class="text-xs text-destructive">{{ importError() }}</p>
+          }
+        </div>
+      }
+
+      <!-- Lista de investimentos pendentes (importação em lote) -->
+      @if (modoImportacao()) {
+        <div class="rounded-lg border border-border bg-muted/30 p-3">
+          <div class="mb-3 flex items-center justify-between gap-3">
+            <p class="text-sm font-medium">
+              {{ investimentosPendentes().length }} investimento(s) para importar
+            </p>
+            <button
+              type="button"
+              (click)="limparImportacao()"
+              class="text-xs font-medium text-muted-foreground hover:text-foreground"
+            >
+              Limpar
+            </button>
+          </div>
+
+          <ul class="max-h-48 space-y-2 overflow-y-auto text-sm">
+            @for (item of investimentosPendentes(); track $index) {
+              <li
+                class="flex items-center justify-between gap-3 rounded-lg border border-border
+                       bg-card px-3 py-2"
+              >
+                <div class="min-w-0 flex-1">
+                  <p class="truncate font-medium">{{ item.ticker }} · {{ item.tipo }}</p>
+                  <p class="text-xs text-muted-foreground">
+                    {{ item.data }} · {{ item.operacao }} · {{ item.quantidade | number:'1.0-4' }} un.
+                  </p>
+                </div>
+                <span class="text-mono shrink-0 text-xs font-semibold">
+                  {{ item.preco | currencyBRL }}
+                </span>
+                <button
+                  type="button"
+                  (click)="removerPendente($index)"
+                  aria-label="Remover item"
+                  class="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-muted-foreground
+                         hover:bg-destructive/15 hover:text-destructive"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                       stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+
+      </div>
+
+      <!-- Footer -->
+      <div class="dialog-panel-footer flex items-center justify-end gap-3">
+        <button
+          type="button"
+          (click)="close.emit()"
+          class="btn-cancel"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          [disabled]="!isFormValid()"
+          class="btn-action active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          @if (isEditMode()) {
+            Salvar alterações
+          } @else if (modoImportacao()) {
+            Importar {{ investimentosPendentes().length }} investimento(s)
+          } @else {
+            Adicionar lançamento
+          }
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

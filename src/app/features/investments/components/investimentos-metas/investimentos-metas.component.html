@@ -1,0 +1,172 @@
+<section class="surface-card overflow-hidden !p-0">
+
+  <!-- Cabeçalho expansível -->
+  <button
+    type="button"
+    (click)="toggleSection()"
+    [attr.aria-expanded]="sectionExpanded()"
+    class="flex w-full flex-col gap-3 px-6 py-4 text-left transition-colors hover:bg-accent/10
+           sm:flex-row sm:items-center sm:justify-between"
+  >
+    <div class="min-w-0 flex-1">
+      <div class="flex items-center gap-2">
+        <h2 class="text-display text-lg font-semibold">Minhas Metas</h2>
+        @if (totalCompleto()) {
+          <span class="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
+            100%
+          </span>
+        }
+      </div>
+      @if (sectionExpanded()) {
+        <p class="mt-0.5 text-xs text-muted-foreground">
+          Alocação alvo por classe — total limitado a 100%
+        </p>
+      } @else {
+        <p class="mt-0.5 text-xs text-muted-foreground">
+          {{ rebalance().length }} classes
+          @if (classesParaAportar() > 0) {
+            · <span class="text-emerald-400">{{ classesParaAportar() }} para aportar</span>
+          }
+        </p>
+      }
+    </div>
+
+    <div class="flex w-full shrink-0 items-center gap-3 sm:w-auto sm:min-w-[11rem]">
+      <div class="min-w-0 flex-1 sm:flex-initial">
+        <div class="mb-1 flex items-center justify-between gap-2 text-[10px]">
+          <span class="text-muted-foreground">Alocado</span>
+          <span
+            class="text-mono font-semibold"
+            [class.text-emerald-400]="totalCompleto()"
+            [class.text-amber-400]="!totalCompleto()"
+          >
+            {{ totalTargetPercent() | number:'1.0-0' }}%
+          </span>
+        </div>
+        <div class="h-0.5 overflow-hidden rounded-full bg-border/50">
+          <div
+            class="h-full rounded-full transition-all duration-300"
+            [class.bg-emerald-500]="totalCompleto()"
+            [class.bg-amber-400]="!totalCompleto()"
+            [style.width.%]="trackWidth(totalTargetPercent())"
+          ></div>
+        </div>
+        @if (!totalCompleto() && sectionExpanded()) {
+          <p class="mt-1 text-[10px] text-muted-foreground">
+            Restante: {{ remainingPercent() | number:'1.0-0' }}%
+          </p>
+        }
+      </div>
+
+      <svg
+        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round"
+        class="h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-200"
+        [class.rotate-180]="sectionExpanded()"
+      >
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+  </button>
+
+  @if (sectionExpanded()) {
+    <div class="overflow-x-auto px-6 pb-6 scroll-elegant">
+      <div class="flex min-w-0 gap-3">
+        @for (item of rebalance(); track item.tipo) {
+          <div
+            class="min-w-[10.5rem] flex-1 rounded-xl border border-border/60 bg-card/40 p-3.5
+                   backdrop-blur-sm"
+          >
+            <!-- Header: nome + meta inline -->
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex min-w-0 items-center gap-2">
+                <span
+                  class="h-2 w-2 shrink-0 rounded-full"
+                  [style.background]="tipoColor(item.tipo)"
+                ></span>
+                <p class="truncate text-sm font-medium text-foreground">
+                  {{ shortLabel(item.tipo) }}
+                </p>
+              </div>
+
+              <div class="flex shrink-0 items-baseline gap-0.5">
+                <input
+                  type="number"
+                  min="0"
+                  [max]="maxTargetFor(item.tipo)"
+                  step="1"
+                  [ngModel]="item.targetPercent"
+                  (ngModelChange)="onTargetChange(item.tipo, $event)"
+                  (click)="$event.stopPropagation()"
+                  [title]="'Máximo disponível: ' + maxTargetFor(item.tipo) + '%'"
+                  class="w-10 border-0 border-b border-border/70 bg-transparent pb-0.5 text-right
+                         text-mono text-sm font-semibold text-foreground
+                         outline-none transition-colors
+                         focus:border-ring focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  [disabled]="maxTargetFor(item.tipo) === 0 && item.targetPercent === 0"
+                />
+                <span class="text-[11px] text-muted-foreground">%</span>
+              </div>
+            </div>
+
+            <!-- Trilhas finas -->
+            <div class="mt-3 space-y-2.5">
+              <div>
+                <div class="mb-1 flex items-center justify-between gap-1">
+                  <span class="text-[10px] text-muted-foreground">Meta</span>
+                  <span class="text-mono text-[10px] text-muted-foreground">
+                    {{ item.targetPercent | number:'1.0-0' }}%
+                  </span>
+                </div>
+                <div class="h-0.5 overflow-hidden rounded-full bg-border/40">
+                  <div
+                    class="h-full rounded-full bg-muted-foreground/45 transition-all duration-300"
+                    [style.width.%]="trackWidth(item.targetPercent)"
+                  ></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="mb-1 flex items-center justify-between gap-1">
+                  <span class="text-[10px] text-muted-foreground">Atual</span>
+                  <span class="text-mono text-[10px] font-medium" [class]="currentPctClass(item)">
+                    {{ item.currentPercent | number:'1.0-1' }}%
+                  </span>
+                </div>
+                <div class="h-0.5 overflow-hidden rounded-full bg-border/40">
+                  <div
+                    class="h-full rounded-full transition-all duration-300"
+                    [class]="currentTrackClass(item)"
+                    [style.width.%]="trackWidth(item.currentPercent)"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rodapé -->
+            <div class="mt-3 flex flex-col items-center gap-1.5">
+              <span
+                class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ring-1 ring-inset"
+                [class]="statusClass(item)"
+              >
+                {{ statusLabel(item) }}
+              </span>
+
+              @if (item.aporteSugerido > 0) {
+                <p class="text-center text-[10px] text-muted-foreground">
+                  Aporte
+                  <span class="text-mono font-semibold text-emerald-400">
+                    {{ item.aporteSugerido | currencyBRL }}
+                  </span>
+                </p>
+              } @else if (item.currentPercent > item.targetPercent) {
+                <p class="text-center text-[10px] text-red-400/90">Segurar compras</p>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+</section>

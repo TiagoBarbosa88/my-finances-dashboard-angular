@@ -1,0 +1,29 @@
+---
+description: Paleta e componentes visuais Smart Finances — proíbe blue-* em UI
+globs: src/**/*.{html,ts,css}
+alwaysApply: false
+---
+
+# Design System — Smart Finances
+
+## Tokens semânticos
+
+| Token | Uso |
+|-------|-----|
+| `primary` / `bg-primary` | Identidade: nav ativa, highlights, FAB painel, login |
+| `action` / `.btn-action` | CTAs: Adicionar, Salvar, Convidar, FAB investimentos |
+| `success` / `text-success` | Valores financeiros positivos |
+| `destructive` / `text-destructive` | Excluir, valores negativos |
+| `warning` / `text-warning` | Variação 0% |
+| `ring` | Focus de inputs — `focus:border-ring focus:ring-ring` |
+
+## Proibido
+
+- Classes Tailwind `blue-*` em templates e componentes (exceto `--chart-2` em gráficos)
+- Cores hardcoded `#...` para botões — usar tokens CSS
+
+## Padrões
+
+- Modais: `.dialog-panel` + footer com `.btn-action` (submit) e `.btn-cancel`
+- FAB investimentos: `.app-fab.app-fab-invest`
+- Inputs: `.input-field` ou `focus:border-ring focus:ring-ring`

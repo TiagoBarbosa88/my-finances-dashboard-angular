@@ -1,0 +1,485 @@
+<div class="flex flex-col gap-6 pb-24 md:pb-10">
+
+  <header>
+    <h1 class="text-display text-2xl font-semibold sm:text-3xl">Configurações</h1>
+    <p class="mt-1 text-sm text-muted-foreground">
+      Sua conta e equipe em um só lugar.
+    </p>
+  </header>
+
+  <!-- Minha Conta + Equipe (lado a lado em tablet/desktop) -->
+  <div class="ajustes-top-grid">
+
+  <!-- Minha Conta -->
+  <section class="surface-card h-full">
+    <h2 class="text-display text-lg font-semibold">Minha Conta</h2>
+    <p class="mt-0.5 text-xs text-muted-foreground">Como você aparece no painel e nas saudações.</p>
+
+    @if (auth.usuarioLogado(); as user) {
+      <p class="mt-2 text-xs text-muted-foreground">
+        Sua permissão:
+        <span class="font-medium text-foreground">{{ roleLabels[user.role] }}</span>
+        @if (user.role === 'leitor') {
+          — peça a um administrador para ampliar seu acesso.
+        }
+      </p>
+    }
+
+    <form class="mt-5 grid gap-4 sm:max-w-md" (ngSubmit)="salvarPerfil()">
+      <div class="grid gap-2">
+        <label for="nome" class="text-sm font-medium">Nome</label>
+        <input
+          id="nome"
+          type="text"
+          name="nome"
+          [ngModel]="nome()"
+          (ngModelChange)="nome.set($event)"
+          class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm
+                 text-foreground outline-none ring-ring transition-colors
+                 focus:border-ring focus:ring-1"
+        />
+      </div>
+
+      <div class="grid gap-2">
+        <label for="email" class="text-sm font-medium">E-mail</label>
+        <input
+          id="email"
+          type="email"
+          name="email"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+          class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm
+                 text-foreground outline-none ring-ring transition-colors
+                 focus:border-ring focus:ring-1"
+        />
+      </div>
+
+      @if (profileMessage()) {
+        <p
+          class="text-sm"
+          [class.text-green-400]="profileMessage()!.includes('sucesso')"
+          [class.text-red-400]="!profileMessage()!.includes('sucesso')"
+        >
+          {{ profileMessage() }}
+        </p>
+      }
+
+      <div>
+        <button
+          type="submit"
+          [disabled]="profileSaving()"
+          class="btn-action disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {{ profileSaving() ? 'Salvando…' : 'Salvar alterações' }}
+        </button>
+      </div>
+    </form>
+
+    @if (canChangePassword()) {
+      <div class="mt-8 border-t border-border pt-6">
+        @if (!passwordFormOpen()) {
+          <button
+            type="button"
+            (click)="abrirFormularioSenha()"
+            class="flex w-full max-w-md cursor-pointer flex-col items-start gap-0.5 rounded-xl
+                   border border-border bg-background px-4 py-3 text-left shadow-sm
+                   transition-all hover:border-primary/40 hover:bg-primary/10"
+          >
+            <span class="text-sm font-semibold text-foreground">Alterar senha</span>
+            <span class="text-xs text-muted-foreground">
+              Use esta senha para entrar na próxima visita.
+            </span>
+          </button>
+          @if (passwordMessage()) {
+            <p
+              class="mt-2 text-sm"
+              [class.text-green-400]="passwordMessage()!.includes('sucesso')"
+              [class.text-red-400]="!passwordMessage()!.includes('sucesso')"
+            >
+              {{ passwordMessage() }}
+            </p>
+          }
+        } @else {
+          <div class="flex flex-wrap items-start justify-between gap-3 sm:max-w-md">
+            <div>
+              <h3 class="text-sm font-semibold">Alterar senha</h3>
+              <p class="mt-0.5 text-xs text-muted-foreground">
+                Use esta senha para entrar na próxima visita.
+              </p>
+            </div>
+            <button
+              type="button"
+              (click)="fecharFormularioSenha()"
+              [disabled]="passwordSaving()"
+              class="cursor-pointer text-xs font-medium text-muted-foreground transition-colors
+                     hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Cancelar
+            </button>
+          </div>
+
+          <form class="mt-4 grid gap-4 sm:max-w-md" autocomplete="off" (ngSubmit)="alterarSenha()">
+          <div class="grid gap-2">
+            <label for="new-password" class="text-sm font-medium">Nova senha</label>
+            <div class="relative">
+              <input
+                id="new-password"
+                [type]="showNewPassword() ? 'text' : 'password'"
+                name="settings-new-password"
+                autocomplete="off"
+                placeholder="Mínimo 6 caracteres"
+                [ngModel]="newPassword()"
+                (ngModelChange)="newPassword.set($event)"
+                class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5
+                       pr-11 text-sm text-foreground placeholder:text-muted-foreground
+                       outline-none ring-ring transition-colors focus:border-ring focus:ring-1"
+              />
+              <button
+                type="button"
+                (click)="showNewPassword.set(!showNewPassword())"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground
+                       transition-colors hover:text-foreground"
+                [attr.aria-label]="showNewPassword() ? 'Ocultar senha' : 'Mostrar senha'"
+              >
+                @if (showNewPassword()) {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                       stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                       stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+
+          <div class="grid gap-2">
+            <label for="confirm-password" class="text-sm font-medium">Confirmar nova senha</label>
+            <input
+              id="confirm-password"
+              [type]="showNewPassword() ? 'text' : 'password'"
+              name="settings-confirm-password"
+              autocomplete="off"
+              placeholder="Repita a nova senha"
+              [ngModel]="confirmPassword()"
+              (ngModelChange)="confirmPassword.set($event)"
+              class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm
+                     text-foreground placeholder:text-muted-foreground outline-none ring-ring
+                     transition-colors focus:border-ring focus:ring-1"
+            />
+          </div>
+
+          @if (passwordMessage()) {
+            <p
+              class="text-sm"
+              [class.text-green-400]="passwordMessage()!.includes('sucesso')"
+              [class.text-red-400]="!passwordMessage()!.includes('sucesso')"
+            >
+              {{ passwordMessage() }}
+            </p>
+          }
+
+          <div>
+            <button
+              type="submit"
+              [disabled]="passwordSaving()"
+              class="cursor-pointer rounded-xl border border-border bg-background px-5 py-2
+                     text-sm font-semibold text-foreground shadow-sm transition-all
+                     hover:border-primary/40 hover:bg-primary/10
+                     disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {{ passwordSaving() ? 'Salvando…' : 'Salvar nova senha' }}
+            </button>
+          </div>
+        </form>
+        }
+      </div>
+    }
+  </section>
+
+  <!-- Equipe -->
+  <section class="surface-card h-full">
+    <div>
+      <h2 class="text-display text-lg font-semibold">Equipe</h2>
+      <p class="mt-0.5 text-xs text-muted-foreground">
+        Quem tem acesso ao Smart Finances com você.
+      </p>
+    </div>
+
+    @if (teamMessage()) {
+      <p
+        class="mt-4 text-sm"
+        [class.text-green-400]="!teamMessage()!.includes('Falha')"
+        [class.text-red-400]="teamMessage()!.includes('Falha')"
+      >
+        {{ teamMessage() }}
+      </p>
+    }
+
+    @if (totalMembros() > 0) {
+      <p class="mt-4 text-sm text-muted-foreground">
+        {{ totalMembros() }} membro{{ totalMembros() === 1 ? '' : 's' }}
+      </p>
+    }
+
+    @if (usuarioAtual() || outrosMembros().length > 0) {
+      <ul class="mt-4 divide-y divide-border text-sm">
+        @if (usuarioAtual(); as eu) {
+          <li class="team-member-row">
+            <div class="team-member-identity">
+              <span class="team-member-name" [title]="eu.nome">{{ eu.nome }}</span>
+              <span class="team-member-email" [title]="eu.email">{{ eu.email }}</span>
+            </div>
+            <div class="team-member-meta">
+              <span
+                class="w-fit rounded-lg px-2.5 py-1 text-xs font-medium ring-1 ring-inset"
+                [class]="roleBadgeClass(eu.role)"
+              >
+                {{ roleLabels[eu.role] }}
+              </span>
+              <span class="team-member-tag">Conta atual</span>
+            </div>
+          </li>
+        }
+
+        @for (membro of outrosMembros(); track membro.id) {
+          <li class="team-member-row">
+            <div class="team-member-identity">
+              <span class="team-member-name" [title]="membro.nome">{{ membro.nome }}</span>
+              <span class="team-member-email" [title]="membro.email">{{ membro.email }}</span>
+            </div>
+            <div class="team-member-meta">
+              <div *appHasRole="['admin']" class="flex flex-wrap items-center gap-2">
+                <select
+                  [ngModel]="membroRoleAtual(membro)"
+                  (ngModelChange)="setMembroRoleDraft(membro.id, $event)"
+                  [disabled]="membroBusy(membro.id)"
+                  class="cursor-pointer rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs
+                         text-foreground outline-none ring-ring transition-colors
+                         focus:border-ring focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  @for (role of roleOptions; track role) {
+                    <option [value]="role">{{ roleLabels[role] }}</option>
+                  }
+                </select>
+
+                @if (roleMembroAlterado(membro)) {
+                  <button
+                    type="button"
+                    (click)="atualizarMembroRole(membro)"
+                    [disabled]="membroBusy(membro.id)"
+                    class="btn-action px-2.5 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Atualizar
+                  </button>
+                }
+
+                <button
+                  type="button"
+                  (click)="solicitarRemoverMembro(membro)"
+                  [disabled]="membroBusy(membro.id)"
+                  class="rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium
+                         text-muted-foreground transition-colors
+                         hover:border-destructive/40 hover:bg-destructive/10 hover:text-destructive
+                         disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Remover
+                </button>
+              </div>
+
+              <span
+                *appHasRole="['editor', 'leitor']"
+                class="w-fit rounded-lg px-2.5 py-1 text-xs font-medium ring-1 ring-inset"
+                [class]="roleBadgeClass(membro.role)"
+              >
+                {{ roleLabels[membro.role] }}
+              </span>
+
+              <span class="team-member-tag">Membro</span>
+            </div>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="mt-5 py-6 text-center text-sm text-muted-foreground">
+        Ninguém na equipe ainda.
+      </p>
+    }
+  </section>
+
+  </div>
+
+  <!-- Convidar — somente admin -->
+  <section *appHasRole="['admin']" class="surface-card">
+    <h2 class="text-display text-lg font-semibold">Convidar alguém</h2>
+    <p class="mt-0.5 text-xs text-muted-foreground">
+      Informe nome e e-mail. A pessoa receberá um link para entrar no Smart Finances.
+    </p>
+
+    <div class="mt-5 grid gap-4 sm:max-w-2xl">
+      <div class="grid gap-3">
+        <div class="grid gap-3 sm:grid-cols-2">
+          <div class="grid gap-1.5">
+            <label for="convite-nome" class="text-xs font-medium">Nome</label>
+            <input
+              id="convite-nome"
+              type="text"
+              name="conviteNome"
+              placeholder="Maria Silva"
+              [ngModel]="conviteNome()"
+              (ngModelChange)="conviteNome.set($event)"
+              class="h-[38px] w-full rounded-lg border border-border bg-background px-3 text-sm
+                     text-foreground placeholder:text-muted-foreground outline-none ring-ring
+                     transition-colors focus:border-ring focus:ring-1"
+            />
+          </div>
+
+          <div class="grid gap-1.5">
+            <label for="convite-email" class="text-xs font-medium">E-mail</label>
+            <input
+              id="convite-email"
+              type="email"
+              name="conviteEmail"
+              placeholder="maria@email.com"
+              [ngModel]="conviteEmail()"
+              (ngModelChange)="conviteEmail.set($event)"
+              class="h-[38px] w-full rounded-lg border border-border bg-background px-3 text-sm
+                     text-foreground placeholder:text-muted-foreground outline-none ring-ring
+                     transition-colors focus:border-ring focus:ring-1"
+            />
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <div class="grid min-w-0 flex-1 gap-1.5 sm:max-w-[11rem]">
+            <label for="convite-role" class="text-xs font-medium">Permissão</label>
+            <select
+              id="convite-role"
+              name="conviteRole"
+              [ngModel]="conviteRole()"
+              (ngModelChange)="conviteRole.set($event)"
+              class="h-[38px] w-full cursor-pointer rounded-lg border border-border bg-background px-3
+                     text-sm text-foreground outline-none ring-ring transition-colors
+                     focus:border-ring focus:ring-1"
+            >
+              @for (role of roleOptions; track role) {
+                <option [value]="role">{{ roleLabels[role] }}</option>
+              }
+            </select>
+          </div>
+
+          <button
+            type="button"
+            (click)="enviarConvite()"
+            [disabled]="conviteButtonDisabled()"
+            class="btn-action h-[38px] shrink-0 sm:min-w-[9.5rem] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            @if (conviteSending()) {
+              Enviando…
+            } @else if (conviteCooldownSec() > 0) {
+              Aguarde {{ conviteCooldownSec() }}s
+            } @else {
+              Enviar convite
+            }
+          </button>
+        </div>
+      </div>
+
+      @if (conviteMessage()) {
+        <p
+          class="text-sm"
+          [class.text-green-400]="
+            conviteMessage()!.includes('enviado') ||
+            conviteMessage()!.includes('atualizada') ||
+            conviteMessage()!.includes('removido') ||
+            conviteMessage()!.includes('registrado')
+          "
+          [class.text-red-400]="
+            conviteMessage()!.includes('Falha') ||
+            conviteMessage()!.includes('válido') ||
+            conviteMessage()!.includes('Informe')
+          "
+        >
+          {{ conviteMessage() }}
+        </p>
+      }
+
+      @if (convitesPendentes().length > 0) {
+        <div class="rounded-xl border border-border bg-muted/20 p-4">
+          <p class="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Convites pendentes
+          </p>
+          <ul class="space-y-3">
+            @for (convite of convitesPendentes(); track convite.id) {
+              <li class="flex flex-col gap-3 rounded-lg border border-border/60 bg-background/40 p-3">
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-medium text-foreground">{{ convite.nome }}</p>
+                  <p class="truncate text-xs text-muted-foreground">{{ convite.email }}</p>
+                  <p class="mt-1 text-xs text-muted-foreground">
+                    Convidado por {{ convite.convidado_por }} · {{ convite.criado_em }}
+                  </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                  <select
+                    [ngModel]="convite.role"
+                    (ngModelChange)="atualizarRoleConvite(convite, $event)"
+                    [disabled]="conviteBusy(convite.id)"
+                    class="cursor-pointer rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs
+                           text-foreground outline-none ring-ring transition-colors
+                           focus:border-ring focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    @for (role of roleOptions; track role) {
+                      <option [value]="role">{{ roleLabels[role] }}</option>
+                    }
+                  </select>
+
+                  <button
+                    type="button"
+                    (click)="reenviarConvite(convite)"
+                    [disabled]="conviteBusy(convite.id)"
+                    class="cursor-pointer rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium
+                           text-muted-foreground transition-colors
+                           hover:border-primary/40 hover:bg-primary/10 hover:text-primary
+                           disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {{ conviteBusy(convite.id) ? '…' : 'Reenviar e-mail' }}
+                  </button>
+
+                  <button
+                    type="button"
+                    (click)="solicitarRemoverConvite(convite)"
+                    [disabled]="conviteBusy(convite.id)"
+                    class="cursor-pointer rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium
+                           text-muted-foreground transition-colors
+                           hover:border-destructive/40 hover:bg-destructive/10 hover:text-destructive
+                           disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Remover
+                  </button>
+                </div>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  </section>
+
+</div>
+
+@if (confirmTarget()) {
+  <app-confirm-dialog
+    [title]="confirmTitle()"
+    [message]="confirmMessage()"
+    confirmLabel="Remover"
+    cancelLabel="Cancelar"
+    (confirm)="executarConfirmacao()"
+    (cancel)="cancelarConfirmacao()"
+  />
+}
