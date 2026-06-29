@@ -10,10 +10,36 @@ Dashboard financeiro pessoal em **Angular 19** — controle de lançamentos, car
 
 | Módulo | Rota | Descrição |
 |--------|------|-----------|
-| **Painel** | `/` | KPIs do mês, gráficos de categorias, saldo e últimos lançamentos |
-| **Investimentos** | `/investimentos` | Carteira, cotações Brapi, metas por classe, semáforo de sugestão |
-| **Lançamentos** | `/lancamentos` | CRUD de receitas e despesas |
-| **Ajustes** | `/ajustes` | Conta, equipe e convites (Admin / Editor / Leitor) |
+| **Painel** | `/app/painel` | KPIs do mês, gráficos de categorias, saldo e últimos lançamentos |
+| **Investimentos** | `/app/investimentos` | Carteira, cotações Brapi, metas por classe, semáforo de sugestão |
+| **Configurações** | `/app/configuracoes` | Conta, equipe e convites (Admin / Editor / Leitor) |
+| **Lançamentos** | `/app/lancamentos` | Em breve |
+| **Login** | `/` | E-mail/senha ou Google OAuth (Supabase) |
+
+---
+
+## Estrutura do projeto
+
+```
+src/app/
+├── core/
+│   ├── auth/          guards, AuthService
+│   ├── api/           Supabase, Finance, Stock, Team
+│   └── config/        rotas, branding
+├── layout/            shell, sidebar, auth-layout
+├── shared/            componentes UI reutilizáveis, pipes, models
+└── features/          uma pasta por menu (inglês)
+    ├── dashboard/     rota /app/painel
+    ├── investments/   rota /app/investimentos
+    ├── settings/      rota /app/configuracoes
+    └── auth/          login, bem-vindo
+```
+
+Aliases TypeScript: `@core/*`, `@shared/*`, `@layout/*`, `@features/*`.
+
+Design system: [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md) · tarefas: [`TASKS.md`](TASKS.md)
+
+---
 
 ### Destaques de investimentos
 

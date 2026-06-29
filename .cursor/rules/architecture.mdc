@@ -1,0 +1,24 @@
+---
+description: Feature-based Angular folder layout and import aliases
+globs: src/app/**/*
+alwaysApply: false
+---
+
+# Architecture
+
+## Folder layout
+
+- **@layout/** — App shell (main-layout, auth-layout, app-sidebar). No feature business logic.
+- **@features/** — One folder per product area (`dashboard`, `investments`, `settings`, `auth`, stubs). Each feature may have `pages/`, `components/`, and `data/`.
+- **@core/** — Cross-cutting infra: `auth/` (guards, auth service), `api/` (Supabase, finance, stock, team, errors), `config/` (routes, brand), `utils/`.
+- **@shared/** — Reusable UI, pipes, directives, models (no feature-specific flows).
+
+## Import aliases
+
+Use path aliases in `tsconfig.json`: `@core/*`, `@shared/*`, `@layout/*`, `@features/*` (legacy `@app/*` still resolves).
+
+## Conventions
+
+- English folder names; Portuguese **URL paths** stay in `app-routes.ts` / `app.routes.ts`.
+- Feature components live under that feature’s `components/`; do not add new code under a removed `finance/` tree.
+- Pages are thin: compose feature components and inject `@core/api` services.
