@@ -108,6 +108,20 @@ supabase: {
 | giselle@email.com | editor | (você define) |
 | marina@email.com | leitor | (você define) |
 
+### 3.2.1 Login com Google (OAuth)
+
+1. **Google Cloud Console** → APIs & Services → Credentials → **OAuth 2.0 Client ID** (Web)
+2. **Authorized redirect URI:** `https://SEU_PROJECT_ID.supabase.co/auth/v1/callback`
+3. **Supabase Dashboard** → Authentication → Providers → **Google** → Enable
+4. Cole **Client ID** e **Client Secret** do Google
+5. **Authentication → URL Configuration:**
+   - **Site URL:** `https://smart-finances-psi.vercel.app` (prod) e `http://localhost:4200` (dev)
+   - **Redirect URLs:** `http://localhost:4200/**`, `https://smart-finances-psi.vercel.app/**`
+6. No app: botão **Continuar com Google** na login chama `signInWithOAuth({ provider: 'google' })`
+7. Após redirect para `/`, o `landingGuard` processa `?code=` ou `#access_token=` (mesmo fluxo de convite)
+
+**Troubleshooting:** redirect errado → confira Site URL e Redirect URLs no Supabase; URI do Google deve ser exatamente `…/auth/v1/callback`.
+
 ### 3.3 Rodar o SQL (seção 4)
 
 1. **SQL Editor → New query**

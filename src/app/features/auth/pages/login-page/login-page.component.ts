@@ -2,16 +2,16 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { APP_NAME } from '@app/core/constants/app-brand';
-import { APP_HOME } from '@app/core/guards/auth.guard';
-import { AuthService } from '@app/core/services/auth.service';
-import { FinanceService } from '@app/core/services/finance.service';
-import { SupabaseService } from '@app/core/services/supabase.service';
+import { APP_NAME } from '@core/config/app-brand';
+import { APP_HOME } from '@core/auth/guards/auth.guard';
+import { AuthService } from '@core/auth/services/auth.service';
+import { FinanceService } from '@core/api/finance.service';
+import { SupabaseService } from '@core/api/supabase.service';
 import {
   AuthLayoutComponent,
   type AuthMobileView,
-} from '@app/layout/auth-layout/auth-layout.component';
-import { PwaInstallBannerComponent } from '@app/shared/ui/pwa-install-banner/pwa-install-banner.component';
+} from '@layout/auth-layout/auth-layout.component';
+import { PwaInstallBannerComponent } from '@shared/ui/pwa-install-banner/pwa-install-banner.component';
 import { environment } from 'src/environments/environment';
 
 /**
@@ -113,6 +113,29 @@ export class LoginPageComponent implements OnInit {
     } catch (err) {
       console.error('[LoginPage] signIn unexpected:', err);
       this.error.set('Erro inesperado ao entrar. Tente novamente.');
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  async signInWithGoogle(): Promise<void> {
+    if (!this.supabase.isConfigured()) {
+      this.error.set('Serviço de login indisponível no momento. Tente novamente mais tarde.');
+      return;
+    }
+
+    this.loading.set(true);
+    this.error.set(null);
+
+    try {
+      const { error } = await this.supabase.signInWithGoogle();
+      if (error) {
+        console.error('[LoginPage] signInWithGoogle:', error.message, error);
+        this.error.set('Não foi possível iniciar login com Google. Tente novamente.');
+      }
+    } catch (err) {
+      console.error('[LoginPage] signInWithGoogle unexpected:', err);
+      this.error.set('Erro inesperado ao entrar com Google.');
     } finally {
       this.loading.set(false);
     }
