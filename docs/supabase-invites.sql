@@ -1,79 +1,20 @@
--- ============================================================
--- Smart Finances — Convites: role ao aceitar + consulta
--- Rode no SQL Editor do projeto my-finances
--- ============================================================
-
--- Ver convites registrados (NÃO aparecem em Authentication → Users)
-SELECT id, nome, email, role, status, criado_em, convidado_por
-FROM public.convites
-ORDER BY criado_em DESC;
-
--- Nome do convidado (rode uma vez se a tabela já existia)
-ALTER TABLE public.convites ADD COLUMN IF NOT EXISTS nome TEXT;
-
--- Ao criar conta, aplicar role do convite pendente
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-DECLARE
-  convite_role app_role;
-  convite_nome TEXT;
-BEGIN
-  SELECT c.role, c.nome INTO convite_role, convite_nome
-  FROM public.convites c
-  WHERE lower(c.email) = lower(NEW.email)
-    AND c.status = 'pendente'
-  ORDER BY c.criado_em DESC
-  LIMIT 1;
-
-  INSERT INTO public.profiles (id, full_name, email, role)
-  VALUES (
-    NEW.id,
-    COALESCE(
-      NEW.raw_user_meta_data->>'full_name',
-      convite_nome,
-      split_part(NEW.email, '@', 1)
-    ),
-    NEW.email,
-    COALESCE(convite_role, (NEW.raw_user_meta_data->>'role')::app_role, 'leitor')
-  );
-
-  IF convite_role IS NOT NULL THEN
-    UPDATE public.convites
-    SET status = 'aceito'
-    WHERE lower(email) = lower(NEW.email) AND status = 'pendente';
-  END IF;
-
-  RETURN NEW;
-END;
-$$;
-
--- Admin pode remover membros da equipe (profiles)
-DROP POLICY IF EXISTS "profiles_delete_admin" ON public.profiles;
-CREATE POLICY "profiles_delete_admin"
-  ON public.profiles FOR DELETE TO authenticated
-  USING (public.is_admin());
-
--- Fallback: convidado marca próprio convite como aceito ao entrar (ex.: trigger não rodou)
-CREATE OR REPLACE FUNCTION public.accept_my_invite()
-RETURNS void
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-BEGIN
-  UPDATE public.convites
-  SET status = 'aceito'
-  WHERE lower(email) = lower((SELECT email FROM auth.users WHERE id = auth.uid()))
-    AND status = 'pendente';
-END;
-$$;
-
-GRANT EXECUTE ON FUNCTION public.accept_my_invite() TO authenticated;
-
--- Corrigir convites já aceitos que ficaram pendentes (rode uma vez se necessário):
--- UPDATE public.convites SET status = 'aceito'
--- WHERE lower(email) = lower('bitmaster22222@gmail.com') AND status = 'pendente';
+-- ============================================================
+-- Smart Finances — Convites + workspace (substitui handle_new_user antigo)
+-- Rode no SQL Editor APÓS migrations/003-workspace-isolation.sql
+-- ============================================================
+
+ALTER TABLE public.convites ADD COLUMN IF NOT EXISTS nome TEXT;
+
+-- Ver convites do seu workspace (após migration 003)
+-- SELECT * FROM public.convites WHERE invited_by = auth.uid();
+
+-- handle_new_user e accept_my_invite: ver docs/migrations/003-workspace-isolation.sql
+
+DROP POLICY IF EXISTS "profiles_delete_admin" ON public.profiles;
+CREATE POLICY "profiles_delete_admin"
+  ON public.profiles FOR DELETE TO authenticated
+  USING (
+    public.is_admin()
+    AND id != auth.uid()
+    AND workspace_id = (SELECT workspace_id FROM public.profiles WHERE id = auth.uid())
+  );

@@ -6,6 +6,7 @@
     "env:sync": "node scripts/sync-environment.mjs",
     "seed:sql": "node scripts/generate-supabase-seed.mjs --email=tiagobarbosa.dev@gmail.com --uuid=50b94089-79f2-4a42-893d-be8fe26c26df",
     "import:planilha": "node scripts/import-planilha-2026.mjs",
+    "validate:planilha": "node scripts/validate-planilha-2026.mjs",
     "add:user": "node scripts/add-supabase-user.mjs",
     "icons:generate": "node scripts/generate-pwa-icons.mjs",
     "postinstall": "node scripts/sync-environment.mjs",

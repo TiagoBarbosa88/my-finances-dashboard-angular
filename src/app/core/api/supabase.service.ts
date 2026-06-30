@@ -229,23 +229,73 @@ export class SupabaseService {
   }
 
   async fetchProfiles(): Promise<Usuario[]> {
+    const session = await this.getSession();
+    if (!session?.user) return [];
+
+    const mine = await this.fetchProfile(session.user.id);
+    if (!mine) return [];
+
+    const workspaceId = await this.resolveWorkspaceId(session.user.id);
+    if (!workspaceId) return [mine];
+
     const { data, error } = await this.client
       .from('profiles')
       .select('id, full_name, email, role')
+      .eq('workspace_id', workspaceId)
       .order('full_name');
 
     if (error) {
       console.error('[SupabaseService] fetchProfiles:', error.message);
-      return [];
+      return mine ? [mine] : [];
     }
 
     return (data ?? []).map((row) => profileToUsuario(row as ProfileRow));
   }
 
+  /** workspace_id do usuário (fallback: próprio id). */
+  private async resolveWorkspaceId(userId: string): Promise<string | null> {
+    const { data, error } = await this.client
+      .from('profiles')
+      .select('workspace_id')
+      .eq('id', userId)
+      .single();
+
+    if (error || !data?.workspace_id) return userId;
+    return data.workspace_id as string;
+  }
+
   async fetchConvites(): Promise<Convite[]> {
+    const session = await this.getSession();
+    if (!session?.user) return [];
+
+    const workspaceId = await this.resolveWorkspaceId(session.user.id);
+    if (!workspaceId) return [];
+
+    const { data: admins, error: adminErr } = await this.client
+      .from('profiles')
+      .select('id')
+      .eq('workspace_id', workspaceId)
+      .eq('role', 'admin');
+
+    if (adminErr || !admins?.length) {
+      const { data, error } = await this.client
+        .from('convites')
+        .select('*')
+        .eq('invited_by', session.user.id)
+        .order('criado_em', { ascending: false });
+
+      if (error) {
+        console.error('[SupabaseService] fetchConvites:', error.message);
+        return [];
+      }
+      return (data ?? []).map((row) => conviteFromRow(row as ConviteRow));
+    }
+
+    const adminIds = admins.map((a) => a.id as string);
     const { data, error } = await this.client
       .from('convites')
       .select('*')
+      .in('invited_by', adminIds)
       .order('criado_em', { ascending: false });
 
     if (error) {

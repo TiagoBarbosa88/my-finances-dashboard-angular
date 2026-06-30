@@ -122,7 +122,20 @@ supabase: {
 
 **Troubleshooting:** redirect errado → confira Site URL e Redirect URLs no Supabase; URI do Google deve ser exatamente `…/auth/v1/callback`.
 
-### 3.2.2 Isolamento de dados por usuário (RLS)
+### 3.2.2 Isolamento de equipe (workspace)
+
+Cada conta Google nova vira **admin do próprio workspace**. Outros usuários só aparecem em **Equipe** se aceitaram **seu convite**.
+
+Rode [`docs/migrations/003-workspace-isolation.sql`](migrations/003-workspace-isolation.sql).
+
+Para corrigir contas que entraram sozinhas e aparecem na equipe de outra pessoa:
+
+```sql
+UPDATE public.profiles SET workspace_id = id, role = 'admin'
+WHERE email IN ('email@gmail.com');
+```
+
+### 3.2.3 Isolamento de dados financeiros (RLS)
 
 Se uma conta nova enxergar lançamentos de outro usuário, rode no SQL Editor:
 
@@ -130,10 +143,11 @@ Se uma conta nova enxergar lançamentos de outro usuário, rode no SQL Editor:
 2. [`docs/migrations/002-reset-financial-data.sql`](migrations/002-reset-financial-data.sql) — zera transações/carteira (mantém `profiles`)
 3. Reimporte seed (abaixo) só na **sua** conta principal
 
-### 3.2.3 Importar planilha 2026
+### 3.2.4 Importar planilha 2026
 
 ```bash
 npm run import:planilha
+npm run validate:planilha   # confere 100% com a planilha
 npm run seed:sql -- --email=SEU_EMAIL --uuid=SEU_UUID
 ```
 
