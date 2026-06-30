@@ -113,28 +113,32 @@ for (const batch of chunk(db.transactions, 50)) {
 // ─── ativos ─────────────────────────────────────────────────────────────────
 lines.push('-- ─── Carteira — ativos (' + db.ativos.length + ') ───────────────────────────────────');
 
-const ativoValues = db.ativos
-  .map((a) => {
-    const uid = userIdExpr();
-    const score = a.score != null ? Number(a.score) : 'NULL';
-    const rent = a.rentabilidadePct != null ? Number(a.rentabilidadePct) : 'NULL';
-    return `  (${uid}, ${sqlStr(a.ticker)}, ${sqlStr(a.tipo)}, ${sqlStr(a.setor ?? '')}, ${Number(a.qtd)}, ${Number(a.precoMedio)}, ${Number(a.precoAtual)}, ${rent}, ${score})`;
-  })
-  .join(',\n');
+if (db.ativos.length > 0) {
+  const ativoValues = db.ativos
+    .map((a) => {
+      const uid = userIdExpr();
+      const score = a.score != null ? Number(a.score) : 'NULL';
+      const rent = a.rentabilidadePct != null ? Number(a.rentabilidadePct) : 'NULL';
+      return `  (${uid}, ${sqlStr(a.ticker)}, ${sqlStr(a.tipo)}, ${sqlStr(a.setor ?? '')}, ${Number(a.qtd)}, ${Number(a.precoMedio)}, ${Number(a.precoAtual)}, ${rent}, ${score})`;
+    })
+    .join(',\n');
 
-lines.push(
-  'INSERT INTO public.ativos (user_id, ticker, tipo, setor, qtd, preco_medio, preco_atual, rentabilidade_pct, score)',
-  'VALUES',
-  ativoValues,
-  'ON CONFLICT (user_id, ticker) DO UPDATE SET',
-  '  qtd = EXCLUDED.qtd,',
-  '  preco_medio = EXCLUDED.preco_medio,',
-  '  preco_atual = EXCLUDED.preco_atual,',
-  '  rentabilidade_pct = EXCLUDED.rentabilidade_pct,',
-  '  score = EXCLUDED.score,',
-  '  updated_at = now();',
-  '',
-);
+  lines.push(
+    'INSERT INTO public.ativos (user_id, ticker, tipo, setor, qtd, preco_medio, preco_atual, rentabilidade_pct, score)',
+    'VALUES',
+    ativoValues,
+    'ON CONFLICT (user_id, ticker) DO UPDATE SET',
+    '  qtd = EXCLUDED.qtd,',
+    '  preco_medio = EXCLUDED.preco_medio,',
+    '  preco_atual = EXCLUDED.preco_atual,',
+    '  rentabilidade_pct = EXCLUDED.rentabilidade_pct,',
+    '  score = EXCLUDED.score,',
+    '  updated_at = now();',
+    '',
+  );
+} else {
+  lines.push('-- (nenhum ativo no db.json — carteira vazia)', '');
+}
 
 // ─── target_metas ───────────────────────────────────────────────────────────
 lines.push('-- ─── Metas de alocação ───────────────────────────────────────');

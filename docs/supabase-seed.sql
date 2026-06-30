@@ -241,16 +241,7 @@ VALUES
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-12-31', 'Salário Tiago', 'Salário', 5000, 'pago', 'Importação Excel');
 
 -- ─── Carteira — ativos (0) ───────────────────────────────────
-INSERT INTO public.ativos (user_id, ticker, tipo, setor, qtd, preco_medio, preco_atual, rentabilidade_pct, score)
-VALUES
-
-ON CONFLICT (user_id, ticker) DO UPDATE SET
-  qtd = EXCLUDED.qtd,
-  preco_medio = EXCLUDED.preco_medio,
-  preco_atual = EXCLUDED.preco_atual,
-  rentabilidade_pct = EXCLUDED.rentabilidade_pct,
-  score = EXCLUDED.score,
-  updated_at = now();
+-- (nenhum ativo no db.json — carteira vazia)
 
 -- ─── Metas de alocação ───────────────────────────────────────
 INSERT INTO public.target_metas (user_id, tipo, target_percent)

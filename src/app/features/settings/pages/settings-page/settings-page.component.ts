@@ -92,7 +92,7 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
 
   readonly canChangePassword = computed(() => this.supabase.isConfigured() && !environment.bypassAuth);
 
-  readonly canSignOut = computed(() => this.supabase.isConfigured() && !environment.bypassAuth);
+  readonly canSignOut = computed(() => this.supabase.isConfigured());
 
   readonly confirmTitle = computed(() => {
     const target = this.confirmTarget();
