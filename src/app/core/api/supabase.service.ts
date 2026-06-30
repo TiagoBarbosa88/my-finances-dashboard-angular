@@ -351,9 +351,13 @@ export class SupabaseService {
   }
 
   async fetchAtivos(): Promise<Ativo[]> {
+    const userId = (await this.getSession())?.user?.id;
+    if (!userId) return [];
+
     const { data, error } = await this.client
       .from('ativos')
       .select('*')
+      .eq('user_id', userId)
       .order('ticker');
 
     if (error) {
@@ -365,9 +369,13 @@ export class SupabaseService {
   }
 
   async fetchTargetMetas(): Promise<TargetMeta[]> {
+    const userId = (await this.getSession())?.user?.id;
+    if (!userId) return [];
+
     const { data, error } = await this.client
       .from('target_metas')
       .select('tipo, target_percent')
+      .eq('user_id', userId)
       .order('tipo');
 
     if (error) {
@@ -381,9 +389,13 @@ export class SupabaseService {
   // ─── CRUD — tabela `transactions` ─────────────────────────────────────────
 
   async fetchTransactions(): Promise<Transaction[]> {
+    const userId = (await this.getSession())?.user?.id;
+    if (!userId) return [];
+
     const { data, error } = await this.client
       .from('transactions')
       .select('*')
+      .eq('user_id', userId)
       .order('data', { ascending: false });
 
     if (error) {

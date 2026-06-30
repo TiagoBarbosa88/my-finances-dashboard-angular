@@ -1,5 +1,6 @@
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { AuthService } from '@core/auth/services/auth.service';
 import { SupabaseService } from '@core/api/supabase.service';
@@ -30,6 +31,7 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
   readonly auth = inject(AuthService);
   readonly supabase = inject(SupabaseService);
   readonly team = inject(TeamService);
+  private readonly router = inject(Router);
 
   private cooldownTimer: ReturnType<typeof setInterval> | null = null;
 
@@ -89,6 +91,8 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
   readonly totalMembros = computed(() => this.team.membros().length);
 
   readonly canChangePassword = computed(() => this.supabase.isConfigured() && !environment.bypassAuth);
+
+  readonly canSignOut = computed(() => this.supabase.isConfigured() && !environment.bypassAuth);
 
   readonly confirmTitle = computed(() => {
     const target = this.confirmTarget();
@@ -475,6 +479,11 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
         this.membroActionId.set(null);
       },
     });
+  }
+
+  async signOut(): Promise<void> {
+    await this.supabase.signOut();
+    await this.router.navigate(['/']);
   }
 
   roleBadgeClass(role: UserRole): string {

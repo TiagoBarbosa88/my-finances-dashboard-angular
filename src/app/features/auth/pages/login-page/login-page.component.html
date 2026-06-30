@@ -1,6 +1,7 @@
 <app-auth-layout
   [mobileView]="mobileView()"
   (mobileEnter)="openMobileLogin()"
+  (googleSignIn)="signInWithGoogle()"
 >
 
   @if (completingInvite()) {

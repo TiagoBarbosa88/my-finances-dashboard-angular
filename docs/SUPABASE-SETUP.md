@@ -122,6 +122,23 @@ supabase: {
 
 **Troubleshooting:** redirect errado → confira Site URL e Redirect URLs no Supabase; URI do Google deve ser exatamente `…/auth/v1/callback`.
 
+### 3.2.2 Isolamento de dados por usuário (RLS)
+
+Se uma conta nova enxergar lançamentos de outro usuário, rode no SQL Editor:
+
+1. [`docs/migrations/001-fix-rls-user-isolation.sql`](migrations/001-fix-rls-user-isolation.sql) — restringe `SELECT` por `user_id`
+2. [`docs/migrations/002-reset-financial-data.sql`](migrations/002-reset-financial-data.sql) — zera transações/carteira (mantém `profiles`)
+3. Reimporte seed (abaixo) só na **sua** conta principal
+
+### 3.2.3 Importar planilha 2026
+
+```bash
+npm run import:planilha
+npm run seed:sql -- --email=SEU_EMAIL --uuid=SEU_UUID
+```
+
+Cole `docs/supabase-seed.sql` no SQL Editor. Novos usuários Google começam com painel vazio (sem seed compartilhado).
+
 ### 3.3 Rodar o SQL (seção 4)
 
 1. **SQL Editor → New query**
@@ -305,7 +322,7 @@ CREATE POLICY "profiles_update_self_or_admin"
 -- transactions
 CREATE POLICY "transactions_select_authenticated"
   ON public.transactions FOR SELECT TO authenticated
-  USING (true);
+  USING (user_id = auth.uid() OR public.is_admin());
 
 CREATE POLICY "transactions_insert_editor_admin"
   ON public.transactions FOR INSERT TO authenticated
@@ -330,7 +347,8 @@ CREATE POLICY "transactions_delete_own_or_admin"
 
 -- ativos
 CREATE POLICY "ativos_select_authenticated"
-  ON public.ativos FOR SELECT TO authenticated USING (true);
+  ON public.ativos FOR SELECT TO authenticated
+  USING (user_id = auth.uid() OR public.is_admin());
 
 CREATE POLICY "ativos_write_editor_admin"
   ON public.ativos FOR ALL TO authenticated
@@ -345,7 +363,8 @@ CREATE POLICY "ativos_write_editor_admin"
 
 -- investimentos
 CREATE POLICY "investimentos_select_authenticated"
-  ON public.investimentos FOR SELECT TO authenticated USING (true);
+  ON public.investimentos FOR SELECT TO authenticated
+  USING (user_id = auth.uid() OR public.is_admin());
 
 CREATE POLICY "investimentos_write_editor_admin"
   ON public.investimentos FOR ALL TO authenticated
@@ -360,7 +379,8 @@ CREATE POLICY "investimentos_write_editor_admin"
 
 -- target_metas
 CREATE POLICY "target_metas_select_authenticated"
-  ON public.target_metas FOR SELECT TO authenticated USING (true);
+  ON public.target_metas FOR SELECT TO authenticated
+  USING (user_id = auth.uid() OR public.is_admin());
 
 CREATE POLICY "target_metas_write_editor_admin"
   ON public.target_metas FOR ALL TO authenticated
@@ -673,7 +693,7 @@ As variáveis `NEXT_PUBLIC_*` da integração Supabase **já bastam** para conec
    ```bash
    npm run seed:sql
    ```
-   Cole `docs/supabase-seed.sql` no SQL Editor (190 lançamentos + 8 ativos + metas).
+   Cole `docs/supabase-seed.sql` no SQL Editor (206 lançamentos da planilha 2026 + metas; ativos vazios).
 
 ### 12.6 Limitação importante: JSON Server
 

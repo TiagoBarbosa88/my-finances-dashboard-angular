@@ -2,2086 +2,1861 @@
   "transactions": [
     {
       "id": 1,
-      "data": "2026-01-05",
-      "descricao": "Sabesp",
-      "categoria": "Moradia",
-      "valor": 250,
+      "data": "2026-01-01",
+      "descricao": "Nubank Giselle",
+      "categoria": "Outros",
+      "valor": 104,
       "status": "pago",
-      "criado_por": "Tiago"
+      "criado_por": "Importação Excel"
     },
     {
       "id": 2,
-      "data": "2026-01-05",
-      "descricao": "Enel",
-      "categoria": "Moradia",
-      "valor": 100,
+      "data": "2026-01-01",
+      "descricao": "Santander",
+      "categoria": "Outros",
+      "valor": 250,
       "status": "pago",
-      "criado_por": "Tiago"
+      "criado_por": "Importação Excel"
     },
     {
       "id": 3,
-      "data": "2026-01-05",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 150,
-      "status": "pago",
-      "criado_por": "Tiago"
-    },
-    {
-      "id": 4,
-      "data": "2026-01-05",
-      "descricao": "Vivo Celular",
-      "categoria": "Tecnologia",
-      "valor": 80,
-      "status": "pago",
-      "criado_por": "Tiago"
-    },
-    {
-      "id": 5,
-      "data": "2026-01-05",
-      "descricao": "Faculdade Giselle",
-      "categoria": "Educação",
-      "valor": 145,
-      "status": "pago",
-      "criado_por": "Giselle"
-    },
-    {
-      "id": 6,
-      "data": "2026-01-05",
-      "descricao": "Faculdade Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pago",
-      "criado_por": "Tiago"
-    },
-    {
-      "id": 7,
-      "data": "2026-01-05",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pago",
-      "criado_por": "Tiago"
-    },
-    {
-      "id": 8,
-      "data": "2026-01-10",
-      "descricao": "Pensão",
+      "data": "2026-01-01",
+      "descricao": "Yago",
       "categoria": "Dependentes",
-      "valor": 400,
-      "status": "pago",
-      "criado_por": "Tiago"
-    },
-    {
-      "id": 9,
-      "data": "2026-06-05",
-      "descricao": "Sabesp",
-      "categoria": "Moradia",
-      "valor": 250,
-      "status": "pendente",
-      "criado_por": "Tiago"
-    },
-    {
-      "id": 10,
-      "data": "2026-06-05",
-      "descricao": "Enel",
-      "categoria": "Moradia",
-      "valor": 100,
-      "status": "pendente",
-      "criado_por": "Tiago"
-    },
-    {
-      "id": 11,
-      "data": "2026-06-05",
-      "descricao": "Faculdade Giselle",
-      "categoria": "Educação",
-      "valor": 145,
-      "status": "pendente",
-      "criado_por": "Giselle"
-    },
-    {
-      "data": "2026-06-21",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pendente",
-      "criado_por": "Você",
-      "id": 12
-    },
-    {
-      "data": "2026-12-21",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pendente",
-      "criado_por": "Você",
-      "id": 13
-    },
-    {
-      "data": "2026-07-21",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pendente",
-      "criado_por": "Você",
-      "id": 14
-    },
-    {
-      "data": "2026-08-21",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pendente",
-      "criado_por": "Você",
-      "id": 15
-    },
-    {
-      "data": "2026-09-21",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pendente",
-      "criado_por": "Você",
-      "id": 16
-    },
-    {
-      "data": "2026-10-21",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pendente",
-      "criado_por": "Você",
-      "id": 17
-    },
-    {
-      "data": "2026-11-21",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pendente",
-      "criado_por": "Você",
-      "id": 18
-    },
-    {
-      "data": "2027-01-21",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pendente",
-      "criado_por": "Você",
-      "id": 19
-    },
-    {
-      "data": "2027-02-21",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pendente",
-      "criado_por": "Você",
-      "id": 20
-    },
-    {
-      "data": "2027-03-21",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pendente",
-      "criado_por": "Você",
-      "id": 21
-    },
-    {
-      "data": "2027-04-21",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pendente",
-      "criado_por": "Você",
-      "id": 22
-    },
-    {
-      "data": "2027-05-21",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pendente",
-      "criado_por": "Você",
-      "id": 23
-    },
-    {
-      "data": "2027-04-21",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pendente",
-      "criado_por": "Você",
-      "id": 24
-    },
-    {
-      "data": "2027-03-21",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pendente",
-      "criado_por": "Você",
-      "id": 25
-    },
-    {
-      "data": "2027-05-21",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pendente",
-      "criado_por": "Você",
-      "id": 26
-    },
-    {
-      "data": "2026-06-04",
-      "descricao": "Sabesp",
-      "categoria": "Moradia",
-      "valor": 250,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 27
-    },
-    {
-      "data": "2026-06-04",
-      "descricao": "Enel",
-      "categoria": "Moradia",
-      "valor": 100,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 28
-    },
-    {
-      "data": "2026-06-04",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 100,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 29
-    },
-    {
-      "data": "2026-06-04",
-      "descricao": "Faculdade Giselle",
-      "categoria": "Educação",
-      "valor": 145,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 30
-    },
-    {
-      "data": "2026-06-04",
-      "descricao": "Faculdade Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 31
-    },
-    {
-      "data": "2026-06-04",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 32
-    },
-    {
-      "data": "2026-06-04",
-      "descricao": "Seguro Carro",
-      "categoria": "Transporte",
-      "valor": 271.5,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 33
-    },
-    {
-      "data": "2026-06-09",
-      "descricao": "Tio Luiz",
-      "categoria": "Familia",
-      "valor": 250,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 34
-    },
-    {
-      "data": "2026-05-31",
-      "descricao": "Vovo Marcos",
-      "categoria": "Familia",
-      "valor": 100,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 35
-    },
-    {
-      "data": "2026-05-31",
-      "descricao": "Yago",
-      "categoria": "Familia",
       "valor": 50,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 36
-    },
-    {
-      "data": "2026-05-31",
-      "descricao": "Dentista",
-      "categoria": "Saúde",
-      "valor": 85,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 37
-    },
-    {
-      "data": "2026-05-31",
-      "descricao": "Nubank Gi",
-      "categoria": "Cartao",
-      "valor": 377.62,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 38
-    },
-    {
-      "data": "2026-06-09",
-      "descricao": "Nubank Ti",
-      "categoria": "Cartao",
-      "valor": 146.8,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 39
-    },
-    {
-      "data": "2026-05-31",
-      "descricao": "Nubank Gi",
-      "categoria": "Cartao",
-      "valor": 377.62,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 40
-    },
-    {
-      "data": "2026-06-09",
-      "descricao": "Meli Gi",
-      "categoria": "Cartao",
-      "valor": 63.5,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 41
-    },
-    {
-      "data": "2026-06-09",
-      "descricao": "Meli Ti",
-      "categoria": "Cartao",
-      "valor": 133.76,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 42
-    },
-    {
-      "data": "2026-05-31",
-      "descricao": "Dentista",
-      "categoria": "Saúde",
-      "valor": 85,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 43
-    },
-    {
-      "data": "2026-05-31",
-      "descricao": "Yago",
-      "categoria": "Familia",
-      "valor": 50,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 44
-    },
-    {
-      "data": "2026-01-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 197.75,
       "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 45
-    },
-    {
-      "data": "2026-02-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 143.46,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 46
-    },
-    {
-      "data": "2026-03-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 143.46,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 47
-    },
-    {
-      "data": "2026-04-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 145,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 48
-    },
-    {
-      "data": "2026-05-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 145,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 49
-    },
-    {
-      "data": "2026-06-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 145,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 50
-    },
-    {
-      "data": "2026-07-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 195,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 51
-    },
-    {
-      "data": "2026-08-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 190,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 52
-    },
-    {
-      "data": "2026-09-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 190,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 53
-    },
-    {
-      "data": "2026-10-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 190,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 54
-    },
-    {
-      "data": "2026-11-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 190,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 55
-    },
-    {
-      "data": "2026-12-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 190,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 56
-    },
-    {
-      "data": "2026-01-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 208.74,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 57
-    },
-    {
-      "data": "2026-07-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 58
-    },
-    {
-      "data": "2026-04-04",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 59
-    },
-    {
-      "data": "2026-01-04",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 170,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 60
-    },
-    {
-      "data": "2026-02-04",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 170,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 61
-    },
-    {
-      "data": "2026-03-04",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 170,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 62
-    },
-    {
-      "data": "2026-05-04",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 63
-    },
-    {
-      "data": "2026-06-04",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 64
-    },
-    {
-      "data": "2026-01-04",
-      "descricao": "Seguro Carro",
-      "categoria": "Transporte",
-      "valor": 276.34,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 65
-    },
-    {
-      "data": "2026-02-04",
-      "descricao": "Seguro Carro",
-      "categoria": "Transporte",
-      "valor": 442,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 66
-    },
-    {
-      "data": "2026-03-04",
-      "descricao": "Seguro Carro",
-      "categoria": "Transporte",
-      "valor": 171.5,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 67
-    },
-    {
-      "data": "2026-04-04",
-      "descricao": "Seguro Carro",
-      "categoria": "Transporte",
-      "valor": 205.5,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 68
-    },
-    {
-      "data": "2026-05-04",
-      "descricao": "Seguro Carro",
-      "categoria": "Transporte",
-      "valor": 166.5,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 69
-    },
-    {
-      "data": "2026-06-04",
-      "descricao": "Seguro Carro",
-      "categoria": "Transporte",
-      "valor": 271.5,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 70
-    },
-    {
-      "data": "2026-01-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 99.9,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 71
-    },
-    {
-      "data": "2026-02-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 99.9,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 72
-    },
-    {
-      "data": "2026-03-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 100,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 73
-    },
-    {
-      "data": "2025-12-31",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 2393,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 74
-    },
-    {
-      "data": "2026-02-28",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 4885.17,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 75
-    },
-    {
-      "data": "2026-03-31",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 5057,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 76
-    },
-    {
-      "data": "2026-01-31",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 2300,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 77
-    },
-    {
-      "data": "2026-04-30",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 4978.54,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 78
-    },
-    {
-      "data": "2026-05-31",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 5197.75,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 79
-    },
-    {
-      "data": "2025-12-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4800,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 80
-    },
-    {
-      "data": "2026-01-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4800,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 81
-    },
-    {
-      "data": "2026-02-28",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 6579.34,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 82
-    },
-    {
-      "data": "2026-03-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 7022.29,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 83
-    },
-    {
-      "data": "2026-04-30",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4429.77,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 84
-    },
-    {
-      "data": "2026-05-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4997.53,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 85
-    },
-    {
-      "data": "2026-02-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 86
-    },
-    {
-      "data": "2026-04-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 100,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 87
-    },
-    {
-      "data": "2026-05-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 100,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 88
-    },
-    {
-      "data": "2026-02-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 99.9,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 89
-    },
-    {
-      "data": "2026-03-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 100,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 90
-    },
-    {
-      "data": "2026-06-04",
-      "descricao": "Seguro Carro",
-      "categoria": "Transporte",
-      "valor": 271.5,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 91
-    },
-    {
-      "data": "2026-01-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 99.9,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 92
-    },
-    {
-      "data": "2026-12-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 190,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 93
-    },
-    {
-      "data": "2026-03-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 94
-    },
-    {
-      "data": "2026-04-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 95
-    },
-    {
-      "data": "2026-05-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 96
-    },
-    {
-      "data": "2026-02-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 97
-    },
-    {
-      "data": "2026-05-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4997.53,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 98
-    },
-    {
-      "data": "2026-05-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4997.53,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 99
-    },
-    {
-      "data": "2026-01-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 197.75,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 100
-    },
-    {
-      "data": "2026-06-04",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 101
-    },
-    {
-      "data": "2026-01-04",
-      "descricao": "Seguro Carro",
-      "categoria": "Transporte",
-      "valor": 276.34,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 102
-    },
-    {
-      "data": "2026-02-04",
-      "descricao": "Seguro Carro",
-      "categoria": "Transporte",
-      "valor": 442,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 103
-    },
-    {
-      "data": "2026-03-04",
-      "descricao": "Seguro Carro",
-      "categoria": "Transporte",
-      "valor": 171.5,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 104
-    },
-    {
-      "data": "2026-04-04",
-      "descricao": "Seguro Carro",
-      "categoria": "Transporte",
-      "valor": 205.5,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 105
-    },
-    {
-      "data": "2026-05-04",
-      "descricao": "Seguro Carro",
-      "categoria": "Transporte",
-      "valor": 166.5,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 106
-    },
-    {
-      "data": "2026-06-04",
-      "descricao": "Seguro Carro",
-      "categoria": "Transporte",
-      "valor": 271.5,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 107
-    },
-    {
-      "data": "2026-01-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 99.9,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 108
-    },
-    {
-      "data": "2026-02-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 99.9,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 109
-    },
-    {
-      "data": "2026-03-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 100,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 110
-    },
-    {
-      "data": "2026-04-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 100,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 111
-    },
-    {
-      "data": "2026-02-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 143.46,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 112
-    },
-    {
-      "data": "2026-05-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 100,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 113
-    },
-    {
-      "data": "2026-06-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 100,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 114
-    },
-    {
-      "data": "2025-12-31",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 2393,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 115
-    },
-    {
-      "data": "2026-01-31",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 2300,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 116
-    },
-    {
-      "data": "2026-02-28",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 4885.17,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 117
-    },
-    {
-      "data": "2026-03-31",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 5057,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 118
-    },
-    {
-      "data": "2026-04-30",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 4978.54,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 119
-    },
-    {
-      "data": "2026-05-31",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 5197.75,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 120
-    },
-    {
-      "data": "2025-12-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4800,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 121
-    },
-    {
-      "data": "2026-01-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4800,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 122
-    },
-    {
-      "data": "2026-02-28",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 6579.34,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 123
-    },
-    {
-      "data": "2026-03-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 143.46,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 124
-    },
-    {
-      "data": "2026-04-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 145,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 125
-    },
-    {
-      "data": "2026-05-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 145,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 126
-    },
-    {
-      "data": "2026-06-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 145,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 127
-    },
-    {
-      "data": "2026-07-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 195,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 128
-    },
-    {
-      "data": "2026-08-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 190,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 129
-    },
-    {
-      "data": "2026-09-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 190,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 130
-    },
-    {
-      "data": "2026-10-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 190,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 131
-    },
-    {
-      "data": "2026-11-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 190,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 132
-    },
-    {
-      "data": "2026-12-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 190,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 133
-    },
-    {
-      "data": "2026-01-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 208.74,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 134
-    },
-    {
-      "data": "2026-02-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 135
-    },
-    {
-      "data": "2026-03-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 136
-    },
-    {
-      "data": "2026-04-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 137
-    },
-    {
-      "data": "2026-05-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 138
-    },
-    {
-      "data": "2026-06-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 139
-    },
-    {
-      "data": "2026-07-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 140
-    },
-    {
-      "data": "2026-01-04",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 170,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 141
-    },
-    {
-      "data": "2026-02-04",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 170,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 142
-    },
-    {
-      "data": "2026-03-04",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 170,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 143
-    },
-    {
-      "data": "2026-04-04",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 144
-    },
-    {
-      "data": "2026-05-04",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 200,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 145
-    },
-    {
-      "data": "2026-03-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 100,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 146
-    },
-    {
-      "data": "2026-05-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 100,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 147
-    },
-    {
-      "data": "2026-01-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 99.9,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 148
-    },
-    {
-      "data": "2026-02-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 99.9,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 149
-    },
-    {
-      "data": "2026-02-04",
-      "descricao": "Facul Giselle",
-      "categoria": "Educação",
-      "valor": 143.46,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 150
-    },
-    {
-      "data": "2026-04-09",
-      "descricao": "Internet",
-      "categoria": "Tecnologia",
-      "valor": 100,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 151
-    },
-    {
-      "data": "2026-03-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 7022.29,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 152
-    },
-    {
-      "data": "2026-04-30",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4429.77,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 153
-    },
-    {
-      "data": "2026-07-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 154
-    },
-    {
-      "data": "2026-04-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 155
-    },
-    {
-      "data": "2026-01-04",
-      "descricao": "Garagem",
-      "categoria": "Transporte",
-      "valor": 170,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 156
-    },
-    {
-      "data": "2025-12-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4800,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 157
-    },
-    {
-      "data": "2026-05-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 158
-    },
-    {
-      "data": "2026-02-28",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 6579.34,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 159
-    },
-    {
-      "data": "2026-06-04",
-      "descricao": "Facul Tiago",
-      "categoria": "Educação",
-      "valor": 318.26,
-      "status": "pago",
-      "criado_por": "Importação Excel",
-      "id": 160
-    },
-    {
-      "data": "2026-01-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4800,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 161
-    },
-    {
-      "data": "2026-04-30",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4429.77,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 162
-    },
-    {
-      "data": "2025-12-31",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 2393,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 163
-    },
-    {
-      "data": "2025-12-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4800,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 164
-    },
-    {
-      "data": "2026-01-31",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 2300,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 165
-    },
-    {
-      "data": "2026-01-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4800,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 166
-    },
-    {
-      "data": "2026-02-28",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 4885.17,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 167
-    },
-    {
-      "data": "2026-02-28",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 6579.34,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 168
-    },
-    {
-      "data": "2026-03-31",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 5057,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 169
-    },
-    {
-      "data": "2026-03-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 7022.29,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 170
-    },
-    {
-      "data": "2026-04-30",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 4978.54,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 171
-    },
-    {
-      "data": "2026-04-30",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4429.77,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 172
-    },
-    {
-      "data": "2026-05-31",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 5197.75,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 173
-    },
-    {
-      "data": "2026-06-30",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4982.73,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 174
-    },
-    {
-      "data": "2026-07-31",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 5000,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 175
-    },
-    {
-      "data": "2026-07-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4898.09,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 176
-    },
-    {
-      "data": "2026-08-31",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 5000,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 177
-    },
-    {
-      "data": "2026-09-30",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 5000,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 178
-    },
-    {
-      "data": "2026-08-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4898.09,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 179
-    },
-    {
-      "data": "2026-09-30",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4898.09,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 180
-    },
-    {
-      "data": "2026-10-31",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 5000,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 181
-    },
-    {
-      "data": "2026-10-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4898.09,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 182
-    },
-    {
-      "data": "2026-11-30",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 5000,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 183
-    },
-    {
-      "data": "2026-11-30",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4898.09,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 184
-    },
-    {
-      "data": "2026-05-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4997.53,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 185
-    },
-    {
-      "data": "2026-04-30",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 4978.54,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 186
-    },
-    {
-      "data": "2026-04-30",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4429.77,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 187
-    },
-    {
-      "data": "2026-06-30",
-      "descricao": "Salario Tiago",
-      "categoria": "Salário",
-      "valor": 5115,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 188
-    },
-    {
-      "data": "2026-03-31",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 7022.29,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 189
-    },
-    {
-      "data": "2026-11-30",
-      "descricao": "Salario Giselle",
-      "categoria": "Salário",
-      "valor": 4898.09,
-      "status": "pendente",
-      "criado_por": "Importação Excel",
-      "id": 190
-    }
-  ],
-  "investimentos": [
-    {
-      "id": 1,
-      "ticker": "ITSA4",
-      "tipo": "Ações",
-      "setor": "Financeiro",
-      "qtd": 320,
-      "precoMedio": 8.42,
-      "precoAtual": 11.28,
-      "variacao": 33.97,
-      "rentabilidade": 33.97,
-      "total": 3609.6,
-      "percentualCarteira": 4.17
-    },
-    {
-      "id": 2,
-      "ticker": "BBAS3",
-      "tipo": "Ações",
-      "setor": "Financeiro",
-      "qtd": 180,
-      "precoMedio": 28.1,
-      "precoAtual": 27.45,
-      "variacao": -2.31,
-      "rentabilidade": -2.31,
-      "total": 4941,
-      "percentualCarteira": 5.71
-    },
-    {
-      "id": 3,
-      "ticker": "VALE3",
-      "tipo": "Ações",
-      "setor": "Materiais",
-      "qtd": 90,
-      "precoMedio": 64.2,
-      "precoAtual": 71.8,
-      "variacao": 11.84,
-      "rentabilidade": 11.84,
-      "total": 6462,
-      "percentualCarteira": 7.46
+      "criado_por": "Importação Excel"
     },
     {
       "id": 4,
-      "ticker": "WEGE3",
-      "tipo": "Ações",
-      "setor": "Industrial",
-      "qtd": 140,
-      "precoMedio": 32.1,
-      "precoAtual": 41.55,
-      "variacao": 29.44,
-      "rentabilidade": 29.44,
-      "total": 5817,
-      "percentualCarteira": 6.72
+      "data": "2026-01-03",
+      "descricao": "Riachuelo",
+      "categoria": "Outros",
+      "valor": 95.39,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     },
     {
       "id": 5,
-      "ticker": "PETR4",
-      "tipo": "Ações",
-      "setor": "Energia",
-      "qtd": 60,
-      "precoMedio": 26.5,
-      "precoAtual": 38.9,
-      "variacao": 46.79,
-      "rentabilidade": 46.79,
-      "total": 2334,
-      "percentualCarteira": 2.7
+      "data": "2026-01-05",
+      "descricao": "Faculdade Giselle",
+      "categoria": "Educação",
+      "valor": 197.75,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     },
     {
       "id": 6,
-      "ticker": "HGLG11",
-      "tipo": "FIIs",
-      "setor": "Logística",
-      "qtd": 45,
-      "precoMedio": 152.3,
-      "precoAtual": 158.4,
-      "variacao": 4.01,
-      "rentabilidade": 4.01,
-      "total": 7128,
-      "percentualCarteira": 8.23
+      "data": "2026-01-05",
+      "descricao": "Faculdade Tiago",
+      "categoria": "Educação",
+      "valor": 208.74,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     },
     {
       "id": 7,
-      "ticker": "MXRF11",
-      "tipo": "FIIs",
-      "setor": "Papel",
-      "qtd": 120,
-      "precoMedio": 9.85,
-      "precoAtual": 10.12,
-      "variacao": 2.74,
-      "rentabilidade": 2.74,
-      "total": 1214.4,
-      "percentualCarteira": 1.4
+      "data": "2026-01-05",
+      "descricao": "Garagem",
+      "categoria": "Transporte",
+      "valor": 170,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     },
     {
       "id": 8,
-      "ticker": "KNRI11",
-      "tipo": "FIIs",
-      "setor": "Híbrido",
-      "qtd": 18,
-      "precoMedio": 142,
-      "precoAtual": 149.8,
-      "variacao": 5.49,
-      "rentabilidade": 5.49,
-      "total": 2696.4,
-      "percentualCarteira": 3.11
+      "data": "2026-01-05",
+      "descricao": "Seguro carro",
+      "categoria": "Transporte",
+      "valor": 276.34,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     },
     {
       "id": 9,
-      "ticker": "XPML11",
-      "tipo": "FIIs",
-      "setor": "Shoppings",
-      "qtd": 35,
-      "precoMedio": 98.5,
-      "precoAtual": 102.3,
-      "variacao": 3.86,
-      "rentabilidade": 3.86,
-      "total": 3580.5,
-      "percentualCarteira": 4.13
+      "data": "2026-01-10",
+      "descricao": "Internet",
+      "categoria": "Tecnologia",
+      "valor": 99.9,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     },
     {
       "id": 10,
-      "ticker": "VISC11",
-      "tipo": "FIIs",
-      "setor": "Shoppings",
-      "qtd": 28,
-      "precoMedio": 88.2,
-      "precoAtual": 91.75,
-      "variacao": 4.02,
-      "rentabilidade": 4.02,
-      "total": 2569,
-      "percentualCarteira": 2.97
+      "data": "2026-01-10",
+      "descricao": "Meli Giselle",
+      "categoria": "Outros",
+      "valor": 63.5,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     },
     {
       "id": 11,
-      "ticker": "BTLG11",
-      "tipo": "FIIs",
-      "setor": "Logística",
-      "qtd": 52,
-      "precoMedio": 112.4,
-      "precoAtual": 115.6,
-      "variacao": 2.85,
-      "rentabilidade": 2.85,
-      "total": 6011.2,
-      "percentualCarteira": 6.94
+      "data": "2026-01-10",
+      "descricao": "Meli Tiago",
+      "categoria": "Outros",
+      "valor": 210.7,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     },
     {
       "id": 12,
-      "ticker": "RBRR11",
-      "tipo": "FIIs",
-      "setor": "Papel",
-      "qtd": 95,
-      "precoMedio": 88.9,
-      "precoAtual": 92.1,
-      "variacao": 3.6,
-      "rentabilidade": 3.6,
-      "total": 8749.5,
-      "percentualCarteira": 10.1
+      "data": "2026-01-10",
+      "descricao": "Nubank Tiago",
+      "categoria": "Outros",
+      "valor": 401.73,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     },
     {
       "id": 13,
-      "ticker": "BOVA11",
-      "tipo": "ETFs",
-      "setor": "Índice Ibovespa",
-      "qtd": 55,
-      "precoMedio": 118.2,
-      "precoAtual": 125.4,
-      "variacao": 6.09,
-      "rentabilidade": 6.09,
-      "total": 6897,
-      "percentualCarteira": 7.96
+      "data": "2026-01-15",
+      "descricao": "Empréstimo",
+      "categoria": "Outros",
+      "valor": 605,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     },
     {
       "id": 14,
-      "ticker": "IVVB11",
-      "tipo": "ETFs",
-      "setor": "S&P 500",
-      "qtd": 22,
-      "precoMedio": 285.5,
-      "precoAtual": 312.8,
-      "variacao": 9.56,
-      "rentabilidade": 9.56,
-      "total": 6881.6,
-      "percentualCarteira": 7.95
+      "data": "2026-01-27",
+      "descricao": "Cartão Itaú",
+      "categoria": "Outros",
+      "valor": 3654.14,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     },
     {
       "id": 15,
-      "ticker": "SMAL11",
-      "tipo": "ETFs",
-      "setor": "Small Caps",
-      "qtd": 38,
-      "precoMedio": 92.3,
-      "precoAtual": 98.65,
-      "variacao": 6.88,
-      "rentabilidade": 6.88,
-      "total": 3748.7,
-      "percentualCarteira": 4.33
+      "data": "2026-01-30",
+      "descricao": "William",
+      "categoria": "Dependentes",
+      "valor": 350,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     },
     {
       "id": 16,
-      "ticker": "BTC",
-      "tipo": "Criptos",
-      "setor": "Criptoativos",
-      "qtd": 0.012,
-      "precoMedio": 285000,
-      "precoAtual": 612000,
-      "variacao": 114.74,
-      "rentabilidade": 114.74,
-      "total": 7344,
-      "percentualCarteira": 8.48
+      "data": "2026-01-31",
+      "descricao": "Décimo Terceiro",
+      "categoria": "Décimo Terceiro",
+      "valor": 2005,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     },
     {
       "id": 17,
-      "ticker": "ETH",
-      "tipo": "Criptos",
-      "setor": "Criptoativos",
-      "qtd": 0.18,
-      "precoMedio": 12500,
-      "precoAtual": 15800,
-      "variacao": 26.4,
-      "rentabilidade": 26.4,
-      "total": 2844,
-      "percentualCarteira": 3.28
+      "data": "2026-01-31",
+      "descricao": "Renda Extra",
+      "categoria": "Renda Extra",
+      "valor": 2005,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     },
     {
       "id": 18,
-      "ticker": "SOL",
-      "tipo": "Criptos",
-      "setor": "Criptoativos",
-      "qtd": 2.5,
-      "precoMedio": 420,
-      "precoAtual": 890,
-      "variacao": 111.9,
-      "rentabilidade": 111.9,
-      "total": 2225,
-      "percentualCarteira": 2.57
+      "data": "2026-01-31",
+      "descricao": "Salário Giselle",
+      "categoria": "Salário",
+      "valor": 4800,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     },
     {
       "id": 19,
-      "ticker": "ADA",
-      "tipo": "Criptos",
-      "setor": "Criptoativos",
-      "qtd": 450,
-      "precoMedio": 2.85,
-      "precoAtual": 3.42,
-      "variacao": 20,
-      "rentabilidade": 20,
-      "total": 1539,
-      "percentualCarteira": 1.78
+      "data": "2026-01-31",
+      "descricao": "Salário Tiago",
+      "categoria": "Salário",
+      "valor": 2393,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     },
     {
       "id": 20,
-      "ticker": "TESOURO",
-      "tipo": "Tesouro Direto",
-      "setor": "Renda Fixa",
-      "qtd": 0,
-      "precoMedio": 0,
-      "precoAtual": 0,
-      "variacao": 0,
-      "rentabilidade": 47.89,
-      "total": 0,
-      "percentualCarteira": 0
+      "data": "2026-02-01",
+      "descricao": "Nubank Giselle",
+      "categoria": "Outros",
+      "valor": 70,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 21,
+      "data": "2026-02-01",
+      "descricao": "Santander",
+      "categoria": "Outros",
+      "valor": 299.4,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 22,
+      "data": "2026-02-01",
+      "descricao": "Yago",
+      "categoria": "Dependentes",
+      "valor": 50,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 23,
+      "data": "2026-02-03",
+      "descricao": "Riachuelo",
+      "categoria": "Outros",
+      "valor": 95.39,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 24,
+      "data": "2026-02-05",
+      "descricao": "Faculdade Giselle",
+      "categoria": "Educação",
+      "valor": 143.46,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 25,
+      "data": "2026-02-05",
+      "descricao": "Faculdade Tiago",
+      "categoria": "Educação",
+      "valor": 318.26,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 26,
+      "data": "2026-02-05",
+      "descricao": "Garagem",
+      "categoria": "Transporte",
+      "valor": 170,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 27,
+      "data": "2026-02-05",
+      "descricao": "Seguro carro",
+      "categoria": "Transporte",
+      "valor": 442,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 28,
+      "data": "2026-02-10",
+      "descricao": "Internet",
+      "categoria": "Tecnologia",
+      "valor": 99.9,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 29,
+      "data": "2026-02-10",
+      "descricao": "Meli Giselle",
+      "categoria": "Outros",
+      "valor": 63.5,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 30,
+      "data": "2026-02-10",
+      "descricao": "Meli Tiago",
+      "categoria": "Outros",
+      "valor": 210.7,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 31,
+      "data": "2026-02-10",
+      "descricao": "Nubank Tiago",
+      "categoria": "Outros",
+      "valor": 377.3,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 32,
+      "data": "2026-02-10",
+      "descricao": "Tio Luiz",
+      "categoria": "Dependentes",
+      "valor": 230,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 33,
+      "data": "2026-02-15",
+      "descricao": "Empréstimo",
+      "categoria": "Outros",
+      "valor": 605,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 34,
+      "data": "2026-02-15",
+      "descricao": "Manutenção carro",
+      "categoria": "Transporte",
+      "valor": 175,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 35,
+      "data": "2026-02-27",
+      "descricao": "Cartão Itaú",
+      "categoria": "Outros",
+      "valor": 3495,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 36,
+      "data": "2026-02-28",
+      "descricao": "Salário Giselle",
+      "categoria": "Salário",
+      "valor": 4800,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 37,
+      "data": "2026-02-28",
+      "descricao": "Salário Tiago",
+      "categoria": "Salário",
+      "valor": 2300,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 38,
+      "data": "2026-02-30",
+      "descricao": "William",
+      "categoria": "Dependentes",
+      "valor": 350,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 39,
+      "data": "2026-03-01",
+      "descricao": "Nubank Giselle",
+      "categoria": "Outros",
+      "valor": 2533.85,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 40,
+      "data": "2026-03-01",
+      "descricao": "Vovô Marcos",
+      "categoria": "Dependentes",
+      "valor": 100,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 41,
+      "data": "2026-03-01",
+      "descricao": "Yago",
+      "categoria": "Dependentes",
+      "valor": 105,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 42,
+      "data": "2026-03-05",
+      "descricao": "Faculdade Giselle",
+      "categoria": "Educação",
+      "valor": 143.46,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 43,
+      "data": "2026-03-05",
+      "descricao": "Faculdade Tiago",
+      "categoria": "Educação",
+      "valor": 318.26,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 44,
+      "data": "2026-03-05",
+      "descricao": "Garagem",
+      "categoria": "Transporte",
+      "valor": 170,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 45,
+      "data": "2026-03-05",
+      "descricao": "Seguro carro",
+      "categoria": "Transporte",
+      "valor": 171.5,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 46,
+      "data": "2026-03-10",
+      "descricao": "Internet",
+      "categoria": "Tecnologia",
+      "valor": 100,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 47,
+      "data": "2026-03-10",
+      "descricao": "Meli Giselle",
+      "categoria": "Outros",
+      "valor": 63.5,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 48,
+      "data": "2026-03-10",
+      "descricao": "Meli Tiago",
+      "categoria": "Outros",
+      "valor": 233.18,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 49,
+      "data": "2026-03-10",
+      "descricao": "Nubank Tiago",
+      "categoria": "Outros",
+      "valor": 169.79,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 50,
+      "data": "2026-03-10",
+      "descricao": "Tio Luiz",
+      "categoria": "Dependentes",
+      "valor": 250,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 51,
+      "data": "2026-03-15",
+      "descricao": "Outros/Lazer",
+      "categoria": "Lazer",
+      "valor": 3115.61,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 52,
+      "data": "2026-03-27",
+      "descricao": "Cartão Itaú",
+      "categoria": "Outros",
+      "valor": 4196.34,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 53,
+      "data": "2026-03-28",
+      "descricao": "Aporte investimentos Giselle",
+      "categoria": "Investimento",
+      "valor": 10350,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 54,
+      "data": "2026-03-28",
+      "descricao": "Aporte investimentos Tiago",
+      "categoria": "Investimento",
+      "valor": 2000,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 55,
+      "data": "2026-03-30",
+      "descricao": "William",
+      "categoria": "Dependentes",
+      "valor": 350,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 56,
+      "data": "2026-03-31",
+      "descricao": "PLR",
+      "categoria": "Bônus",
+      "valor": 11490.19,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 57,
+      "data": "2026-03-31",
+      "descricao": "Renda Extra",
+      "categoria": "Renda Extra",
+      "valor": 11490.19,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 58,
+      "data": "2026-03-31",
+      "descricao": "Salário Giselle",
+      "categoria": "Salário",
+      "valor": 6579.34,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 59,
+      "data": "2026-03-31",
+      "descricao": "Salário Tiago",
+      "categoria": "Salário",
+      "valor": 4885.17,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 60,
+      "data": "2026-04-01",
+      "descricao": "Nubank Giselle",
+      "categoria": "Outros",
+      "valor": 333.53,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 61,
+      "data": "2026-04-01",
+      "descricao": "Vovô Marcos",
+      "categoria": "Dependentes",
+      "valor": 100,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 62,
+      "data": "2026-04-01",
+      "descricao": "Yago",
+      "categoria": "Dependentes",
+      "valor": 50,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 63,
+      "data": "2026-04-05",
+      "descricao": "Faculdade Giselle",
+      "categoria": "Educação",
+      "valor": 145,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 64,
+      "data": "2026-04-05",
+      "descricao": "Faculdade Tiago",
+      "categoria": "Educação",
+      "valor": 318.26,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 65,
+      "data": "2026-04-05",
+      "descricao": "Garagem",
+      "categoria": "Transporte",
+      "valor": 200,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 66,
+      "data": "2026-04-05",
+      "descricao": "Seguro carro",
+      "categoria": "Transporte",
+      "valor": 205.5,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 67,
+      "data": "2026-04-10",
+      "descricao": "Internet",
+      "categoria": "Tecnologia",
+      "valor": 100,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 68,
+      "data": "2026-04-10",
+      "descricao": "Meli Giselle",
+      "categoria": "Outros",
+      "valor": 63.5,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 69,
+      "data": "2026-04-10",
+      "descricao": "Meli Tiago",
+      "categoria": "Outros",
+      "valor": 324.17,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 70,
+      "data": "2026-04-10",
+      "descricao": "Nubank Tiago",
+      "categoria": "Outros",
+      "valor": 119.05,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 71,
+      "data": "2026-04-10",
+      "descricao": "Tio Luiz",
+      "categoria": "Dependentes",
+      "valor": 250,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 72,
+      "data": "2026-04-15",
+      "descricao": "Manutenção carro",
+      "categoria": "Transporte",
+      "valor": 1183.07,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 73,
+      "data": "2026-04-15",
+      "descricao": "Outros/Lazer",
+      "categoria": "Lazer",
+      "valor": 101.38,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 74,
+      "data": "2026-04-27",
+      "descricao": "Cartão Itaú",
+      "categoria": "Outros",
+      "valor": 3354.69,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 75,
+      "data": "2026-04-28",
+      "descricao": "Aporte investimentos Giselle",
+      "categoria": "Investimento",
+      "valor": 758,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 76,
+      "data": "2026-04-28",
+      "descricao": "Aporte investimentos Tiago",
+      "categoria": "Investimento",
+      "valor": 14725,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 77,
+      "data": "2026-04-30",
+      "descricao": "Décimo Terceiro",
+      "categoria": "Décimo Terceiro",
+      "valor": 28426.73,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 78,
+      "data": "2026-04-30",
+      "descricao": "Férias",
+      "categoria": "Férias",
+      "valor": 6584.33,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 79,
+      "data": "2026-04-30",
+      "descricao": "Renda Extra",
+      "categoria": "Renda Extra",
+      "valor": 35011.06,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 80,
+      "data": "2026-04-30",
+      "descricao": "Salário Giselle",
+      "categoria": "Salário",
+      "valor": 7022.29,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 81,
+      "data": "2026-04-30",
+      "descricao": "Salário Tiago",
+      "categoria": "Salário",
+      "valor": 5057,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 82,
+      "data": "2026-04-30",
+      "descricao": "William",
+      "categoria": "Dependentes",
+      "valor": 20350,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 83,
+      "data": "2026-05-01",
+      "descricao": "Dentista",
+      "categoria": "Dependentes",
+      "valor": 85,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 84,
+      "data": "2026-05-01",
+      "descricao": "Nubank Giselle",
+      "categoria": "Outros",
+      "valor": 325.54,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 85,
+      "data": "2026-05-01",
+      "descricao": "Vovô Marcos",
+      "categoria": "Dependentes",
+      "valor": 100,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 86,
+      "data": "2026-05-01",
+      "descricao": "Yago",
+      "categoria": "Dependentes",
+      "valor": 50,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 87,
+      "data": "2026-05-05",
+      "descricao": "Faculdade Giselle",
+      "categoria": "Educação",
+      "valor": 145,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 88,
+      "data": "2026-05-05",
+      "descricao": "Faculdade Tiago",
+      "categoria": "Educação",
+      "valor": 318.26,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 89,
+      "data": "2026-05-05",
+      "descricao": "Garagem",
+      "categoria": "Transporte",
+      "valor": 200,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 90,
+      "data": "2026-05-05",
+      "descricao": "Seguro carro",
+      "categoria": "Transporte",
+      "valor": 166.5,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 91,
+      "data": "2026-05-10",
+      "descricao": "Internet",
+      "categoria": "Tecnologia",
+      "valor": 100,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 92,
+      "data": "2026-05-10",
+      "descricao": "Meli Giselle",
+      "categoria": "Outros",
+      "valor": 63.5,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 93,
+      "data": "2026-05-10",
+      "descricao": "Meli Tiago",
+      "categoria": "Outros",
+      "valor": 133.76,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 94,
+      "data": "2026-05-10",
+      "descricao": "Nubank Tiago",
+      "categoria": "Outros",
+      "valor": 120,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 95,
+      "data": "2026-05-10",
+      "descricao": "Tio Luiz",
+      "categoria": "Dependentes",
+      "valor": 250,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 96,
+      "data": "2026-05-27",
+      "descricao": "Cartão Itaú",
+      "categoria": "Outros",
+      "valor": 4330.07,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 97,
+      "data": "2026-05-28",
+      "descricao": "Aporte investimentos Giselle",
+      "categoria": "Investimento",
+      "valor": 250,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 98,
+      "data": "2026-05-28",
+      "descricao": "Aporte investimentos Tiago",
+      "categoria": "Investimento",
+      "valor": 2250,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 99,
+      "data": "2026-05-31",
+      "descricao": "Salário Giselle",
+      "categoria": "Salário",
+      "valor": 4429.77,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 100,
+      "data": "2026-05-31",
+      "descricao": "Salário Tiago",
+      "categoria": "Salário",
+      "valor": 4978.54,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 101,
+      "data": "2026-06-01",
+      "descricao": "Nubank Giselle",
+      "categoria": "Outros",
+      "valor": 377.62,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 102,
+      "data": "2026-06-01",
+      "descricao": "Vovô Marcos",
+      "categoria": "Dependentes",
+      "valor": 100,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 103,
+      "data": "2026-06-01",
+      "descricao": "Yago",
+      "categoria": "Dependentes",
+      "valor": 50,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 104,
+      "data": "2026-06-05",
+      "descricao": "Faculdade Giselle",
+      "categoria": "Educação",
+      "valor": 145,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 105,
+      "data": "2026-06-05",
+      "descricao": "Faculdade Tiago",
+      "categoria": "Educação",
+      "valor": 318.26,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 106,
+      "data": "2026-06-05",
+      "descricao": "Garagem",
+      "categoria": "Transporte",
+      "valor": 200,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 107,
+      "data": "2026-06-05",
+      "descricao": "Seguro carro",
+      "categoria": "Transporte",
+      "valor": 271.5,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 108,
+      "data": "2026-06-10",
+      "descricao": "Internet",
+      "categoria": "Tecnologia",
+      "valor": 100,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 109,
+      "data": "2026-06-10",
+      "descricao": "Meli Giselle",
+      "categoria": "Outros",
+      "valor": 63.5,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 110,
+      "data": "2026-06-10",
+      "descricao": "Meli Tiago",
+      "categoria": "Outros",
+      "valor": 133.76,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 111,
+      "data": "2026-06-10",
+      "descricao": "Nubank Tiago",
+      "categoria": "Outros",
+      "valor": 146.8,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 112,
+      "data": "2026-06-10",
+      "descricao": "Tio Luiz",
+      "categoria": "Dependentes",
+      "valor": 250,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 113,
+      "data": "2026-06-15",
+      "descricao": "Outros/Lazer",
+      "categoria": "Lazer",
+      "valor": 1000,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 114,
+      "data": "2026-06-27",
+      "descricao": "Cartão Itaú",
+      "categoria": "Outros",
+      "valor": 3938.83,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 115,
+      "data": "2026-06-30",
+      "descricao": "Décimo Terceiro",
+      "categoria": "Décimo Terceiro",
+      "valor": 3181.35,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 116,
+      "data": "2026-06-30",
+      "descricao": "Renda Extra",
+      "categoria": "Renda Extra",
+      "valor": 3181.35,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 117,
+      "data": "2026-06-30",
+      "descricao": "Salário Giselle",
+      "categoria": "Salário",
+      "valor": 4997.53,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 118,
+      "data": "2026-06-30",
+      "descricao": "Salário Tiago",
+      "categoria": "Salário",
+      "valor": 5197.75,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 119,
+      "data": "2026-07-01",
+      "descricao": "Água",
+      "categoria": "Moradia",
+      "valor": 138.93,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 120,
+      "data": "2026-07-01",
+      "descricao": "Luz",
+      "categoria": "Moradia",
+      "valor": 241.75,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 121,
+      "data": "2026-07-01",
+      "descricao": "Nubank Giselle",
+      "categoria": "Outros",
+      "valor": 412,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 122,
+      "data": "2026-07-01",
+      "descricao": "Vovô Marcos",
+      "categoria": "Dependentes",
+      "valor": 100,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 123,
+      "data": "2026-07-01",
+      "descricao": "Yago",
+      "categoria": "Dependentes",
+      "valor": 94,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 124,
+      "data": "2026-07-05",
+      "descricao": "Faculdade Giselle",
+      "categoria": "Educação",
+      "valor": 197.75,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 125,
+      "data": "2026-07-05",
+      "descricao": "Faculdade Tiago",
+      "categoria": "Educação",
+      "valor": 107,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 126,
+      "data": "2026-07-05",
+      "descricao": "Garagem",
+      "categoria": "Transporte",
+      "valor": 200,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 127,
+      "data": "2026-07-05",
+      "descricao": "Seguro carro",
+      "categoria": "Transporte",
+      "valor": 214.5,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 128,
+      "data": "2026-07-10",
+      "descricao": "Internet",
+      "categoria": "Tecnologia",
+      "valor": 100,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 129,
+      "data": "2026-07-10",
+      "descricao": "Meli Giselle",
+      "categoria": "Outros",
+      "valor": 63.5,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 130,
+      "data": "2026-07-10",
+      "descricao": "Meli Tiago",
+      "categoria": "Outros",
+      "valor": 133.76,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 131,
+      "data": "2026-07-10",
+      "descricao": "Nubank Tiago",
+      "categoria": "Outros",
+      "valor": 235.95,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 132,
+      "data": "2026-07-10",
+      "descricao": "Tio Luiz",
+      "categoria": "Dependentes",
+      "valor": 250,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 133,
+      "data": "2026-07-27",
+      "descricao": "Cartão Itaú",
+      "categoria": "Outros",
+      "valor": 3655.53,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 134,
+      "data": "2026-07-31",
+      "descricao": "Renda Extra",
+      "categoria": "Renda Extra",
+      "valor": 4000,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 135,
+      "data": "2026-07-31",
+      "descricao": "Salário Giselle",
+      "categoria": "Salário",
+      "valor": 4982.73,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 136,
+      "data": "2026-07-31",
+      "descricao": "Salário Tiago",
+      "categoria": "Salário",
+      "valor": 5115,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 137,
+      "data": "2026-08-01",
+      "descricao": "Nubank Giselle",
+      "categoria": "Outros",
+      "valor": 403.33,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 138,
+      "data": "2026-08-01",
+      "descricao": "Vovô Marcos",
+      "categoria": "Dependentes",
+      "valor": 100,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 139,
+      "data": "2026-08-01",
+      "descricao": "Yago",
+      "categoria": "Dependentes",
+      "valor": 50,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 140,
+      "data": "2026-08-05",
+      "descricao": "Faculdade Giselle",
+      "categoria": "Educação",
+      "valor": 190,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 141,
+      "data": "2026-08-05",
+      "descricao": "Garagem",
+      "categoria": "Transporte",
+      "valor": 200,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 142,
+      "data": "2026-08-05",
+      "descricao": "Seguro carro",
+      "categoria": "Transporte",
+      "valor": 241.58,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 143,
+      "data": "2026-08-10",
+      "descricao": "Internet",
+      "categoria": "Tecnologia",
+      "valor": 100,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 144,
+      "data": "2026-08-10",
+      "descricao": "Meli Giselle",
+      "categoria": "Outros",
+      "valor": 63.5,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 145,
+      "data": "2026-08-10",
+      "descricao": "Meli Tiago",
+      "categoria": "Outros",
+      "valor": 133.76,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 146,
+      "data": "2026-08-10",
+      "descricao": "Nubank Tiago",
+      "categoria": "Outros",
+      "valor": 110,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 147,
+      "data": "2026-08-10",
+      "descricao": "Tio Luiz",
+      "categoria": "Dependentes",
+      "valor": 250,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 148,
+      "data": "2026-08-27",
+      "descricao": "Cartão Itaú",
+      "categoria": "Outros",
+      "valor": 2500,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 149,
+      "data": "2026-08-31",
+      "descricao": "Salário Giselle",
+      "categoria": "Salário",
+      "valor": 4898.09,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 150,
+      "data": "2026-08-31",
+      "descricao": "Salário Tiago",
+      "categoria": "Salário",
+      "valor": 5000,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 151,
+      "data": "2026-09-01",
+      "descricao": "Nubank Giselle",
+      "categoria": "Outros",
+      "valor": 290,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 152,
+      "data": "2026-09-01",
+      "descricao": "Vovô Marcos",
+      "categoria": "Dependentes",
+      "valor": 100,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 153,
+      "data": "2026-09-01",
+      "descricao": "Yago",
+      "categoria": "Dependentes",
+      "valor": 50,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 154,
+      "data": "2026-09-05",
+      "descricao": "Faculdade Giselle",
+      "categoria": "Educação",
+      "valor": 190,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 155,
+      "data": "2026-09-05",
+      "descricao": "Garagem",
+      "categoria": "Transporte",
+      "valor": 200,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 156,
+      "data": "2026-09-05",
+      "descricao": "Seguro carro",
+      "categoria": "Transporte",
+      "valor": 241.58,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 157,
+      "data": "2026-09-10",
+      "descricao": "Internet",
+      "categoria": "Tecnologia",
+      "valor": 100,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 158,
+      "data": "2026-09-10",
+      "descricao": "Meli Giselle",
+      "categoria": "Outros",
+      "valor": 63.5,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 159,
+      "data": "2026-09-10",
+      "descricao": "Meli Tiago",
+      "categoria": "Outros",
+      "valor": 133.76,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 160,
+      "data": "2026-09-10",
+      "descricao": "Nubank Tiago",
+      "categoria": "Outros",
+      "valor": 110,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 161,
+      "data": "2026-09-10",
+      "descricao": "Tio Luiz",
+      "categoria": "Dependentes",
+      "valor": 250,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 162,
+      "data": "2026-09-27",
+      "descricao": "Cartão Itaú",
+      "categoria": "Outros",
+      "valor": 2000,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 163,
+      "data": "2026-09-30",
+      "descricao": "Salário Giselle",
+      "categoria": "Salário",
+      "valor": 4898.09,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 164,
+      "data": "2026-09-30",
+      "descricao": "Salário Tiago",
+      "categoria": "Salário",
+      "valor": 5000,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 165,
+      "data": "2026-10-01",
+      "descricao": "Vovô Marcos",
+      "categoria": "Dependentes",
+      "valor": 100,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 166,
+      "data": "2026-10-01",
+      "descricao": "Yago",
+      "categoria": "Dependentes",
+      "valor": 50,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 167,
+      "data": "2026-10-05",
+      "descricao": "Faculdade Giselle",
+      "categoria": "Educação",
+      "valor": 190,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 168,
+      "data": "2026-10-05",
+      "descricao": "Garagem",
+      "categoria": "Transporte",
+      "valor": 200,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 169,
+      "data": "2026-10-05",
+      "descricao": "Seguro carro",
+      "categoria": "Transporte",
+      "valor": 241.58,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 170,
+      "data": "2026-10-10",
+      "descricao": "Internet",
+      "categoria": "Tecnologia",
+      "valor": 100,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 171,
+      "data": "2026-10-10",
+      "descricao": "Meli Giselle",
+      "categoria": "Outros",
+      "valor": 63.5,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 172,
+      "data": "2026-10-10",
+      "descricao": "Meli Tiago",
+      "categoria": "Outros",
+      "valor": 133.76,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 173,
+      "data": "2026-10-10",
+      "descricao": "Nubank Tiago",
+      "categoria": "Outros",
+      "valor": 110,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 174,
+      "data": "2026-10-10",
+      "descricao": "Tio Luiz",
+      "categoria": "Dependentes",
+      "valor": 250,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 175,
+      "data": "2026-10-27",
+      "descricao": "Cartão Itaú",
+      "categoria": "Outros",
+      "valor": 2000,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 176,
+      "data": "2026-10-31",
+      "descricao": "Renda Extra",
+      "categoria": "Renda Extra",
+      "valor": 20000,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 177,
+      "data": "2026-10-31",
+      "descricao": "Salário Giselle",
+      "categoria": "Salário",
+      "valor": 4898.09,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 178,
+      "data": "2026-10-31",
+      "descricao": "Salário Tiago",
+      "categoria": "Salário",
+      "valor": 5000,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 179,
+      "data": "2026-11-01",
+      "descricao": "Vovô Marcos",
+      "categoria": "Dependentes",
+      "valor": 100,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 180,
+      "data": "2026-11-01",
+      "descricao": "Yago",
+      "categoria": "Dependentes",
+      "valor": 50,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 181,
+      "data": "2026-11-05",
+      "descricao": "Faculdade Giselle",
+      "categoria": "Educação",
+      "valor": 190,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 182,
+      "data": "2026-11-05",
+      "descricao": "Garagem",
+      "categoria": "Transporte",
+      "valor": 200,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 183,
+      "data": "2026-11-05",
+      "descricao": "Seguro carro",
+      "categoria": "Transporte",
+      "valor": 241.58,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 184,
+      "data": "2026-11-10",
+      "descricao": "Internet",
+      "categoria": "Tecnologia",
+      "valor": 100,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 185,
+      "data": "2026-11-10",
+      "descricao": "Meli Giselle",
+      "categoria": "Outros",
+      "valor": 63.5,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 186,
+      "data": "2026-11-10",
+      "descricao": "Meli Tiago",
+      "categoria": "Outros",
+      "valor": 133.76,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 187,
+      "data": "2026-11-10",
+      "descricao": "Nubank Tiago",
+      "categoria": "Outros",
+      "valor": 110,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 188,
+      "data": "2026-11-10",
+      "descricao": "Tio Luiz",
+      "categoria": "Dependentes",
+      "valor": 250,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 189,
+      "data": "2026-11-27",
+      "descricao": "Cartão Itaú",
+      "categoria": "Outros",
+      "valor": 1500,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 190,
+      "data": "2026-11-30",
+      "descricao": "Salário Giselle",
+      "categoria": "Salário",
+      "valor": 4898.09,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 191,
+      "data": "2026-11-30",
+      "descricao": "Salário Tiago",
+      "categoria": "Salário",
+      "valor": 5000,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 192,
+      "data": "2026-12-01",
+      "descricao": "Vovô Marcos",
+      "categoria": "Dependentes",
+      "valor": 100,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 193,
+      "data": "2026-12-01",
+      "descricao": "Yago",
+      "categoria": "Dependentes",
+      "valor": 50,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 194,
+      "data": "2026-12-05",
+      "descricao": "Faculdade Giselle",
+      "categoria": "Educação",
+      "valor": 190,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 195,
+      "data": "2026-12-05",
+      "descricao": "Garagem",
+      "categoria": "Transporte",
+      "valor": 200,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 196,
+      "data": "2026-12-05",
+      "descricao": "Seguro carro",
+      "categoria": "Transporte",
+      "valor": 241.58,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 197,
+      "data": "2026-12-10",
+      "descricao": "Internet",
+      "categoria": "Tecnologia",
+      "valor": 100,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 198,
+      "data": "2026-12-10",
+      "descricao": "Meli Giselle",
+      "categoria": "Outros",
+      "valor": 63.5,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 199,
+      "data": "2026-12-10",
+      "descricao": "Meli Tiago",
+      "categoria": "Outros",
+      "valor": 133.76,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 200,
+      "data": "2026-12-10",
+      "descricao": "Nubank Tiago",
+      "categoria": "Outros",
+      "valor": 110,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 201,
+      "data": "2026-12-10",
+      "descricao": "Tio Luiz",
+      "categoria": "Dependentes",
+      "valor": 250,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 202,
+      "data": "2026-12-27",
+      "descricao": "Cartão Itaú",
+      "categoria": "Outros",
+      "valor": 1500,
+      "status": "pendente",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 203,
+      "data": "2026-12-31",
+      "descricao": "Décimo Terceiro",
+      "categoria": "Décimo Terceiro",
+      "valor": 4000,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 204,
+      "data": "2026-12-31",
+      "descricao": "Renda Extra",
+      "categoria": "Renda Extra",
+      "valor": 4000,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 205,
+      "data": "2026-12-31",
+      "descricao": "Salário Giselle",
+      "categoria": "Salário",
+      "valor": 4898.09,
+      "status": "pago",
+      "criado_por": "Importação Excel"
+    },
+    {
+      "id": 206,
+      "data": "2026-12-31",
+      "descricao": "Salário Tiago",
+      "categoria": "Salário",
+      "valor": 5000,
+      "status": "pago",
+      "criado_por": "Importação Excel"
     }
   ],
-  "ativos": [
-    {
-      "id": 1,
-      "ticker": "ITUB4",
-      "tipo": "Ações",
-      "setor": "Financeiro",
-      "qtd": 15,
-      "precoMedio": 41,
-      "precoAtual": 39.87,
-      "rentabilidadePct": 0.83,
-      "score": 9
-    },
-    {
-      "id": 2,
-      "ticker": "TAEE11",
-      "tipo": "Ações",
-      "setor": "Energia",
-      "qtd": 11,
-      "precoMedio": 41.48,
-      "precoAtual": 39.3,
-      "rentabilidadePct": -3.87,
-      "score": 9
-    },
-    {
-      "id": 3,
-      "ticker": "AESB3",
-      "tipo": "Ações",
-      "setor": "Energia",
-      "qtd": 33,
-      "precoMedio": 12.15,
-      "precoAtual": 8.12,
-      "rentabilidadePct": -31.6,
-      "score": 3
-    },
-    {
-      "id": 4,
-      "ticker": "SAPR4",
-      "tipo": "Ações",
-      "setor": "Saneamento",
-      "qtd": 23,
-      "precoMedio": 8.61,
-      "precoAtual": 7.27,
-      "rentabilidadePct": 73.45,
-      "score": 7
-    },
-    {
-      "id": 5,
-      "ticker": "BBAS3",
-      "tipo": "Ações",
-      "setor": "Financeiro",
-      "qtd": 6,
-      "precoMedio": 23.37,
-      "precoAtual": 19.42,
-      "rentabilidadePct": 75.93,
-      "score": 7
-    },
-    {
-      "id": 6,
-      "ticker": "MGLU3",
-      "tipo": "Ações",
-      "setor": "Varejo",
-      "qtd": 1,
-      "precoMedio": 65.53,
-      "precoAtual": 4.62,
-      "rentabilidadePct": -77.29,
-      "score": 1
-    },
-    {
-      "id": 7,
-      "ticker": "PCIP11",
-      "tipo": "FIIs",
-      "setor": "Papel",
-      "qtd": 1,
-      "precoMedio": 118.29,
-      "precoAtual": 80.26,
-      "rentabilidadePct": -9.35,
-      "score": 7
-    },
-    {
-      "id": 8,
-      "ticker": "SPXB11",
-      "tipo": "ETFs",
-      "setor": "S&P 500",
-      "qtd": 21,
-      "precoMedio": 15.79,
-      "precoAtual": 17.05,
-      "rentabilidadePct": 113.53,
-      "score": 9
-    }
-  ],
-  "usuarios": [
-    {
-      "id": 1,
-      "nome": "Tiago",
-      "email": "tiago@email.com",
-      "role": "admin"
-    },
-    {
-      "id": 2,
-      "nome": "Giselle",
-      "email": "giselle@email.com",
-      "role": "editor"
-    },
-    {
-      "id": 3,
-      "nome": "Marina",
-      "email": "marina@email.com",
-      "role": "leitor"
-    }
-  ],
+  "investimentos": [],
+  "ativos": [],
+  "usuarios": [],
   "convites": []
 }

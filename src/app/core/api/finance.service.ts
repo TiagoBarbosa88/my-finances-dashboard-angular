@@ -10,7 +10,7 @@ import {
   INITIAL_TRANSACTIONS,
   PIE_COLORS,
   resolveCategoryColor,
-  STATUS_STORAGE_KEY,
+  statusStorageKey,
 } from '@features/dashboard/data/finance.data';
 import {
   CLASSE_ATIVO_CORES,
@@ -21,7 +21,7 @@ import {
   PROVENTOS_12M,
   PROVENTOS_ACUMULADOS,
   FATOR_AJUSTE_RENTABILIDADE_12M,
-  TARGET_METAS_STORAGE_KEY,
+  targetMetasStorageKey,
   TIPOS_ATIVO_ORDEM,
 } from '@features/investments/data/investimentos.data';
 import { SupabaseService } from '@core/api/supabase.service';
@@ -85,29 +85,51 @@ export class FinanceService {
   readonly quotesLoading = signal(false);
 
   /** Metas de alocação por classe (% da carteira). */
-  readonly targetMetas = signal<TargetMeta[]>(FinanceService.loadTargetMetas());
+  readonly targetMetas = signal<TargetMeta[]>(INITIAL_TARGET_METAS.map((m) => ({ ...m })));
 
   constructor() {
-    this.loadTransactions();
-    this.loadCarteiraAtivos();
-    this.loadInvestimentos();
-    void this.syncTargetMetasFromRemote();
-
     if (this.supabase.isConfigured()) {
+      void this.bootstrapFromSession();
       this.supabase.client.auth.onAuthStateChange((_event, session) => {
-        if (session) {
+        if (session?.user) {
+          this.targetMetas.set(FinanceService.loadTargetMetasForUser(session.user.id));
           this.loadTransactions();
           this.loadCarteiraAtivos();
           this.loadInvestimentos();
           void this.syncTargetMetasFromRemote();
+        } else {
+          this.clearUserData();
         }
       });
+    } else {
+      this.loadTransactions();
+      this.loadCarteiraAtivos();
+      this.loadInvestimentos();
     }
   }
 
-  private static loadTargetMetas(): TargetMeta[] {
+  private async bootstrapFromSession(): Promise<void> {
+    const session = await this.supabase.getSession();
+    if (!session?.user) return;
+
+    this.targetMetas.set(FinanceService.loadTargetMetasForUser(session.user.id));
+    this.loadTransactions();
+    this.loadCarteiraAtivos();
+    this.loadInvestimentos();
+    void this.syncTargetMetasFromRemote();
+  }
+
+  private clearUserData(): void {
+    this.transactions.set([]);
+    this.carteiraAtivos.set([]);
+    this.investimentos.set([]);
+    this.targetMetas.set(INITIAL_TARGET_METAS.map((m) => ({ ...m })));
+    this.loading.set(false);
+  }
+
+  private static loadTargetMetasForUser(userId?: string | null): TargetMeta[] {
     try {
-      const raw = localStorage.getItem(TARGET_METAS_STORAGE_KEY);
+      const raw = localStorage.getItem(targetMetasStorageKey(userId));
       if (raw) {
         const parsed = JSON.parse(raw) as TargetMeta[];
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -305,7 +327,10 @@ export class FinanceService {
     );
 
     try {
-      localStorage.setItem(TARGET_METAS_STORAGE_KEY, JSON.stringify(this.targetMetas()));
+      localStorage.setItem(
+        targetMetasStorageKey(this.auth.usuarioLogado()?.id),
+        JSON.stringify(this.targetMetas()),
+      );
     } catch {
       /* storage indisponível */
     }
@@ -688,7 +713,7 @@ export class FinanceService {
       carteira = this.applyLancamentoEmLista(carteira, lancamento, () => nextId++);
     }
 
-    if (carteira.length === 0 && this.investimentos().length === 0) {
+    if (carteira.length === 0 && this.investimentos().length === 0 && environment.bypassAuth) {
       carteira = [...INITIAL_ATIVOS];
     }
 
@@ -1062,7 +1087,7 @@ export class FinanceService {
       const session = await this.supabase.getSession();
       if (session?.user) {
         const data = await this.supabase.fetchTransactions();
-        const saved = this.readSavedStatuses();
+        const saved = this.readSavedStatuses(session.user.id);
         this.transactions.set(
           data.map((t) => this.enrichTransaction({ ...t, status: saved[t.id] ?? t.status })),
         );
@@ -1090,6 +1115,7 @@ export class FinanceService {
   // ─── Persistência local (fallback offline) ────────────────────────────────
 
   private loadLocalTransactions(): Transaction[] {
+    if (!environment.bypassAuth) return [];
     const saved = this.readSavedStatuses();
     return INITIAL_TRANSACTIONS.map((t) =>
       this.enrichTransaction({ ...t, status: saved[t.id] ?? t.status }),
@@ -1103,10 +1129,10 @@ export class FinanceService {
     return userId != null ? { ...transaction, user_id: userId } : transaction;
   }
 
-  private readSavedStatuses(): Record<number, TransactionStatus> {
+  private readSavedStatuses(userId?: string | null): Record<number, TransactionStatus> {
     if (typeof localStorage === 'undefined') return {};
     try {
-      const raw = localStorage.getItem(STATUS_STORAGE_KEY);
+      const raw = localStorage.getItem(statusStorageKey(userId ?? this.auth.usuarioLogado()?.id));
       return raw ? (JSON.parse(raw) as Record<number, TransactionStatus>) : {};
     } catch {
       return {};
@@ -1115,10 +1141,11 @@ export class FinanceService {
 
   private persistStatuses(): void {
     if (typeof localStorage === 'undefined') return;
+    const userId = this.auth.usuarioLogado()?.id;
     const map = this.transactions().reduce<Record<number, TransactionStatus>>((acc, t) => {
       acc[t.id] = t.status;
       return acc;
     }, {});
-    localStorage.setItem(STATUS_STORAGE_KEY, JSON.stringify(map));
+    localStorage.setItem(statusStorageKey(userId), JSON.stringify(map));
   }
 }

@@ -22,4 +22,5 @@ export class AuthLayoutComponent {
   readonly mobileView = input<AuthMobileView>('landing');
 
   readonly mobileEnter = output<void>();
+  readonly googleSignIn = output<void>();
 }

@@ -471,6 +471,30 @@
     </div>
   </section>
 
+  @if (canSignOut()) {
+    <section class="surface-card">
+      <h2 class="text-display text-lg font-semibold">Sair da conta</h2>
+      <p class="mt-0.5 text-xs text-muted-foreground">
+        Encerra sua sessão neste dispositivo.
+      </p>
+      <button
+        type="button"
+        (click)="signOut()"
+        class="mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl
+               border border-destructive/30 bg-destructive/10 px-4 py-2.5 text-sm font-semibold
+               text-destructive transition-colors hover:bg-destructive/15 sm:w-auto"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Sair
+      </button>
+    </section>
+  }
+
 </div>
 
 @if (confirmTarget()) {
