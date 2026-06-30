@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 
-import { CATEGORIAS } from '@features/dashboard/data/finance.data';
+import { isReceitaCategory } from '@features/dashboard/data/finance.data';
 import { AuthService } from '@core/auth/services/auth.service';
 import { ConfirmDialogComponent } from '@shared/ui/confirm-dialog/confirm-dialog.component';
 import { FinanceService } from '@core/api/finance.service';
@@ -192,7 +192,7 @@ export class TransactionsTableComponent {
   }
 
   isReceita(transaction: Transaction): boolean {
-    return (CATEGORIAS.RECEITA as readonly string[]).includes(transaction.categoria);
+    return isReceitaCategory(transaction.categoria);
   }
 
   categoryIconStyle(categoria: string): Record<string, string> {

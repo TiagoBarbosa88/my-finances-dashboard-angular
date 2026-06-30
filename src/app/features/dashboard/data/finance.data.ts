@@ -61,6 +61,19 @@ export const CATEGORIAS = {
   DESPESA: ['Moradia', 'Alimentação', 'Transporte', 'Saúde', 'Educação', 'Lazer', 'Investimento', 'Outros'],
 } as const;
 
+/** Categorias que entram no total de receitas (Outros é despesa por padrão na planilha). */
+export const RECEITA_EFFECTIVE = [
+  'Salário',
+  'Décimo Terceiro',
+  'Férias',
+  'Bônus',
+  'Renda Extra',
+] as const;
+
+export function isReceitaCategory(categoria: string): boolean {
+  return (RECEITA_EFFECTIVE as readonly string[]).includes(categoria);
+}
+
 export type TipoTransacao = keyof typeof CATEGORIAS;
 
 export const BAR_CATEGORIES = [

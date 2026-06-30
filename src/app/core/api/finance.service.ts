@@ -11,6 +11,7 @@ import {
   PIE_COLORS,
   resolveCategoryColor,
   statusStorageKey,
+  isReceitaCategory,
 } from '@features/dashboard/data/finance.data';
 import {
   CLASSE_ATIVO_CORES,
@@ -1095,7 +1096,7 @@ export class FinanceService {
   }
 
   private isReceita(categoria: string): boolean {
-    return (CATEGORIAS.RECEITA as readonly string[]).includes(categoria);
+    return isReceitaCategory(categoria);
   }
 
   /** Agrupa despesas do mês visível por categoria (exclui receitas como Salário). */

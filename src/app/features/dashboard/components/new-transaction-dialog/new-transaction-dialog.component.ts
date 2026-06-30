@@ -402,6 +402,7 @@ export class NewTransactionDialogComponent {
   }
 
   private inferTipo(categoria: string): TipoTransacao {
+    if (categoria === 'Outros') return 'DESPESA';
     return CATEGORIAS.RECEITA.some((cat) => cat === categoria) ? 'RECEITA' : 'DESPESA';
   }
 

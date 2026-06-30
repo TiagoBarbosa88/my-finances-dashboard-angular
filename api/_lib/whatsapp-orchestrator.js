@@ -157,7 +157,7 @@ async function monthSummary(admin, userId) {
     .gte('data', start)
     .lte('data', end);
 
-  const receitaCats = ['Salário', 'Décimo Terceiro', 'Férias', 'Bônus', 'Renda Extra', 'Outros'];
+  const receitaCats = ['Salário', 'Décimo Terceiro', 'Férias', 'Bônus', 'Renda Extra'];
   let receitas = 0;
   let despesas = 0;
 

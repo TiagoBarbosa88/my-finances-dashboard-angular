@@ -104,9 +104,13 @@
       @if (i === 0) {
         <button
           type="button"
-          (click)="scrollToReceitasAudit()"
+          (click)="toggleReceitasAudit()"
           class="text-left transition-transform hover:scale-[1.01] active:scale-[0.99]"
-          aria-label="Ver composição de receitas"
+          [ngClass]="{
+            'ring-2 ring-success/40 rounded-2xl': showReceitasAudit()
+          }"
+          [attr.aria-expanded]="showReceitasAudit()"
+          aria-label="Mostrar ou ocultar composição de receitas"
         >
           <app-summary-card
             [label]="card.label"
@@ -132,13 +136,15 @@
     }
   </section>
 
-  <!-- ═══════════════ AUDITORIA DE RECEITAS ═══════════════ -->
-  <app-receitas-chart
-    [pieData]="finance.receitasPieData()"
-    [breakdown]="finance.receitasBreakdown()"
-    [pieTotal]="finance.receitasPieTotal()"
-    [cardTotal]="finance.totalReceitas()"
-  />
+  <!-- ═══════════════ AUDITORIA DE RECEITAS (toggle) ═══════════════ -->
+  @if (showReceitasAudit()) {
+    <app-receitas-chart
+      [pieData]="finance.receitasPieData()"
+      [breakdown]="finance.receitasBreakdown()"
+      [pieTotal]="finance.receitasPieTotal()"
+      [cardTotal]="finance.totalReceitas()"
+    />
+  }
 
   <!-- ═══════════════ GRÁFICOS ═══════════════ -->
   <app-category-chart

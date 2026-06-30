@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 
 import { AuthService } from '@core/auth/services/auth.service';
@@ -29,6 +30,7 @@ interface SummaryCardData {
   selector: 'app-dashboard-page',
   standalone: true,
   imports: [
+    NgClass,
     SummaryCardComponent,
     CategoryChartComponent,
     ReceitasChartComponent,
@@ -53,6 +55,9 @@ export class DashboardPageComponent {
   /** Controla a visibilidade do modal de todos os lançamentos. */
   readonly showAllTransactions = signal(false);
 
+  /** Painel de composição de receitas (toggle pelo card Receitas). */
+  readonly showReceitasAudit = signal(false);
+
   openAllTransactions(): void {
     this.showAllTransactions.set(true);
   }
@@ -72,8 +77,15 @@ export class DashboardPageComponent {
     this.editingTransaction.set(null);
   }
 
-  scrollToReceitasAudit(): void {
-    document.getElementById('receitas-audit')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  toggleReceitasAudit(): void {
+    const opening = !this.showReceitasAudit();
+    this.showReceitasAudit.set(opening);
+
+    if (opening) {
+      setTimeout(() => {
+        document.getElementById('receitas-audit')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
+    }
   }
 
   /** Saudação dinâmica conforme o horário do dia. */
