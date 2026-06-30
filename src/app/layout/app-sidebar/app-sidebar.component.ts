@@ -5,6 +5,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { APP_NAME } from '@core/config/app-brand';
 import { SIDEBAR_NAV_ITEMS, type SidebarIcon } from '@core/config/app-routes';
 import { SupabaseService } from '@core/api/supabase.service';
+import { AuthService } from '@core/auth/services/auth.service';
 
 export type { SidebarIcon };
 
@@ -20,6 +21,7 @@ export type { SidebarIcon };
   templateUrl: './app-sidebar.component.html',
 })
 export class AppSidebarComponent {
+  private readonly auth = inject(AuthService);
   private readonly supabase = inject(SupabaseService);
   private readonly router = inject(Router);
 
@@ -29,8 +31,8 @@ export class AppSidebarComponent {
   readonly currentUser = this.supabase.currentUser;
 
   async signOut(): Promise<void> {
-    await this.supabase.signOut();
-    this.router.navigate(['/']);
+    await this.auth.signOut();
+    await this.router.navigateByUrl('/', { replaceUrl: true });
   }
 
   /** Rotas sincronizadas com app.routes.ts via app-routes.ts */

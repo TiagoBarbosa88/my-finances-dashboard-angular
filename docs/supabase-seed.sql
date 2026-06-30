@@ -18,7 +18,7 @@ END $$;
 -- 3) Limpa tentativa anterior (descomente se reimportar):
 -- DELETE FROM public.transactions WHERE user_id = '50b94089-79f2-4a42-893d-be8fe26c26df'::uuid;
 -- (ativos/target_metas usam ON CONFLICT abaixo)
--- ─── Lançamentos (206) ────────────────────────────────────────
+-- ─── Lançamentos (207) ────────────────────────────────────────
 INSERT INTO public.transactions (user_id, data, descricao, categoria, valor, status, criado_por)
 VALUES
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-01-01', 'Nubank Giselle', 'Outros', 104, 'pago', 'Importação Excel'),
@@ -58,7 +58,7 @@ VALUES
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-02-27', 'Cartão Itaú', 'Outros', 3495, 'pago', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-02-28', 'Salário Giselle', 'Salário', 4800, 'pago', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-02-28', 'Salário Tiago', 'Salário', 2300, 'pago', 'Importação Excel'),
-  ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-02-30', 'William', 'Dependentes', 350, 'pago', 'Importação Excel'),
+  ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-02-28', 'William', 'Dependentes', 350, 'pago', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-03-01', 'Nubank Giselle', 'Outros', 2533.85, 'pago', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-03-01', 'Vovô Marcos', 'Dependentes', 100, 'pago', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-03-01', 'Yago', 'Dependentes', 105, 'pago', 'Importação Excel'),
@@ -160,6 +160,7 @@ VALUES
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-07-10', 'Nubank Tiago', 'Outros', 235.95, 'pago', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-07-10', 'Tio Luiz', 'Dependentes', 250, 'pago', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-07-27', 'Cartão Itaú', 'Outros', 3655.53, 'pago', 'Importação Excel'),
+  ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-07-31', 'Férias', 'Férias', 4000, 'pago', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-07-31', 'Renda Extra', 'Renda Extra', 4000, 'pago', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-07-31', 'Salário Giselle', 'Salário', 4982.73, 'pago', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-07-31', 'Salário Tiago', 'Salário', 5115, 'pago', 'Importação Excel'),
@@ -175,11 +176,11 @@ VALUES
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-08-10', 'Nubank Tiago', 'Outros', 110, 'pendente', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-08-10', 'Tio Luiz', 'Dependentes', 250, 'pendente', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-08-27', 'Cartão Itaú', 'Outros', 2500, 'pendente', 'Importação Excel'),
-  ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-08-31', 'Salário Giselle', 'Salário', 4898.09, 'pago', 'Importação Excel'),
-  ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-08-31', 'Salário Tiago', 'Salário', 5000, 'pago', 'Importação Excel');
+  ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-08-31', 'Salário Giselle', 'Salário', 4898.09, 'pago', 'Importação Excel');
 
 INSERT INTO public.transactions (user_id, data, descricao, categoria, valor, status, criado_por)
 VALUES
+  ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-08-31', 'Salário Tiago', 'Salário', 5000, 'pago', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-09-01', 'Nubank Giselle', 'Outros', 290, 'pendente', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-09-01', 'Vovô Marcos', 'Dependentes', 100, 'pendente', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-09-01', 'Yago', 'Dependentes', 50, 'pendente', 'Importação Excel'),
@@ -228,11 +229,11 @@ VALUES
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-12-05', 'Seguro carro', 'Transporte', 241.58, 'pendente', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-12-10', 'Internet', 'Tecnologia', 100, 'pendente', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-12-10', 'Meli Giselle', 'Outros', 63.5, 'pendente', 'Importação Excel'),
-  ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-12-10', 'Meli Tiago', 'Outros', 133.76, 'pendente', 'Importação Excel'),
-  ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-12-10', 'Nubank Tiago', 'Outros', 110, 'pendente', 'Importação Excel');
+  ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-12-10', 'Meli Tiago', 'Outros', 133.76, 'pendente', 'Importação Excel');
 
 INSERT INTO public.transactions (user_id, data, descricao, categoria, valor, status, criado_por)
 VALUES
+  ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-12-10', 'Nubank Tiago', 'Outros', 110, 'pendente', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-12-10', 'Tio Luiz', 'Dependentes', 250, 'pendente', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-12-27', 'Cartão Itaú', 'Outros', 1500, 'pendente', 'Importação Excel'),
   ('50b94089-79f2-4a42-893d-be8fe26c26df'::uuid, '2026-12-31', 'Décimo Terceiro', 'Décimo Terceiro', 4000, 'pago', 'Importação Excel'),

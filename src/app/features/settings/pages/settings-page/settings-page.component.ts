@@ -482,8 +482,8 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
   }
 
   async signOut(): Promise<void> {
-    await this.supabase.signOut();
-    await this.router.navigate(['/']);
+    await this.auth.signOut();
+    await this.router.navigateByUrl('/', { replaceUrl: true });
   }
 
   roleBadgeClass(role: UserRole): string {

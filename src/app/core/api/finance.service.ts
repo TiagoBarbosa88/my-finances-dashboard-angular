@@ -49,6 +49,7 @@ import {
   TransactionStatus,
 } from '@shared/models/transaction.model';
 import { environment } from '../../../environments/environment';
+import { isSameMonthYear } from '@shared/pipes/format.utils';
 
 @Injectable({ providedIn: 'root' })
 export class FinanceService {
@@ -144,10 +145,7 @@ export class FinanceService {
 
   readonly filteredTransactions = computed(() => {
     const d = this.currentDate();
-    return this.transactions().filter((t) => {
-      const td = new Date(t.data);
-      return td.getMonth() === d.getMonth() && td.getFullYear() === d.getFullYear();
-    });
+    return this.transactions().filter((t) => isSameMonthYear(t.data, d));
   });
 
   readonly monthLabel = computed(() => {
@@ -1087,10 +1085,7 @@ export class FinanceService {
       const session = await this.supabase.getSession();
       if (session?.user) {
         const data = await this.supabase.fetchTransactions();
-        const saved = this.readSavedStatuses(session.user.id);
-        this.transactions.set(
-          data.map((t) => this.enrichTransaction({ ...t, status: saved[t.id] ?? t.status })),
-        );
+        this.transactions.set(data.map((t) => this.enrichTransaction(t)));
         this.loading.set(false);
         return;
       }

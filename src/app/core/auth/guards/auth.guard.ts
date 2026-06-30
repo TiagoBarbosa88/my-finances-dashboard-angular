@@ -75,12 +75,13 @@ async function bootstrapSessionAfterRedirect(): Promise<{ session: boolean; type
  * Landing `/` — exibe login ou redireciona quem já está autenticado.
  */
 export const landingGuard: CanActivateFn = async () => {
-  if (environment.bypassAuth) {
-    return inject(Router).createUrlTree([APP_HOME]);
-  }
-
   const router = inject(Router);
   const supabase = inject(SupabaseService);
+
+  // Dev sem Supabase: entra direto no painel mock.
+  if (environment.bypassAuth && !supabase.isConfigured()) {
+    return router.createUrlTree([APP_HOME]);
+  }
 
   if (urlHasAuthCallback() && supabase.isConfigured()) {
     const { session, type } = await bootstrapSessionAfterRedirect();
@@ -104,10 +105,11 @@ export const landingGuard: CanActivateFn = async () => {
  * Guarda rotas do app (`/app/*`).
  */
 export const authGuard: CanActivateFn = async (_route, state) => {
-  if (environment.bypassAuth) return true;
-
   const supabase = inject(SupabaseService);
   const router = inject(Router);
+
+  // Dev sem Supabase: JSON Server mock sem login.
+  if (environment.bypassAuth && !supabase.isConfigured()) return true;
 
   if (!supabase.isConfigured()) return true;
 

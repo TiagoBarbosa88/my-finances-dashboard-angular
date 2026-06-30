@@ -33,7 +33,7 @@ export class LoginPageComponent implements OnInit {
   readonly appName = APP_NAME;
 
   constructor() {
-    if (environment.bypassAuth) {
+    if (environment.bypassAuth && !this.supabase.isConfigured()) {
       const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? APP_HOME;
       this.router.navigateByUrl(returnUrl);
     }

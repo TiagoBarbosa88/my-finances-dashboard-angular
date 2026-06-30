@@ -14,10 +14,11 @@ const CREATOR = 'Importação Excel';
 
 /**
  * @param {number} month 1–12
- * @param {number} day
+ * @param {number} day dia de vencimento (ajustado ao último dia do mês se inválido)
  */
 function dateIso(month, day) {
-  const d = String(day).padStart(2, '0');
+  const safeDay = Math.min(day, lastDayOfMonth(month));
+  const d = String(safeDay).padStart(2, '0');
   const m = String(month).padStart(2, '0');
   return `${YEAR}-${m}-${d}`;
 }
@@ -197,7 +198,7 @@ transactions.push(
   ...receitaRows('Renda Extra', 'Renda Extra', [
     2005, 0, 11490.19, 35011.06, 0, 3181.35, 4000, 0, 0, 20000, 0, 4000,
   ]),
-  ...receitaRows('Férias', 'Férias', [0, 0, 0, 6584.33, 0, 0, 0, 0, 0, 0, 0, 0]),
+  ...receitaRows('Férias', 'Férias', [0, 0, 0, 6584.33, 0, 0, 4000, 0, 0, 0, 0, 0]),
   ...receitaRows('PLR', 'Bônus', [0, 0, 11490.19, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
   ...receitaRows('Décimo Terceiro', 'Décimo Terceiro', [2005, 0, 0, 28426.73, 0, 3181.35, 0, 0, 0, 0, 0, 4000]),
 );

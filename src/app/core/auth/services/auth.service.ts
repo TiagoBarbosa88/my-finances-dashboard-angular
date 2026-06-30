@@ -360,6 +360,12 @@ export class AuthService {
 
 
 
+  /** Encerra sessão Supabase e limpa perfil local. */
+  async signOut(): Promise<void> {
+    await this.supabase.signOut();
+    this.usuarioLogado.set(null);
+  }
+
   updateProfile(nome: string, email: string): Observable<Usuario> {
 
     const current = this.usuarioLogado();
