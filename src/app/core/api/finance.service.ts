@@ -813,6 +813,44 @@ export class FinanceService {
       .sort((a, b) => b.gasto - a.gasto);
   });
 
+  readonly receitasTransactions = computed(() =>
+    this.filteredTransactions().filter((t) => this.isReceita(t.categoria)),
+  );
+
+  readonly receitasPieData = computed<PieChartItem[]>(() => {
+    const totals = new Map<string, number>();
+
+    for (const t of this.receitasTransactions()) {
+      totals.set(t.categoria, (totals.get(t.categoria) ?? 0) + t.valor);
+    }
+
+    return [...totals.entries()]
+      .filter(([, value]) => value > 0)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, value], index) => ({
+        name,
+        value,
+        color: resolveCategoryColor(name, index),
+      }));
+  });
+
+  readonly receitasPieTotal = computed(() =>
+    this.receitasPieData().reduce((s, i) => s + i.value, 0),
+  );
+
+  readonly receitasBreakdown = computed(() =>
+    [...this.receitasTransactions()]
+      .sort((a, b) => b.valor - a.valor || a.descricao.localeCompare(b.descricao, 'pt-BR'))
+      .map((t) => ({
+        id: t.id,
+        descricao: t.descricao,
+        categoria: t.categoria,
+        valor: t.valor,
+        data: t.data,
+        criado_por: t.criado_por,
+      })),
+  );
+
   // ─── Ações ────────────────────────────────────────────────────────────────
 
   prevMonth(): void {

@@ -100,18 +100,45 @@
 
   <!-- ═══════════════ CARDS DE RESUMO ═══════════════ -->
   <section class="grid grid-cols-2 gap-4 md:grid-cols-4">
-    @for (card of summaryCards(); track card.label) {
-      <app-summary-card
-        [label]="card.label"
-        [value]="card.value"
-        [change]="card.change"
-        [positive]="card.positive"
-        [variant]="card.variant"
-        [valueTone]="card.valueTone"
-        [icon]="card.icon"
-      />
+    @for (card of summaryCards(); track card.label; let i = $index) {
+      @if (i === 0) {
+        <button
+          type="button"
+          (click)="scrollToReceitasAudit()"
+          class="text-left transition-transform hover:scale-[1.01] active:scale-[0.99]"
+          aria-label="Ver composição de receitas"
+        >
+          <app-summary-card
+            [label]="card.label"
+            [value]="card.value"
+            [change]="card.change"
+            [positive]="card.positive"
+            [variant]="card.variant"
+            [valueTone]="card.valueTone"
+            [icon]="card.icon"
+          />
+        </button>
+      } @else {
+        <app-summary-card
+          [label]="card.label"
+          [value]="card.value"
+          [change]="card.change"
+          [positive]="card.positive"
+          [variant]="card.variant"
+          [valueTone]="card.valueTone"
+          [icon]="card.icon"
+        />
+      }
     }
   </section>
+
+  <!-- ═══════════════ AUDITORIA DE RECEITAS ═══════════════ -->
+  <app-receitas-chart
+    [pieData]="finance.receitasPieData()"
+    [breakdown]="finance.receitasBreakdown()"
+    [pieTotal]="finance.receitasPieTotal()"
+    [cardTotal]="finance.totalReceitas()"
+  />
 
   <!-- ═══════════════ GRÁFICOS ═══════════════ -->
   <app-category-chart

@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -5,6 +6,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '@core/auth/services/auth.service';
 import { SupabaseService } from '@core/api/supabase.service';
 import { TeamService } from '@core/api/team.service';
+import { WhatsAppService } from '@core/api/whatsapp.service';
 import { HasRoleDirective } from '@shared/directives/has-role.directive';
 import {
   Convite,
@@ -24,13 +26,14 @@ type ConfirmTarget =
 @Component({
   selector: 'app-settings-page',
   standalone: true,
-  imports: [FormsModule, HasRoleDirective, ConfirmDialogComponent],
+  imports: [DatePipe, FormsModule, HasRoleDirective, ConfirmDialogComponent],
   templateUrl: './settings-page.component.html',
 })
 export class SettingsPageComponent implements OnInit, OnDestroy {
   readonly auth = inject(AuthService);
   readonly supabase = inject(SupabaseService);
   readonly team = inject(TeamService);
+  readonly whatsapp = inject(WhatsAppService);
   private readonly router = inject(Router);
 
   private cooldownTimer: ReturnType<typeof setInterval> | null = null;
@@ -62,6 +65,10 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
   readonly conviteEditEmail = signal<Record<number, string>>({});
   readonly membroRoleDraft = signal<Record<string, UserRole>>({});
   readonly confirmTarget = signal<ConfirmTarget | null>(null);
+
+  readonly whatsappPhone = signal('');
+  readonly whatsappMessage = signal<string | null>(null);
+  readonly whatsappBusy = signal(false);
 
   readonly convitesPendentes = computed(() =>
     this.team.convites().filter((c) => c.status === 'pendente'),
@@ -114,6 +121,9 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
     this.syncProfileFromAuth();
     this.team.loadMembros();
     this.team.loadConvites();
+    if (this.auth.usuarioLogado()?.role === 'admin') {
+      this.loadWhatsAppStatus();
+    }
   }
 
   ngOnDestroy(): void {
@@ -495,5 +505,44 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
       default:
         return 'bg-muted text-muted-foreground ring-border';
     }
+  }
+
+  loadWhatsAppStatus(): void {
+    this.whatsapp.loadStatus().subscribe({
+      error: (err: Error) => this.whatsappMessage.set(err.message),
+    });
+  }
+
+  gerarCodigoWhatsApp(): void {
+    this.whatsappBusy.set(true);
+    this.whatsappMessage.set(null);
+
+    const phone = this.whatsappPhone().trim();
+    this.whatsapp.generateCode(phone || undefined).subscribe({
+      next: (res) => {
+        this.whatsappMessage.set(res.message);
+        this.whatsappBusy.set(false);
+      },
+      error: (err: Error) => {
+        this.whatsappMessage.set(err.message);
+        this.whatsappBusy.set(false);
+      },
+    });
+  }
+
+  desvincularWhatsApp(): void {
+    this.whatsappBusy.set(true);
+    this.whatsappMessage.set(null);
+
+    this.whatsapp.unlink().subscribe({
+      next: (res) => {
+        this.whatsappMessage.set(res.message);
+        this.whatsappBusy.set(false);
+      },
+      error: (err: Error) => {
+        this.whatsappMessage.set(err.message);
+        this.whatsappBusy.set(false);
+      },
+    });
   }
 }

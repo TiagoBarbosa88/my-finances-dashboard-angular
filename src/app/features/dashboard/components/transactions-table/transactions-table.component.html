@@ -14,9 +14,32 @@
     }
   </div>
 
+  <!-- Mobile — ordenação -->
+  <div class="mt-3 flex items-center gap-2 md:hidden">
+    <label for="mobile-sort" class="shrink-0 text-xs text-muted-foreground">Ordenar por</label>
+    <select
+      id="mobile-sort"
+      class="h-9 flex-1 rounded-lg border border-border bg-card px-2 text-xs outline-none ring-ring focus:ring-1"
+      [value]="sortColumn()"
+      (change)="onMobileSortChange($any($event.target).value)"
+    >
+      @for (opt of sortOptions; track opt.key) {
+        <option [value]="opt.key">{{ opt.label }}</option>
+      }
+    </select>
+    <button
+      type="button"
+      (click)="toggleSortDirection()"
+      class="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-border bg-card text-sm"
+      [attr.aria-label]="sortDirection() === 'asc' ? 'Ordem crescente' : 'Ordem decrescente'"
+    >
+      {{ sortDirection() === 'asc' ? '↑' : '↓' }}
+    </button>
+  </div>
+
   <!-- Mobile — cards (referência app financeiro moderno) -->
   <div [class]="mobileListClass()">
-    @if (transactionsFiltradas().length === 0) {
+    @if (transactionsOrdenadas().length === 0) {
       <p class="py-10 text-center text-sm italic text-muted-foreground">
         @if (termoBusca().trim()) {
           Nenhum lançamento encontrado para "{{ termoBusca() }}".
@@ -25,7 +48,7 @@
         }
       </p>
     } @else {
-      @for (t of transactionsFiltradas(); track t.id) {
+      @for (t of transactionsOrdenadas(); track t.id) {
         <div
           class="group flex items-center gap-3 rounded-2xl border border-border/70
                  bg-muted/15 p-3.5 transition-colors hover:bg-accent/30"
@@ -109,12 +132,50 @@
 
       <thead [class]="theadClass()">
         <tr class="text-left text-xs uppercase tracking-wider text-muted-foreground">
-          <th class="pb-3 font-medium">Data</th>
-          <th class="pb-3 font-medium">Descrição</th>
-          <th class="pb-3 font-medium">Categoria</th>
-          <th class="pb-3 font-medium">Status</th>
-          <th class="pb-3 font-medium">Quem lançou</th>
-          <th class="pb-3 text-right font-medium">Valor</th>
+          <th
+            class="pb-3 font-medium"
+            [class]="thSortClass('data')"
+            (click)="toggleSort('data')"
+            [attr.aria-label]="sortAriaLabel('data', 'Data')"
+          >
+            Data <span class="text-[10px] opacity-70">{{ sortIcon('data') }}</span>
+          </th>
+          <th
+            [class]="thSortClass('descricao')"
+            (click)="toggleSort('descricao')"
+            [attr.aria-label]="sortAriaLabel('descricao', 'Descrição')"
+          >
+            Descrição <span class="text-[10px] opacity-70">{{ sortIcon('descricao') }}</span>
+          </th>
+          <th
+            [class]="thSortClass('categoria')"
+            (click)="toggleSort('categoria')"
+            [attr.aria-label]="sortAriaLabel('categoria', 'Categoria')"
+          >
+            Categoria <span class="text-[10px] opacity-70">{{ sortIcon('categoria') }}</span>
+          </th>
+          <th
+            [class]="thSortClass('status')"
+            (click)="toggleSort('status')"
+            [attr.aria-label]="sortAriaLabel('status', 'Status')"
+          >
+            Status <span class="text-[10px] opacity-70">{{ sortIcon('status') }}</span>
+          </th>
+          <th
+            [class]="thSortClass('criado_por')"
+            (click)="toggleSort('criado_por')"
+            [attr.aria-label]="sortAriaLabel('criado_por', 'Quem lançou')"
+          >
+            Quem lançou <span class="text-[10px] opacity-70">{{ sortIcon('criado_por') }}</span>
+          </th>
+          <th
+            class="pb-3 text-right font-medium"
+            [class]="thSortClass('valor') + ' text-right'"
+            (click)="toggleSort('valor')"
+            [attr.aria-label]="sortAriaLabel('valor', 'Valor')"
+          >
+            Valor <span class="text-[10px] opacity-70">{{ sortIcon('valor') }}</span>
+          </th>
           @if (showActionsColumn()) {
             <th class="pb-3 text-right font-medium">Ações</th>
           }
@@ -123,7 +184,7 @@
 
       <tbody class="divide-y divide-border">
 
-        @if (transactionsFiltradas().length === 0) {
+        @if (transactionsOrdenadas().length === 0) {
           <tr>
             <td [attr.colspan]="showActionsColumn() ? 7 : 6" class="py-8 text-center italic text-muted-foreground">
               @if (termoBusca().trim()) {
@@ -134,7 +195,7 @@
             </td>
           </tr>
         } @else {
-          @for (t of transactionsFiltradas(); track t.id) {
+          @for (t of transactionsOrdenadas(); track t.id) {
             <tr class="group transition-colors hover:bg-accent/40">
 
               <!-- Data -->

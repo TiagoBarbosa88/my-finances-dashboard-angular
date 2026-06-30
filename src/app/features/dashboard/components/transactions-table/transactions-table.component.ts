@@ -6,6 +6,18 @@ import { ConfirmDialogComponent } from '@shared/ui/confirm-dialog/confirm-dialog
 import { FinanceService } from '@core/api/finance.service';
 import { Transaction } from '@shared/models/transaction.model';
 
+export type SortColumn = 'data' | 'descricao' | 'categoria' | 'status' | 'criado_por' | 'valor';
+export type SortDirection = 'asc' | 'desc';
+
+const SORT_COLUMNS: { key: SortColumn; label: string }[] = [
+  { key: 'data', label: 'Data' },
+  { key: 'descricao', label: 'Descrição' },
+  { key: 'categoria', label: 'Categoria' },
+  { key: 'status', label: 'Status' },
+  { key: 'criado_por', label: 'Quem lançou' },
+  { key: 'valor', label: 'Valor' },
+];
+
 /**
  * Tabela de lançamentos filtrados pelo mês.
  * Recebe a lista via `input()` e delega mutações ao FinanceService.
@@ -47,6 +59,10 @@ export class TransactionsTableComponent {
   /** Termo digitado no campo de busca do dashboard. */
   readonly termoBusca = this.finance.termoBusca;
 
+  readonly sortColumn = signal<SortColumn>('data');
+  readonly sortDirection = signal<SortDirection>('desc');
+  readonly sortOptions = SORT_COLUMNS;
+
   /** Lista do mês filtrada pelo termo de busca (case-insensitive). */
   readonly transactionsFiltradas = computed(() => {
     const term = this.termoBusca().trim().toLowerCase();
@@ -63,6 +79,79 @@ export class TransactionsTableComponent {
         String(t.valor).includes(term),
     );
   });
+
+  readonly transactionsOrdenadas = computed(() => {
+    const list = [...this.transactionsFiltradas()];
+    const col = this.sortColumn();
+    const dir = this.sortDirection();
+    const factor = dir === 'asc' ? 1 : -1;
+
+    list.sort((a, b) => {
+      let cmp = 0;
+
+      switch (col) {
+        case 'data':
+          cmp = a.data.localeCompare(b.data);
+          break;
+        case 'valor':
+          cmp = a.valor - b.valor;
+          break;
+        case 'status':
+          cmp = (a.status === 'pago' ? 0 : 1) - (b.status === 'pago' ? 0 : 1);
+          break;
+        case 'descricao':
+          cmp = a.descricao.localeCompare(b.descricao, 'pt-BR');
+          break;
+        case 'categoria':
+          cmp = a.categoria.localeCompare(b.categoria, 'pt-BR');
+          break;
+        case 'criado_por':
+          cmp = a.criado_por.localeCompare(b.criado_por, 'pt-BR');
+          break;
+      }
+
+      return cmp * factor;
+    });
+
+    return list;
+  });
+
+  toggleSort(column: SortColumn): void {
+    if (this.sortColumn() === column) {
+      this.sortDirection.update((d) => (d === 'asc' ? 'desc' : 'asc'));
+      return;
+    }
+
+    this.sortColumn.set(column);
+    this.sortDirection.set(column === 'data' || column === 'valor' ? 'desc' : 'asc');
+  }
+
+  toggleSortDirection(): void {
+    this.sortDirection.update((d) => (d === 'asc' ? 'desc' : 'asc'));
+  }
+
+  onMobileSortChange(value: string): void {
+    const column = value as SortColumn;
+    if (!SORT_COLUMNS.some((c) => c.key === column)) return;
+    this.sortColumn.set(column);
+  }
+
+  sortIcon(column: SortColumn): string {
+    if (this.sortColumn() !== column) return '↕';
+    return this.sortDirection() === 'asc' ? '↑' : '↓';
+  }
+
+  sortAriaLabel(column: SortColumn, label: string): string {
+    if (this.sortColumn() !== column) return `Ordenar por ${label}`;
+    const dir = this.sortDirection() === 'asc' ? 'crescente' : 'decrescente';
+    return `${label}, ordenado ${dir}. Clique para inverter.`;
+  }
+
+  thSortClass(column: SortColumn): string {
+    const base =
+      'cursor-pointer select-none pb-3 font-medium transition-colors hover:text-foreground';
+    return this.sortColumn() === column ? `${base} text-foreground` : base;
+  }
 
   categoryBadgeStyle(categoria: string): Record<string, string> {
     const c = this.finance.getCategoryColor(categoria);

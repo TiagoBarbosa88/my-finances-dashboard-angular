@@ -6,6 +6,7 @@ import { Transaction } from '@shared/models/transaction.model';
 import { HasRoleDirective } from '@shared/directives/has-role.directive';
 import { AllTransactionsModalComponent } from '@features/dashboard/components/all-transactions-modal/all-transactions-modal.component';
 import { CategoryChartComponent } from '@features/dashboard/components/category-chart/category-chart.component';
+import { ReceitasChartComponent } from '@features/dashboard/components/receitas-chart/receitas-chart.component';
 import { NewTransactionDialogComponent } from '@features/dashboard/components/new-transaction-dialog/new-transaction-dialog.component';
 import {
   SummaryCardComponent,
@@ -30,6 +31,7 @@ interface SummaryCardData {
   imports: [
     SummaryCardComponent,
     CategoryChartComponent,
+    ReceitasChartComponent,
     TransactionsTableComponent,
     NewTransactionDialogComponent,
     AllTransactionsModalComponent,
@@ -68,6 +70,10 @@ export class DashboardPageComponent {
   closeTransactionDialog(): void {
     this.showDialog.set(false);
     this.editingTransaction.set(null);
+  }
+
+  scrollToReceitasAudit(): void {
+    document.getElementById('receitas-audit')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   /** Saudação dinâmica conforme o horário do dia. */

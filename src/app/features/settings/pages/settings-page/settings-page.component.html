@@ -338,6 +338,114 @@
 
   </div>
 
+  <!-- WhatsApp — somente admin -->
+  <section *appHasRole="['admin']" class="surface-card">
+    <h2 class="text-display text-lg font-semibold">WhatsApp</h2>
+    <p class="mt-0.5 text-xs text-muted-foreground">
+      Lance despesas e receitas pelo WhatsApp. Gere um código e envie pelo celular vinculado à Evolution API.
+    </p>
+
+    @if (whatsapp.status(); as waStatus) {
+      <div class="mt-4 flex flex-wrap items-center gap-2 text-sm">
+        @if (waStatus.linked && waStatus.phone) {
+          <span class="rounded-full bg-success/15 px-3 py-1 text-xs font-medium text-success">
+            Vinculado: {{ waStatus.phone }}
+          </span>
+        } @else if (waStatus.pendingCode || whatsapp.lastCode()) {
+          <span class="rounded-full bg-warning/15 px-3 py-1 text-xs font-medium text-warning">
+            Aguardando código no WhatsApp
+          </span>
+        } @else {
+          <span class="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+            Não vinculado
+          </span>
+        }
+      </div>
+    }
+
+    @if (whatsapp.lastCode()) {
+      <div class="mt-4 rounded-xl border border-primary/30 bg-primary/10 p-4">
+        <p class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Código de vínculo</p>
+        <p class="text-display mt-1 text-3xl font-bold tracking-widest text-primary">
+          {{ whatsapp.lastCode() }}
+        </p>
+        @if (whatsapp.lastCodeExpiresAt()) {
+          <p class="mt-1 text-xs text-muted-foreground">
+            Expira em {{ whatsapp.lastCodeExpiresAt() | date:'short' }}
+          </p>
+        }
+        <p class="mt-2 text-xs text-muted-foreground">
+          Envie este código no WhatsApp conectado à instância Evolution.
+        </p>
+      </div>
+    }
+
+    <div class="mt-5 grid gap-4 sm:max-w-md">
+      <div class="grid gap-2">
+        <label for="whatsapp-phone" class="text-sm font-medium">Telefone (opcional)</label>
+        <input
+          id="whatsapp-phone"
+          type="tel"
+          name="whatsappPhone"
+          placeholder="+5511999999999"
+          [ngModel]="whatsappPhone()"
+          (ngModelChange)="whatsappPhone.set($event)"
+          class="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm
+                 text-foreground outline-none ring-ring transition-colors focus:border-ring focus:ring-1"
+        />
+        <p class="text-xs text-muted-foreground">
+          O número final é confirmado quando você envia o código pelo WhatsApp.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <button
+          type="button"
+          (click)="gerarCodigoWhatsApp()"
+          [disabled]="whatsappBusy()"
+          class="btn-action disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {{ whatsappBusy() ? 'Gerando…' : 'Gerar código' }}
+        </button>
+
+        @if (whatsapp.status()?.linked) {
+          <button
+            type="button"
+            (click)="desvincularWhatsApp()"
+            [disabled]="whatsappBusy()"
+            class="rounded-xl border border-border px-4 py-2 text-sm font-medium text-muted-foreground
+                   transition-colors hover:border-destructive/40 hover:bg-destructive/10 hover:text-destructive
+                   disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Desvincular
+          </button>
+        }
+      </div>
+
+      @if (whatsappMessage()) {
+        <p
+          class="text-sm"
+          [class.text-green-400]="
+            whatsappMessage()!.includes('gerado') ||
+            whatsappMessage()!.includes('vinculado') ||
+            whatsappMessage()!.includes('desvinculado')
+          "
+          [class.text-red-400]="
+            whatsappMessage()!.includes('Falha') ||
+            whatsappMessage()!.includes('Não') ||
+            whatsappMessage()!.includes('Aguarde')
+          "
+        >
+          {{ whatsappMessage() }}
+        </p>
+      }
+    </div>
+
+    <p class="mt-4 text-xs text-muted-foreground">
+      Veja o guia completo em <code class="text-foreground">docs/WHATSAPP-SETUP.md</code> no repositório.
+    </p>
+  </section>
+
   <!-- Convidar — somente admin -->
   <section *appHasRole="['admin']" class="surface-card">
     <h2 class="text-display text-lg font-semibold">Convidar alguém</h2>

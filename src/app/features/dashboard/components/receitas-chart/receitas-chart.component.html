@@ -1,0 +1,104 @@
+<section id="receitas-audit" class="surface-card scroll-mt-6">
+
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h2 class="text-display text-lg font-semibold">Composição de Receitas</h2>
+      <p class="mt-0.5 text-xs text-muted-foreground">
+        Veja quais lançamentos compõem o total de receitas do mês.
+      </p>
+    </div>
+    <span class="text-mono shrink-0 rounded-full border border-success/30 bg-success/10 px-2.5 py-0.5 text-xs text-success">
+      {{ finance.formatCurrency(pieTotal()) }}
+    </span>
+  </div>
+
+  @if (breakdown().length === 0) {
+    <p class="mt-6 py-8 text-center text-sm italic text-muted-foreground">
+      Nenhuma receita lançada neste mês.
+    </p>
+  } @else {
+    <div class="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div>
+        <app-donut-chart
+          [data]="pieData()"
+          [centerText]="finance.formatCurrency(pieTotal())"
+          [highlightedName]="highlightedCategory()"
+          [formatTooltip]="pieTooltipFn"
+          (sliceHighlight)="highlightedCategory.set($event)"
+        />
+
+        <ul class="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+          @for (item of pieData(); track item.name) {
+            <li
+              class="legend-item flex items-center justify-between gap-2"
+              [class.legend-item--active]="isLegendActive(item.name)"
+              [class.legend-item--dimmed]="isLegendDimmed(item.name)"
+              [attr.title]="pieTooltipFn(item.name, item.value)"
+              (mouseenter)="onLegendEnter(item.name)"
+              (mouseleave)="onLegendLeave()"
+            >
+              <span class="legend-label flex min-w-0 items-center gap-2 truncate text-muted-foreground">
+                <span class="h-2 w-2 shrink-0 rounded-full" [style]="categoryDotStyle(item.name)"></span>
+                {{ item.name }}
+              </span>
+              <span class="text-mono text-foreground">
+                {{ pieTotal() > 0 ? (item.value / pieTotal() * 100 | number:'1.0-0') : 0 }}%
+              </span>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="min-h-0">
+        <p class="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          Lançamentos incluídos
+        </p>
+        <div class="max-h-[320px] overflow-y-auto scroll-elegant rounded-xl border border-border/60">
+          <table class="w-full text-sm">
+            <thead class="sticky top-0 bg-card/95 text-left text-xs uppercase tracking-wider text-muted-foreground backdrop-blur-sm">
+              <tr>
+                <th class="px-3 py-2 font-medium">Descrição</th>
+                <th class="px-3 py-2 font-medium">Categoria</th>
+                <th class="px-3 py-2 text-right font-medium">Valor</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              @for (item of breakdown(); track item.id) {
+                <tr class="hover:bg-accent/30">
+                  <td class="px-3 py-2.5">
+                    <p class="font-medium">{{ item.descricao }}</p>
+                    <p class="text-xs text-muted-foreground">
+                      {{ finance.formatShortDate(item.data) }} · {{ item.criado_por }}
+                    </p>
+                  </td>
+                  <td class="px-3 py-2.5">
+                    <span
+                      class="inline-flex rounded-full px-2 py-0.5 text-xs"
+                      [class]="isAmbiguousCategory(item.categoria)
+                        ? 'bg-warning/15 text-warning ring-1 ring-warning/30'
+                        : 'bg-muted/40 text-muted-foreground'"
+                    >
+                      {{ item.categoria }}
+                    </span>
+                  </td>
+                  <td class="px-3 py-2.5 text-right text-mono font-semibold text-success">
+                    {{ finance.formatCurrency(item.valor) }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr class="border-t border-border bg-muted/20">
+                <td colspan="2" class="px-3 py-2.5 text-sm font-semibold">Total do mês</td>
+                <td class="px-3 py-2.5 text-right text-mono font-semibold text-success">
+                  {{ finance.formatCurrency(pieTotal()) }}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+
+</section>

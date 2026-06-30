@@ -1,0 +1,51 @@
+services:
+  evolution-api:
+    image: atendai/evolution-api:v2.2.3
+    container_name: smart-finances-evolution
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SERVER_URL: ${EVOLUTION_PUBLIC_URL:-http://localhost:8080}
+      AUTHENTICATION_API_KEY: ${EVOLUTION_API_KEY:-change-me-evolution-key}
+      AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES: "true"
+      LOG_LEVEL: ERROR
+      DEL_INSTANCE: "false"
+      DATABASE_ENABLED: "true"
+      DATABASE_PROVIDER: postgresql
+      DATABASE_CONNECTION_URI: ${EVOLUTION_DATABASE_URL:-postgresql://evolution:evolution@postgres:5432/evolution}
+      CACHE_REDIS_ENABLED: "true"
+      CACHE_REDIS_URI: redis://redis:6379/0
+      WEBHOOK_GLOBAL_ENABLED: "true"
+      WEBHOOK_GLOBAL_URL: ${WHATSAPP_WEBHOOK_URL:-https://smart-finances-psi.vercel.app/api/whatsapp/webhook}
+      WEBHOOK_GLOBAL_WEBHOOK_BY_EVENTS: "false"
+      CONFIG_SESSION_PHONE_CLIENT: Smart Finances
+      CONFIG_SESSION_PHONE_NAME: Chrome
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - evolution_instances:/evolution/instances
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: smart-finances-evolution-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: evolution
+      POSTGRES_PASSWORD: evolution
+      POSTGRES_DB: evolution
+    volumes:
+      - evolution_pg:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: smart-finances-evolution-redis
+    restart: unless-stopped
+    volumes:
+      - evolution_redis:/data
+
+volumes:
+  evolution_instances:
+  evolution_pg:
+  evolution_redis:

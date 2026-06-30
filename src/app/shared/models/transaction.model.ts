@@ -54,3 +54,13 @@ export interface BarSlice {
   metaVal: number;
   gastoVal: number;
 }
+
+/** Item da lista de auditoria de receitas do mês. */
+export interface ReceitaBreakdownItem {
+  id: number;
+  descricao: string;
+  categoria: string;
+  valor: number;
+  data: string;
+  criado_por: string;
+}

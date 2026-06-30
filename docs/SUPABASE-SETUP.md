@@ -128,6 +128,8 @@ Cada conta Google nova vira **admin do próprio workspace**. Outros usuários s�
 
 Rode [`docs/migrations/003-workspace-isolation.sql`](migrations/003-workspace-isolation.sql).
 
+Para WhatsApp (vínculo, sessões e log), rode também [`docs/migrations/004-whatsapp-sessions.sql`](migrations/004-whatsapp-sessions.sql) — ver [`docs/WHATSAPP-SETUP.md`](WHATSAPP-SETUP.md).
+
 Para corrigir contas que entraram sozinhas e aparecem na equipe de outra pessoa:
 
 ```sql
